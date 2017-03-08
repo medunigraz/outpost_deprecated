@@ -70,8 +70,16 @@ class NodeSerializer(GeoFeatureModelSerializer):
 
 
 class EdgeSerializer(GeoFeatureModelSerializer):
-    source_node = NodeSerializer(source='source', many=False)
-    destination_node = NodeSerializer(source='destination', many=False)
+    source_node = NodeSerializer(
+        source='source',
+        many=False,
+        read_only=True
+    )
+    destination_node = NodeSerializer(
+        source='destination',
+        many=False,
+        read_only=True
+    )
 
     class Meta:
         model = models.Edge
