@@ -1,0 +1,31 @@
+$ci_light: #007B3C;
+$ci_dark: #007B3C;
+$ci_background: #333333;
+$ci_white: #FFFFFF;
+
+.navbar {
+  .logo {
+    padding: 5px;
+    height: 50px;
+  }
+}
+.navbar-inverse {
+  background-color: $ci_background;
+  border-color: $ci_light;
+  .navbar-brand {
+    color: $ci_white;
+    &:hover {
+      color: $ci_dark;
+    }
+  }
+  .navbar-nav {
+    &> li {
+      &> a {
+        color: $ci_white;
+        &:hover {
+          color: $ci_dark;
+        }
+      }
+    }
+  }
+}

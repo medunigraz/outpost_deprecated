@@ -1,0 +1,21 @@
+{% extends "rest_framework/base.html" %}
+
+{% load static %}
+{% load compress %}
+
+{% block bootstrap_theme %}
+<link rel="shortcut icon" type="image/png" href="{% static 'favicon.png' %}"/>
+{% compress css %}
+<link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.css' %}" type="text/css" charset="utf-8">
+<link rel="stylesheet" href="{% static 'bootswatch/lumen/bootstrap.css' %}" type="text/css" charset="utf-8">
+<link rel="stylesheet" href="{% static 'outpost/style.scss' %}" type="text/x-scss" charset="utf-8">
+{% endcompress %}
+{% endblock %}
+
+{% block branding %}
+<img src="{% static 'logo.svg' %}" class="navbar-left logo">
+<a class="navbar-brand" rel="nofollow" href="/">
+  API @ Medical University of Graz
+</a>
+{% endblock %}
+{% block title %}API @ Medical University of Graz{% endblock %}
