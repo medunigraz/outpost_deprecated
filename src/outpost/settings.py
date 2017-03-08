@@ -9,7 +9,6 @@ from urllib.parse import (
     urlparse,
 )
 
-from debug_toolbar.panels.headers import HeadersPanel
 from docutils.core import publish_parts
 from etcd import Client
 from IPy import IP
@@ -54,6 +53,7 @@ ETCD = dict(
         ).children
     )
 )
+
 
 SITE_ID = ETCD.get('SITE_ID')
 
@@ -323,10 +323,3 @@ LOGGING = {
         },
     },
 }
-
-
-
-HeadersPanel.ENVIRON_FILTER.add('GEOIP_ADDR')
-HeadersPanel.ENVIRON_FILTER.add('GEOIP_CONTINENT_CODE')
-HeadersPanel.ENVIRON_FILTER.add('GEOIP_COUNTRY_CODE')
-HeadersPanel.ENVIRON_FILTER.add('GEOIP_COUNTRY_NAME')
