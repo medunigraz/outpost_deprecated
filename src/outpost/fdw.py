@@ -1,3 +1,8 @@
+import sqlalchemy.dialects.postgresql.base
+from sqlalchemy.dialects.postgresql.array import ARRAY
+
+sqlalchemy.dialects.postgresql.base.ARRAY = ARRAY
+
 from multicorn.sqlalchemyfdw import SqlAlchemyFdw
 from sqlalchemy.dialects import registry
 
