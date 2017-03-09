@@ -37,7 +37,6 @@ INSTALLED_APPS = [
     'django_extensions',
     'crispy_forms',
     'guardian',
-    'debug_toolbar',
     'django_python3_ldap',
     'reversion',
     'compressor',
