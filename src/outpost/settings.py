@@ -4,72 +4,24 @@ Django settings for Outpost project.
 
 import json
 import os
-from urllib.parse import (
-    parse_qsl,
-    urlparse,
-)
 
 from docutils.core import publish_parts
-from etcd import Client
-from IPy import IP
-
-
-class IPList(list):
-
-    def __init__(self, addresses):
-        super(IPList, self).__init__()
-        for address in addresses:
-            self.append(IP(address))
-
-    def __contains__(self, address):
-        for net in self:
-            if address in net:
-                return True
-        return False
 
 
 BASE_DIR = os.path.abspath(os.path.join(__file__, '../../..'))
 
-ETCD_URL = urlparse(
-    os.environ.get(
-        'ETCD_URL',
-        'http://localhost:4001/api.medunigraz.at/django/development'
-    )
-)
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', None)
 
-ETCD = dict(
-    map(
-        lambda n: (n.key.split('/')[-1], json.loads(n.value.replace('{{BASE_DIR}}', BASE_DIR))),
-        Client(
-            protocol=ETCD_URL.scheme,
-            host=ETCD_URL.hostname,
-            port=ETCD_URL.port,
-            username=ETCD_URL.username,
-            password=ETCD_URL.password,
-            **dict(parse_qsl(ETCD_URL.query))
-        ).read(
-            ETCD_URL.path,
-            recursive=True
-        ).children
-    )
-)
+DEBUG = False
 
+ADMINS = tuple()
 
-SITE_ID = ETCD.get('SITE_ID')
-
-SECRET_KEY = ETCD.get('SECRET_KEY', os.environ.get('DJANGO_SECRET_KEY', None))
-
-DEBUG = ETCD.get('DEBUG', False)
-
-ADMINS = ETCD.get('ADMINS', [])
-
-EMAIL_HOST = ETCD.get('EMAIL_HOST', 'localhost')
+EMAIL_HOST = 'localhost'
 SERVER_EMAIL = 'it-server@medunigraz.at'
 
-if 'INTERNAL_IPS' in ETCD:
-    INTERNAL_IPS = IPList(ETCD.get('INTERNAL_IPS', []))
+INTERNAL_IPS = list()
 
-ALLOWED_HOSTS = ETCD.get('ALLOWED_HOSTS', [])
+ALLOWED_HOSTS = list()
 
 INSTALLED_APPS = [
     'django.contrib.auth',
@@ -96,7 +48,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'social.apps.django_app.default',
     'djoser',
-    'dynamic_scraper',
+    #'dynamic_scraper',
     'haystack',
     'polymorphic',
     'redis_admin',
@@ -148,20 +100,18 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'development.db')
     }
 }
-DATABASES.update(ETCD.get('DATABASES', {}))
 
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.dummy.DummyCache'
     }
 }
-CACHES.update(ETCD.get('CACHES', {}))
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 SESSION_CACHE_ALIAS = 'default'
 
-LANGUAGE_CODE = ETCD.get('LANGUAGE_CODE', 'en-us')
-TIME_ZONE = ETCD.get('TIME_ZONE', 'UTC')
+LANGUAGE_CODE = 'en-us'
+TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
@@ -204,13 +154,13 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # The URL of the LDAP server.
-LDAP_AUTH_URL = ETCD.get('LDAP_AUTH_URL')
+LDAP_AUTH_URL = 'ldap://localhost:389'
 
 # Initiate TLS on connection.
-LDAP_AUTH_USE_TLS = ETCD.get('LDAP_AUTH_USE_TLS', True)
+LDAP_AUTH_USE_TLS = False
 
 # The LDAP search base for looking up users.
-LDAP_AUTH_SEARCH_BASE = ETCD.get('LDAP_AUTH_SEARCH_BASE')
+LDAP_AUTH_SEARCH_BASE = 'dc=example,dc=com'
 
 # The LDAP class that represents a user.
 LDAP_AUTH_OBJECT_CLASS = 'inetOrgPerson'
@@ -255,8 +205,8 @@ LDAP_AUTH_ACTIVE_DIRECTORY_DOMAIN = None
 # The LDAP username and password of a user for authenticating the
 # `ldap_sync_users` management command. Set to None if you allow anonymous
 # queries.
-LDAP_AUTH_CONNECTION_USERNAME = ETCD.get('LDAP_AUTH_CONNECTION_USERNAME', None)
-LDAP_AUTH_CONNECTION_PASSWORD = ETCD.get('LDAP_AUTH_CONNECTION_PASSWORD', None)
+LDAP_AUTH_CONNECTION_USERNAME = None
+LDAP_AUTH_CONNECTION_PASSWORD = None
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -287,7 +237,6 @@ HAYSTACK_CONNECTIONS = {
         'INDEX_NAME': 'api.medunigraz.at',
     }
 }
-# HAYSTACK_CONNECTIONS.update(ETCD.get('HAYSTACK_CONNECTIONS', {}))
 
 CORS_ORIGIN_ALLOW_ALL = True
 
@@ -323,3 +272,10 @@ LOGGING = {
         },
     },
 }
+
+if 'DJANGO_LOCAL_CONFIGURATION' in os.environ:
+    filename = os.path.abspath(os.environ.get('DJANGO_LOCAL_CONFIGURATION'))
+    if os.access(filename, os.R_OK):
+        with open(filename) as config:
+            code = compile(config.read(), filename, 'exec')
+            exec(code, globals(), locals())
