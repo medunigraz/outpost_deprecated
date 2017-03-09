@@ -45,6 +45,11 @@ setup(
     py_modules=[splitext(basename(path))[0] for path in glob('src/*.py')],
     include_package_data=True,
     zip_safe=False,
+    entry_points={
+        'sqlalchemy.dialects': [
+            'oracle.pyodbc = outpost.pyodbc:OracleDialect_pyodbc',
+            ]
+        }
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
@@ -56,8 +61,8 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: Implementation :: CPython',
         'Topic :: Utilities',
-    ],
+        ],
     keywords=[
         'restful', 'gis'
-    ]
-)
+        ]
+    )
