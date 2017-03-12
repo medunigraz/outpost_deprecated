@@ -13,6 +13,14 @@ class Building(models.Model):
         blank=True,
         srid=settings.DEFAULT_SRID
     )
+    campusonline = models.ForeignKey(
+        'campusonline.Building',
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        related_name='+'
+    )
 
     def __str__(self):
         return self.name
@@ -21,6 +29,14 @@ class Building(models.Model):
 class Floor(OrderedModel):
     name = models.TextField()
     building = models.ForeignKey('Building')
+    campusonline = models.ForeignKey(
+        'campusonline.Floor',
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        related_name='+'
+    )
 
     class Meta(OrderedModel.Meta):
         pass
@@ -85,10 +101,13 @@ class Room(Node):
         null=True,
         blank=True
     )
-    campusonline = models.CharField(
-        max_length=128,
+    campusonline = models.ForeignKey(
+        'campusonline.Room',
+        models.SET_NULL,
+        db_constraint=False,
         null=True,
-        blank=True
+        blank=True,
+        related_name='+'
     )
 
     def __str__(self):
