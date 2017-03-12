@@ -6,6 +6,7 @@ from rest_framework.serializers import (
 )
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
+from ..campusonline import serializers as campusonline
 from . import (
     models,
     search_indexes,
@@ -13,6 +14,11 @@ from . import (
 
 
 class RoomSerializer(GeoFeatureModelSerializer):
+    campusonline = campusonline.RoomSerializer(
+        many=False,
+        read_only=True
+    )
+
     class Meta:
         model = models.Room
         geo_field = 'layout'
@@ -23,6 +29,11 @@ class RoomSerializer(GeoFeatureModelSerializer):
 
 
 class RoomSearchSerializer(HaystackSerializer):
+    campusonline = campusonline.RoomSerializer(
+        many=False,
+        read_only=True
+    )
+
     class Meta:
         index_classes = [search_indexes.RoomIndex]
         fields = [
@@ -31,6 +42,11 @@ class RoomSearchSerializer(HaystackSerializer):
 
 
 class FloorSerializer(ModelSerializer):
+    campusonline = campusonline.FloorSerializer(
+        many=False,
+        read_only=True
+    )
+
     class Meta:
         model = models.Floor
         exclude = (
@@ -39,6 +55,11 @@ class FloorSerializer(ModelSerializer):
 
 
 class BuildingSerializer(GeoFeatureModelSerializer):
+    campusonline = campusonline.BuildingSerializer(
+        many=False,
+        read_only=True
+    )
+
     class Meta:
         model = models.Building
         geo_field = 'outline'
