@@ -65,3 +65,5 @@ docs/_build
 
 # Development
 *.sqlite3
+static/
+media/
