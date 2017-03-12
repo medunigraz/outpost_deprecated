@@ -108,7 +108,7 @@ class EdgeSerializer(GeoFeatureModelSerializer):
 
 
 class RoutingEdgeSerializer(EdgeSerializer):
-    sequence = IntegerField(read_only=True)
+    pass
 
 
 class BeaconSerializer(GeoFeatureModelSerializer):
