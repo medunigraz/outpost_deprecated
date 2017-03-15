@@ -34,6 +34,10 @@ urlpatterns = [
         include('outpost.api.urls')
     ),
     url(
+        '^',
+        include('django.contrib.auth.urls')
+    ),
+    url(
         r'^',
         include('outpost.base.urls')
     ),
