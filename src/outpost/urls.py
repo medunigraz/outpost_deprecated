@@ -28,15 +28,15 @@ urlpatterns = [
     ),
     url(
         r'^auth/',
-        include('djoser.urls.authtoken')
+        include('djoser.urls.authtoken', namespace='djoser')
     ),
     url(
         r'^',
         include('outpost.api.urls')
     ),
     url(
-        '^',
-        include('django.contrib.auth.urls')
+        r'^',
+        include('django.contrib.auth.urls', namespace='accounts')
     ),
     url(
         r'^',
