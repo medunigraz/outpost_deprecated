@@ -31,7 +31,7 @@ urlpatterns = [
         include('djoser.urls.authtoken')
     ),
     url(
-        r'^api/',
+        r'^',
         include('outpost.api.urls')
     ),
     url(
