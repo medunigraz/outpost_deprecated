@@ -15,6 +15,26 @@ from . import (
 )
 
 
+class LanguageViewSet(ReadOnlyModelViewSet):
+    queryset = models.Language.objects.all()
+    serializer_class = serializers.LanguageSerializer
+
+
+class CategoryViewSet(ReadOnlyModelViewSet):
+    queryset = models.Category.objects.all()
+    serializer_class = serializers.CategorySerializer
+
+
+class CalendarViewSet(ReadOnlyModelViewSet):
+    queryset = models.Calendar.objects.all()
+    serializer_class = serializers.CalendarSerializer
+
+
+class EventViewSet(ReadOnlyModelViewSet):
+    queryset = models.Event.objects.all()
+    serializer_class = serializers.EventSerializer
+
+
 class NewsViewSet(ReadOnlyModelViewSet):
     queryset = models.News.objects.all()
     serializer_class = serializers.NewsSerializer
@@ -23,8 +43,3 @@ class NewsViewSet(ReadOnlyModelViewSet):
 class NewsSearchViewSet(HaystackViewSet):
     index_models = [models.News]
     serializer_class = serializers.NewsSearchSerializer
-
-
-class CategoryViewSet(ReadOnlyModelViewSet):
-    queryset = models.Category.objects.all()
-    serializer_class = serializers.CategorySerializer

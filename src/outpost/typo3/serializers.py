@@ -9,6 +9,26 @@ from . import (
 )
 
 
+class LanguageSerializer(ModelSerializer):
+    class Meta:
+        model = models.Language
+
+
+class CategorySerializer(ModelSerializer):
+    class Meta:
+        model = models.Category
+
+
+class CalendarSerializer(ModelSerializer):
+    class Meta:
+        model = models.Calendar
+
+
+class EventSerializer(ModelSerializer):
+    class Meta:
+        model = models.Event
+
+
 class NewsSerializer(ModelSerializer):
     class Meta:
         model = models.News
@@ -20,8 +40,3 @@ class NewsSearchSerializer(HaystackSerializer):
         fields = [
             'text',
         ]
-
-
-class CategorySerializer(ModelSerializer):
-    class Meta:
-        model = models.Category
