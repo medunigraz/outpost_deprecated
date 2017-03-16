@@ -128,7 +128,7 @@ COMPRESS_PRECOMPILERS = [
     ('text/x-scss', 'django_pyscss.compressor.DjangoScssFilter'),
 ]
 
-LOGIN_URL = 'accounts.login'
+LOGIN_URL = 'accounts:login'
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
