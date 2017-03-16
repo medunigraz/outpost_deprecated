@@ -1,0 +1,38 @@
+{% extends "outpost/base.html" %}
+
+{% block content %}
+<div class="signin">
+  <h2 class="form-signin-heading">Please sign in</h2>
+  {% if form.errors %}
+  <div class="alert alert-warning" role="alert">
+    Your username and password didn't match. Please try again.
+  </div>
+  {% endif %}
+
+  {% if next %}
+      <div class="alert alert-info" role="alert">
+        {% if user.is_authenticated %}
+        Your account doesn't have access to this page. To proceed, please login with an account that has access.
+        {% else %}
+        Please login to see this page.
+        {% endif %}
+      </div>
+  {% endif %}
+  <form method="post" action="{% url 'accounts:login' %}" class="form-signin well">
+  {% csrf_token %}
+    <label for="username" class="sr-only">
+      Username:
+    </label>
+    <input id="username" class="form-control" placeholder="Username" required="" autofocus="" type="email">
+    <label for="password" class="sr-only">
+      Password
+    </label>
+    <input id="password" class="form-control" placeholder="Password" required="" type="password">
+    <button class="btn btn-lg btn-primary btn-block" type="submit">
+      <i class="glyphicon glyphicon-log-in"></i>
+      Sign in
+    </button>
+    <input type="hidden" name="next" value="{{ next }}" />
+  </form>
+</div>
+{% endblock %}

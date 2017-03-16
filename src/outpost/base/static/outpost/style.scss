@@ -3,6 +3,9 @@ $ci_dark: #007B3C;
 $ci_background: #333333;
 $ci_white: #FFFFFF;
 
+body {
+  margin-top: 70px;
+}
 .navbar {
   .logo {
     padding: 5px;
@@ -28,4 +31,8 @@ $ci_white: #FFFFFF;
       }
     }
   }
+}
+.signin {
+  max-width: 30em;
+  margin: auto;
 }
