@@ -256,6 +256,8 @@ DOWNLOADVIEW_RULES = [
     }
 ]
 
+CELERY_BROKER_URL = 'amqp://guest:guest@localhost//'
+
 RUNSERVERPLUS_SERVER_ADDRESS_PORT = '0.0.0.0:8088'
 
 LOGGING = {
