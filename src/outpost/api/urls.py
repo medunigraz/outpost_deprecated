@@ -75,6 +75,22 @@ v1.register(
     base_name='campusonline-building-list'
 )
 v1.register(
+    r'typo3/languages',
+    typo3.LanguageViewSet
+)
+v1.register(
+    r'typo3/categories',
+    typo3.CategoryViewSet
+)
+v1.register(
+    r'typo3/calendars',
+    typo3.CalendarViewSet
+)
+v1.register(
+    r'typo3/events',
+    typo3.EventViewSet
+)
+v1.register(
     r'typo3/news',
     typo3.NewsViewSet
 )
@@ -82,10 +98,6 @@ v1.register(
     r'typo3/search/news',
     typo3.NewsSearchViewSet,
     base_name='news-search'
-)
-v1.register(
-    r'typo3/categories',
-    typo3.CategoryViewSet
 )
 
 urlpatterns = [
