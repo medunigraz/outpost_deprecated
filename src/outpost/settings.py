@@ -4,8 +4,10 @@ Django settings for Outpost project.
 
 import json
 import os
+import ldap
 
 from docutils.core import publish_parts
+from django_auth_ldap.config import LDAPSearch, GroupOfNamesType
 
 
 BASE_DIR = os.path.abspath(os.path.join(__file__, '../../..'))
@@ -129,10 +131,11 @@ COMPRESS_PRECOMPILERS = [
 ]
 
 LOGIN_URL = 'accounts:login'
+LOGOUT_REDIRECT_URL = '/'
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'django_python3_ldap.auth.LDAPBackend',
+    'django_auth_ldap.backend.LDAPBackend',
     'guardian.backends.ObjectPermissionBackend',
 )
 
@@ -154,60 +157,36 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# The URL of the LDAP server.
-LDAP_AUTH_URL = 'ldap://localhost:389'
-
-# Initiate TLS on connection.
-LDAP_AUTH_USE_TLS = False
-
-# The LDAP search base for looking up users.
-LDAP_AUTH_SEARCH_BASE = 'dc=example,dc=com'
-
-# The LDAP class that represents a user.
-LDAP_AUTH_OBJECT_CLASS = 'inetOrgPerson'
-
-# User model fields mapped to the LDAP
-# attributes that represent them.
-LDAP_AUTH_USER_FIELDS = {
-    'username': 'cn',
-    'first_name': 'givenName',
-    'last_name': 'sn',
-    'email': 'mail',
+AUTH_LDAP_SERVER_URI = "ldap://ldap.example.com"
+AUTH_LDAP_BIND_DN = "cn=django-agent,dc=example,dc=com"
+AUTH_LDAP_BIND_PASSWORD = "phlebotinum"
+AUTH_LDAP_USER_SEARCH = LDAPSearch("ou=users,dc=example,dc=com", ldap.SCOPE_SUBTREE, "(uid=%(user)s)")
+AUTH_LDAP_GROUP_SEARCH = LDAPSearch("ou=django,ou=groups,dc=example,dc=com",
+    ldap.SCOPE_SUBTREE, "(objectClass=groupOfNames)"
+)
+AUTH_LDAP_GROUP_TYPE = GroupOfNamesType(name_attr="cn")
+AUTH_LDAP_REQUIRE_GROUP = "cn=enabled,ou=django,ou=groups,dc=example,dc=com"
+AUTH_LDAP_DENY_GROUP = "cn=disabled,ou=django,ou=groups,dc=example,dc=com"
+AUTH_LDAP_USER_ATTR_MAP = {
+    "first_name": "givenName",
+    "last_name": "sn",
+    "email": "mail"
 }
-
-# A tuple of django model fields used to uniquely identify a user.
-LDAP_AUTH_USER_LOOKUP_FIELDS = ('username',)
-
-# Path to a callable that takes a dict of {model_field_name: value},
-# returning a dict of clean model data.
-# Use this to customize how data loaded from LDAP is saved to the User model.
-LDAP_AUTH_CLEAN_USER_DATA = 'django_python3_ldap.utils.clean_user_data'
-
-# Path to a callable that takes a user model and a dict of {ldap_field_name:
-# [value]}, and saves any additional user relationships based on the LDAP data.
-# Use this to customize how data loaded from LDAP is saved to User model
-# relations. For customizing non-related User model fields, use
-# LDAP_AUTH_CLEAN_USER_DATA.
-LDAP_AUTH_SYNC_USER_RELATIONS = 'django_python3_ldap.utils.sync_user_relations'
-
-# Path to a callable that takes a dict of {ldap_field_name: value},
-# returning a list of [ldap_search_filter]. The search filters will then be
-# AND'd together when creating the final search filter.
-LDAP_AUTH_FORMAT_SEARCH_FILTERS = 'outpost.ldap.group_membership_filter'
-
-# Path to a callable that takes a dict of {model_field_name: value}, and
-# returns a string of the username to bind to the LDAP server. Use this to
-# support different types of LDAP server.
-LDAP_AUTH_FORMAT_USERNAME = 'django_python3_ldap.utils.format_username_openldap'
-
-# Sets the login domain for Active Directory users.
-LDAP_AUTH_ACTIVE_DIRECTORY_DOMAIN = None
-
-# The LDAP username and password of a user for authenticating the
-# `ldap_sync_users` management command. Set to None if you allow anonymous
-# queries.
-LDAP_AUTH_CONNECTION_USERNAME = None
-LDAP_AUTH_CONNECTION_PASSWORD = None
+AUTH_LDAP_PROFILE_ATTR_MAP = {
+    "employee_number": "employeeNumber"
+}
+AUTH_LDAP_USER_FLAGS_BY_GROUP = {
+    "is_active": "cn=active,ou=django,ou=groups,dc=example,dc=com",
+    "is_staff": "cn=staff,ou=django,ou=groups,dc=example,dc=com",
+    "is_superuser": "cn=superuser,ou=django,ou=groups,dc=example,dc=com"
+}
+AUTH_LDAP_PROFILE_FLAGS_BY_GROUP = {
+    "is_awesome": "cn=awesome,ou=django,ou=groups,dc=example,dc=com",
+}
+AUTH_LDAP_ALWAYS_UPDATE_USER = True
+AUTH_LDAP_FIND_GROUP_PERMS = True
+AUTH_LDAP_CACHE_GROUPS = True
+AUTH_LDAP_GROUP_CACHE_TIMEOUT = 3600
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
