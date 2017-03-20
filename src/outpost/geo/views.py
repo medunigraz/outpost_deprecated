@@ -77,6 +77,7 @@ class BuildingViewSet(GeoModelViewSet):
 class NodeViewSet(GeoModelViewSet):
     queryset = models.Node.objects.all()
     serializer_class = serializers.NodeSerializer
+    pagination_class = None
     bbox_filter_field = 'center'
     filter_backends = (
         DjangoFilterBackend,
@@ -107,6 +108,7 @@ class EdgeViewSet(GeoModelViewSet):
     """
     queryset = models.Edge.objects.all()
     serializer_class = serializers.EdgeSerializer
+    pagination_class = None
     bbox_filter_field = 'path'
     filter_backends = (
         DjangoFilterBackend,
