@@ -430,7 +430,7 @@ class Migration(migrations.Migration):
         DROP FOREIGN TABLE IF EXISTS "typo3"."news";
         """,
         """
-        DROP SERVER IF EXISTS sqlalchemy;
+        DROP SERVER IF EXISTS "sqlalchemy";
         """,
     ]
 
