@@ -91,6 +91,11 @@ v1.register(
     typo3.EventViewSet
 )
 v1.register(
+    r'typo3/search/events',
+    typo3.EventSearchViewSet,
+    base_name='event-search'
+)
+v1.register(
     r'typo3/news',
     typo3.NewsViewSet
 )

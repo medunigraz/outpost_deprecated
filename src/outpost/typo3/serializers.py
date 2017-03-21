@@ -1,4 +1,4 @@
-from drf_haystack.serializers import HaystackSerializer
+from drf_haystack.serializers import HaystackSerializerMixin
 from rest_framework.serializers import (
     ModelSerializer,
 )
@@ -27,16 +27,32 @@ class CalendarSerializer(ModelSerializer):
 class EventSerializer(ModelSerializer):
     class Meta:
         model = models.Event
+        fields = (
+            '__all__'
+        )
+        exclude = tuple()
+
+
+class EventSearchSerializer(HaystackSerializerMixin, EventSerializer):
+    class Meta(EventSerializer.Meta):
+        field_aliases = None
+        search_fields = (
+            'text',
+        )
 
 
 class NewsSerializer(ModelSerializer):
     class Meta:
         model = models.News
+        fields = (
+            '__all__'
+        )
+        exclude = tuple()
 
 
-class NewsSearchSerializer(HaystackSerializer):
-    class Meta:
-        index_classes = [search_indexes.NewsIndex]
-        fields = [
+class NewsSearchSerializer(HaystackSerializerMixin, NewsSerializer):
+    class Meta(NewsSerializer.Meta):
+        field_aliases = None
+        search_fields = (
             'text',
-        ]
+        )

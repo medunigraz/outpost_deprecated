@@ -35,6 +35,11 @@ class EventViewSet(ReadOnlyModelViewSet):
     serializer_class = serializers.EventSerializer
 
 
+class EventSearchViewSet(HaystackViewSet):
+    index_models = [models.Event]
+    serializer_class = serializers.EventSearchSerializer
+
+
 class NewsViewSet(ReadOnlyModelViewSet):
     queryset = models.News.objects.all()
     serializer_class = serializers.NewsSerializer
