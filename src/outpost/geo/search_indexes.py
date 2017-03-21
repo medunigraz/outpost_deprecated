@@ -5,7 +5,6 @@ from .models import Room
 
 class RoomIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
-    name = indexes.CharField(model_attr='co_code')
 
     def get_model(self):
         return Room
