@@ -209,7 +209,13 @@ class Migration(migrations.Migration):
         """
         CREATE VIEW "public"."typo3_category" AS SELECT
             uid AS id,
-            sys_language_uid AS language_id,
+            CASE WHEN
+                sys_language_uid > 0
+            THEN
+                sys_language_uid
+            ELSE
+                NULL
+            END AS language_id,
             CASE
                 starttime
             WHEN
@@ -241,7 +247,13 @@ class Migration(migrations.Migration):
         CREATE VIEW "public"."typo3_calendar" AS SELECT
             uid AS id,
             title,
-            sys_language_uid AS language_id
+            CASE WHEN
+                sys_language_uid > 0
+            THEN
+                sys_language_uid
+            ELSE
+                NULL
+            END AS language_id
         FROM "typo3"."calendar"
         WHERE
             type = 0 AND
@@ -272,12 +284,24 @@ class Migration(migrations.Migration):
             allday::boolean AS allday,
             title,
             calendar_id,
-            category_id,
+            CASE WHEN
+                category_id > 0
+            THEN
+                category_id
+            ELSE
+                NULL
+            END AS category_id,
             organizer,
             location,
             teaser,
             description,
-            sys_language_uid AS language_id,
+            CASE WHEN
+                sys_language_uid > 0
+            THEN
+                sys_language_uid
+            ELSE
+                NULL
+            END AS language_id,
             tx_mugcal_register::boolean AS register,
             CASE WHEN
                 tx_mugcal_registration_end > 0
@@ -312,7 +336,13 @@ class Migration(migrations.Migration):
         """
         CREATE VIEW "public"."typo3_news" AS SELECT
             uid AS id,
-            sys_language_uid AS language_id,
+            CASE WHEN
+                sys_language_uid > 0
+            THEN
+                sys_language_uid
+            ELSE
+                NULL
+            END AS language_id,
             CASE
                 starttime
             WHEN
