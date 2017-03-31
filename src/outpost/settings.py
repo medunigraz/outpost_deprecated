@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'redis_admin',
     'push_notifications',
     'ordered_model',
+    'celery_haystack',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -216,6 +217,8 @@ HAYSTACK_CONNECTIONS = {
         'INDEX_NAME': 'api.medunigraz.at',
     }
 }
+
+HAYSTACK_SIGNAL_PROCESSOR = 'celery_haystack.signals.CelerySignalProcessor'
 
 CORS_ORIGIN_ALLOW_ALL = True
 

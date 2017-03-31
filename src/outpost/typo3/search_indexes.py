@@ -1,9 +1,10 @@
 from haystack import indexes
+from celery_haystack.indexes import CelerySearchIndex
 
 from .models import News, Event
 
 
-class NewsIndex(indexes.SearchIndex, indexes.Indexable):
+class NewsIndex(CelerySearchIndex, indexes.Indexable):
     text = indexes.CharField(
         document=True,
         use_template=True
@@ -30,7 +31,7 @@ class NewsIndex(indexes.SearchIndex, indexes.Indexable):
         return self.get_model().objects.all()
 
 
-class EventIndex(indexes.SearchIndex, indexes.Indexable):
+class EventIndex(CelerySearchIndex, indexes.Indexable):
     text = indexes.CharField(
         document=True,
         use_template=True
