@@ -1,3 +1,4 @@
+from drf_haystack.filters import HaystackAutocompleteFilter
 from drf_haystack.viewsets import HaystackViewSet
 from rest_framework.filters import DjangoFilterBackend
 from rest_framework.viewsets import (
@@ -205,3 +206,13 @@ class RoutingEdgeViewSet(MediatypeNegotiationMixin, ReadOnlyModelViewSet):
                 target=target
             )
         )
+
+
+class AutocompleteViewSet(HaystackViewSet):
+    serializer_class = serializers.AutocompleteSerializer
+    index_models = [
+        models.Room,
+    ]
+    filter_backends = [
+        HaystackAutocompleteFilter,
+    ]

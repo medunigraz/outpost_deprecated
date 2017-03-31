@@ -112,6 +112,22 @@ class RoutingEdgeSerializer(EdgeSerializer):
 
 
 class BeaconSerializer(GeoFeatureModelSerializer):
+
     class Meta:
         model = models.Beacon
         geo_field = 'position'
+
+
+class AutocompleteSerializer(HaystackSerializer):
+
+    class Meta:
+        index_classes = [
+            search_indexes.RoomIndex,
+        ]
+        ignore_fields = [
+            'text',
+            'autocomplete',
+        ]
+        field_aliases = {
+            'q': 'autocomplete',
+        }

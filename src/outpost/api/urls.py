@@ -52,6 +52,11 @@ v1.register(
     base_name='room-search'
 )
 v1.register(
+    r'geo/autocomplete',
+    geo.AutocompleteViewSet,
+    base_name='autocomplete'
+)
+v1.register(
     r'attendance/holdings',
     attendance.HoldingViewSet
 )
