@@ -119,6 +119,7 @@ class BeaconSerializer(GeoFeatureModelSerializer):
 
 
 class AutocompleteSerializer(HaystackSerializer):
+    ctype = SerializerMethodField()
 
     class Meta:
         index_classes = [
@@ -131,3 +132,6 @@ class AutocompleteSerializer(HaystackSerializer):
         field_aliases = {
             'q': 'autocomplete',
         }
+
+    def get_ctype(self, obj):
+        return obj.content_type()
