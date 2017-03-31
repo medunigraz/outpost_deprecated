@@ -398,14 +398,11 @@ class Migration(migrations.Migration):
             raum_nr ::integer AS id,
             raum_bez AS title,
             gebaeude_nr ::integer AS building_id,
-            gebaeude AS building,
             stockwerk_nr ::integer AS floor_id,
-            stockwerk AS floor,
             raum AS name_short,
             raum_nummer AS name_full,
             flaeche AS area,
             hoehe AS height,
-            org_nr ::integer AS organization_id,
             organisation AS organization
         FROM "campusonline"."raum";
         """,

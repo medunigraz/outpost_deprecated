@@ -10,23 +10,21 @@ class Room(models.Model):
         blank=True,
         null=True
     )
-    building_id = models.IntegerField(
+    building = models.ForeignKey(
+        'Building',
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
         blank=True,
-        null=True
+        related_name='+'
     )
-    building = models.CharField(
-        max_length=256,
+    floor = models.ForeignKey(
+        'Floor',
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
         blank=True,
-        null=True
-    )
-    floor_id = models.IntegerField(
-        blank=True,
-        null=True
-    )
-    floor = models.CharField(
-        max_length=256,
-        blank=True,
-        null=True
+        related_name='+'
     )
     name_short = models.CharField(
         max_length=256,
@@ -47,10 +45,6 @@ class Room(models.Model):
     height = models.DecimalField(
         max_digits=65535,
         decimal_places=1,
-        blank=True,
-        null=True
-    )
-    organization_id = models.IntegerField(
         blank=True,
         null=True
     )
