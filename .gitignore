@@ -68,3 +68,4 @@ docs/_build
 /static/
 /media/
 /xapian_index/
+/celerybeat-schedule.db
