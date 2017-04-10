@@ -37,7 +37,9 @@ class RoomViewSet(GeoModelViewSet):
         InBBoxFilter,
     )
     filter_fields = (
+        'category',
         'floor',
+        'campusonline',
     )
     bbox_filter_include_overlapping = True
 
@@ -63,6 +65,9 @@ class FloorViewSet(RevisionMixin, ModelViewSet):
     filter_backends = (
         DjangoFilterBackend,
     )
+    filter_fields = (
+        'campusonline',
+    )
 
 
 class BuildingViewSet(GeoModelViewSet):
@@ -70,7 +75,11 @@ class BuildingViewSet(GeoModelViewSet):
     serializer_class = serializers.BuildingSerializer
     bbox_filter_field = 'outline'
     filter_backends = (
+        DjangoFilterBackend,
         InBBoxFilter,
+    )
+    filter_fields = (
+        'campusonline',
     )
     bbox_filter_include_overlapping = True
 

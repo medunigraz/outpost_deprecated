@@ -119,15 +119,20 @@ class BeaconSerializer(GeoFeatureModelSerializer):
 
 
 class AutocompleteSerializer(HaystackSerializer):
+    id = IntegerField(source='pk')
     ctype = SerializerMethodField()
 
     class Meta:
         index_classes = [
             search_indexes.RoomIndex,
         ]
+        fields = [
+            'autocomplete',
+            'id',
+            'ctype',
+        ]
         ignore_fields = [
             'text',
-            'autocomplete',
         ]
         field_aliases = {
             'q': 'autocomplete',
