@@ -1,6 +1,21 @@
 from django.contrib.gis.db import models
 
 
+class RoomCategory(models.Model):
+    id = models.IntegerField(
+        primary_key=True
+    )
+    name = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True
+    )
+
+    class Meta:
+        managed = False
+        db_table = 'campusonline_room_category'
+
+
 class Room(models.Model):
     id = models.IntegerField(
         primary_key=True
@@ -52,6 +67,14 @@ class Room(models.Model):
         max_length=256,
         blank=True,
         null=True
+    )
+    category = models.ForeignKey(
+        'RoomCategory',
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        related_name='+'
     )
 
     class Meta:

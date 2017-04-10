@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib.gis.db import models
+from django.contrib.gis.geos import Point
 from ordered_model.models import OrderedModel
 from polymorphic.models import PolymorphicModel
 
@@ -78,6 +79,15 @@ class Edge(models.Model):
 
 class RoomCategory(models.Model):
     name = models.TextField()
+    searchable = models.BooleanField(default=True)
+    campusonline = models.ForeignKey(
+        'campusonline.RoomCategory',
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        related_name='+'
+    )
 
     def __str__(self):
         return self.name or 'Undefined'
@@ -87,6 +97,10 @@ class RoomCategory(models.Model):
 class Room(Node):
     layout = models.PolygonField(
         srid=settings.DEFAULT_SRID
+    )
+    marker = models.PointField(
+        srid=settings.DEFAULT_SRID,
+        default=Point(0,0)
     )
     virtual = models.BooleanField(
         default=False
@@ -129,6 +143,25 @@ class Door(Node):
     rooms = models.ManyToManyField(
         'Room'
     )
+
+
+class PointOfInterestCategory(Node):
+    name = models.CharField(
+        max_length=128
+    )
+    icon = models.ForeignKey(
+        'base.Icon'
+    )
+    color = models.CharField(
+        max_length=6
+    )
+    selected = models.BooleanField(
+        default=False
+    )
+
+
+class PointOfInterest(Node):
+    category = models.ForeignKey('PointOfInterestCategory')
 
 
 class Beacon(models.Model):
