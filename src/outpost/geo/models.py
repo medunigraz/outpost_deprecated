@@ -131,6 +131,17 @@ class Room(Node):
         if self.layout:
             self.center = self.layout.point_on_surface
 
+            def x(k): return k[0]
+
+            def y(k): return k[1]
+
+            # Map all [(x,y)] to [y] and select the maximum
+            # Filter all [(x,y)] where y = max_y
+            # Select maximum y from [(x,y)] and save as marker anchor point
+            c = self.layout.coords
+            max_y = max(map(lambda k: y(k), c[0]))
+            self.marker = Point(min(filter(lambda k: y(k) == max_y, c[0]), key=lambda k: x(k)), srid=settings.DEFAULT_SRID)
+
 
 class Walls(models.Model):
     floor = models.ForeignKey('Floor')
