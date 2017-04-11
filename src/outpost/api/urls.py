@@ -16,6 +16,11 @@ v1.register(
     base_name='geo-room-list'
 )
 v1.register(
+    r'geo/roomcategory',
+    geo.RoomCategoryViewSet,
+    base_name='geo-roomcategory-list'
+)
+v1.register(
     r'geo/doors',
     geo.DoorViewSet
 )

@@ -13,6 +13,16 @@ from . import (
 )
 
 
+class RoomCategorySerializer(ModelSerializer):
+    campusonline = campusonline.RoomSerializer(
+        many=False,
+        read_only=True
+    )
+
+    class Meta:
+        model = models.RoomCategory
+
+
 class RoomSerializer(GeoFeatureModelSerializer):
     campusonline = campusonline.RoomSerializer(
         many=False,

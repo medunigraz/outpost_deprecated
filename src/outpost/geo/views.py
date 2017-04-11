@@ -28,6 +28,17 @@ class GeoModelViewSet(MediatypeNegotiationMixin, RevisionMixin, ModelViewSet):
     pass
 
 
+class RoomCategoryViewSet(RevisionMixin, ModelViewSet):
+    queryset = models.RoomCategory.objects.all()
+    serializer_class = serializers.RoomCategorySerializer
+    filter_backends = (
+        DjangoFilterBackend,
+    )
+    filter_fields = (
+        'searchable',
+    )
+
+
 class RoomViewSet(GeoModelViewSet):
     queryset = models.Room.objects.all()
     serializer_class = serializers.RoomSerializer
