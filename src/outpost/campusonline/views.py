@@ -15,9 +15,20 @@ from . import (
 )
 
 
+class RoomCategoryViewSet(ReadOnlyModelViewSet):
+    queryset = models.RoomCategory.objects.all()
+    serializer_class = serializers.RoomCategorySerializer
+
+
 class RoomViewSet(ReadOnlyModelViewSet):
     queryset = models.Room.objects.all()
     serializer_class = serializers.RoomSerializer
+    filter_backends = (
+        DjangoFilterBackend,
+    )
+    filter_fields = (
+        'category',
+    )
 
 
 class FloorViewSet(ReadOnlyModelViewSet):

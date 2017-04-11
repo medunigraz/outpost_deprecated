@@ -65,6 +65,11 @@ v1.register(
     attendance.EntryViewSet
 )
 v1.register(
+    r'campusonline/roomcategory',
+    campusonline.RoomCategoryViewSet,
+    base_name='campusonline-roomcategory-list'
+)
+v1.register(
     r'campusonline/room',
     campusonline.RoomViewSet,
     base_name='campusonline-room-list'

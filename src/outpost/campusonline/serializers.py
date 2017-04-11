@@ -7,9 +7,9 @@ from . import (
 )
 
 
-class RoomSerializer(ModelSerializer):
+class RoomCategorySerializer(ModelSerializer):
     class Meta:
-        model = models.Room
+        model = models.RoomCategory
 
 
 class FloorSerializer(ModelSerializer):
@@ -20,3 +20,12 @@ class FloorSerializer(ModelSerializer):
 class BuildingSerializer(ModelSerializer):
     class Meta:
         model = models.Building
+
+
+class RoomSerializer(ModelSerializer):
+    category = RoomCategorySerializer()
+    floor = FloorSerializer()
+    building = BuildingSerializer()
+
+    class Meta:
+        model = models.Room
