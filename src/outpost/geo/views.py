@@ -146,6 +146,13 @@ class BeaconViewSet(GeoModelViewSet):
     serializer_class = serializers.BeaconSerializer
 
 
+class PointOfInterestViewSet(GeoModelViewSet):
+    """
+    """
+    queryset = models.PointOfInterestInstance.objects.all()
+    serializer_class = serializers.PointOfInterestInstanceSerializer
+
+
 class RoutingEdgeViewSet(MediatypeNegotiationMixin, ReadOnlyModelViewSet):
     """
     Query the edge graph for a route between two nodes:

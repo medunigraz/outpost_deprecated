@@ -47,6 +47,10 @@ v1.register(
     geo.BeaconViewSet
 )
 v1.register(
+    r'geo/pointofinterest',
+    geo.PointOfInterestViewSet
+)
+v1.register(
     r'geo/routing/edges',
     geo.RoutingEdgeViewSet,
     base_name='edge-routing'

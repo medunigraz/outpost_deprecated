@@ -156,23 +156,25 @@ class Door(Node):
     )
 
 
-class PointOfInterestCategory(Node):
+class PointOfInterest(Node):
     name = models.CharField(
         max_length=128
     )
     icon = models.ForeignKey(
-        'base.Icon'
+        'base.Icon',
+        null=True
     )
     color = models.CharField(
-        max_length=6
+        max_length=6,
+        default='007b3c'
     )
     selected = models.BooleanField(
         default=False
     )
 
 
-class PointOfInterest(Node):
-    category = models.ForeignKey('PointOfInterestCategory')
+class PointOfInterestInstance(Node):
+    name = models.ForeignKey('PointOfInterest')
 
 
 class Beacon(models.Model):

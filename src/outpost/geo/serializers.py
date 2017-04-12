@@ -128,6 +128,20 @@ class BeaconSerializer(GeoFeatureModelSerializer):
         geo_field = 'position'
 
 
+class PointOfInterestSerializer(ModelSerializer):
+
+    class Meta:
+        model = models.PointOfInterest
+
+
+class PointOfInterestInstanceSerializer(GeoFeatureModelSerializer):
+    name = PointOfInterestSerializer()
+
+    class Meta:
+        model = models.PointOfInterestInstance
+        geo_field = 'center'
+
+
 class AutocompleteSerializer(HaystackSerializer):
     id = IntegerField(source='pk')
     ctype = SerializerMethodField()
