@@ -143,15 +143,21 @@ class Room(Node):
             self.marker = Point(min(filter(lambda k: y(k) == max_y, c[0]), key=lambda k: x(k)), srid=settings.DEFAULT_SRID)
 
 
-
-
+@signal_connect
 class Door(Node):
     rooms = models.ManyToManyField(
         'Room'
     )
+    layout = models.PolygonField(
+        srid=settings.DEFAULT_SRID
+    )
+
+    def pre_save(self, *args, **kwargs):
+        if self.layout:
+            self.center = self.layout.centroid
 
 
-class PointOfInterest(Node):
+class PointOfInterest(models.Model):
     name = models.CharField(
         max_length=128
     )
@@ -167,9 +173,16 @@ class PointOfInterest(Node):
         default=False
     )
 
+    def __str__(self):
+        return self.name
+
 
 class PointOfInterestInstance(Node):
     name = models.ForeignKey('PointOfInterest')
+    description = models.TextField(null=True)
+
+    def __str__(self):
+        return str(self.name)
 
 
 class Beacon(models.Model):
