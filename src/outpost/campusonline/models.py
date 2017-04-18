@@ -15,6 +15,9 @@ class RoomCategory(models.Model):
         managed = False
         db_table = 'campusonline_room_category'
 
+    def __str__(self):
+        return self.name
+
 
 class Room(models.Model):
     id = models.IntegerField(
@@ -81,6 +84,9 @@ class Room(models.Model):
         managed = False
         db_table = 'campusonline_room'
 
+    def __str__(self):
+        return '{s.title} ({s.name_full})'.format(s=self)
+
 
 class Floor(models.Model):
     id = models.IntegerField(
@@ -100,6 +106,9 @@ class Floor(models.Model):
     class Meta:
         managed = False
         db_table = 'campusonline_floor'
+
+    def __str__(self):
+        return '{s.name} ({s.short})'.format(s=self)
 
 
 class Building(models.Model):
@@ -126,3 +135,5 @@ class Building(models.Model):
         managed = False
         db_table = 'campusonline_building'
 
+    def __str__(self):
+        return '{s.name} ({s.short})'.format(s=self)
