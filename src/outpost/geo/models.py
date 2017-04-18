@@ -31,7 +31,9 @@ class Building(OriginMixin, models.Model):
     )
 
     def __str__(self):
-        return self.name
+        if not self.campusonline:
+            return self.name or 'Building'
+        return '{s.name} [CO: {s.campusonline}]'.format(s=self)
 
 
 class Floor(OriginMixin, OrderedModel):
@@ -132,7 +134,9 @@ class Room(OriginMixin, Node):
     )
 
     def __str__(self):
-        return self.name or 'Room'
+        if not self.campusonline:
+            return self.name or 'Room'
+        return '{s.name} [CO: {s.campusonline}]'.format(s=self)
 
     def pre_save(self, *args, **kwargs):
         if self.layout:
