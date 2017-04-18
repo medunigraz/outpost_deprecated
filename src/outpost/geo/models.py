@@ -30,6 +30,11 @@ class Building(models.Model):
 class Floor(OrderedModel):
     name = models.TextField()
     building = models.ForeignKey('Building')
+    outline = models.MultiPolygonField(
+        null=True,
+        blank=True,
+        srid=settings.DEFAULT_SRID
+    )
     campusonline = models.ForeignKey(
         'campusonline.Floor',
         models.SET_NULL,
