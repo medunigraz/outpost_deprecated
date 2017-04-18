@@ -7,7 +7,14 @@ from polymorphic.models import PolymorphicModel
 from outpost.base.decorators import signal_connect
 
 
-class Building(models.Model):
+class OriginMixin(models.Model):
+    origin = models.IntegerField(null=True)
+
+    class Meta:
+        abstract = True
+
+
+class Building(OriginMixin, models.Model):
     name = models.TextField()
     outline = models.MultiPolygonField(
         null=True,
@@ -27,7 +34,7 @@ class Building(models.Model):
         return self.name
 
 
-class Floor(OrderedModel):
+class Floor(OriginMixin, OrderedModel):
     name = models.TextField()
     building = models.ForeignKey('Building')
     outline = models.MultiPolygonField(
@@ -99,7 +106,7 @@ class RoomCategory(models.Model):
 
 
 @signal_connect
-class Room(Node):
+class Room(OriginMixin, Node):
     layout = models.PolygonField(
         srid=settings.DEFAULT_SRID
     )
@@ -149,7 +156,7 @@ class Room(Node):
 
 
 @signal_connect
-class Door(Node):
+class Door(OriginMixin, Node):
     rooms = models.ManyToManyField(
         'Room'
     )
