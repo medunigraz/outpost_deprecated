@@ -79,11 +79,6 @@ class Edge(models.Model):
     accessible = models.BooleanField(default=False)
     weight = models.IntegerField(default=1)
     path = models.LineStringField(srid=settings.DEFAULT_SRID)
-    door = models.ForeignKey(
-        'Door',
-        null=True,
-        blank=True
-    )
 
     def __str__(self):
         return 'Edge between {s.source} and {s.destination}'.format(s=self)
