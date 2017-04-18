@@ -17,6 +17,9 @@ class Icon(models.Model):
         upload_to=Uuid4Upload
     )
 
+    def __str__(self):
+        return self.name
+
     def colorize(self, color):
         image = Image.open(self.image.path)
         saturation = image.convert('L')
