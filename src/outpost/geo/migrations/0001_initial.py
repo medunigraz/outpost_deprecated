@@ -41,7 +41,7 @@ class Migration(migrations.Migration):
                 ('outline', django.contrib.gis.db.models.fields.MultiPolygonField(blank=True, null=True, srid=3857)),
                 ('campusonline', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='campusonline.Building')),
             ],
-            bases=(outpost.geo.models.OriginMixin, models.Model),
+            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='Edge',
@@ -66,7 +66,7 @@ class Migration(migrations.Migration):
                 'ordering': ('order',),
                 'abstract': False,
             },
-            bases=(outpost.geo.models.OriginMixin, models.Model),
+            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='Node',
@@ -106,7 +106,7 @@ class Migration(migrations.Migration):
             options={
                 'abstract': False,
             },
-            bases=(outpost.geo.models.OriginMixin, 'geo.node'),
+            bases=('geo.node',),
         ),
         migrations.CreateModel(
             name='PointOfInterestInstance',
@@ -134,7 +134,7 @@ class Migration(migrations.Migration):
             options={
                 'abstract': False,
             },
-            bases=(outpost.geo.models.OriginMixin, 'geo.node'),
+            bases=('geo.node',),
         ),
         migrations.AddField(
             model_name='node',
