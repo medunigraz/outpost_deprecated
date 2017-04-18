@@ -143,11 +143,6 @@ class Room(Node):
             self.marker = Point(min(filter(lambda k: y(k) == max_y, c[0]), key=lambda k: x(k)), srid=settings.DEFAULT_SRID)
 
 
-class Walls(models.Model):
-    floor = models.ForeignKey('Floor')
-    lines = models.MultiLineStringField(
-        srid=settings.DEFAULT_SRID
-    )
 
 
 class Door(Node):
