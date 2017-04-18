@@ -109,7 +109,7 @@ class Room(OriginMixin, Node):
     )
     marker = models.PointField(
         srid=settings.DEFAULT_SRID,
-        default=Point(0,0)
+        default=Point(0, 0)
     )
     virtual = models.BooleanField(
         default=False
