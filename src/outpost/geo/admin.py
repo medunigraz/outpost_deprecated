@@ -51,3 +51,14 @@ class FloorAdmin(VersionAdmin, OrderedModelAdmin):
 @admin.register(models.Beacon)
 class BeaconAdmin(admin.ModelAdmin):
     pass
+
+
+class PointOfInterestInstanceInline(admin.TabularInline):
+    model = models.PointOfInterestInstance
+
+
+@admin.register(models.PointOfInterest)
+class PointOfInterestAdmin(admin.ModelAdmin):
+    inlines = [
+        PointOfInterestInstanceInline,
+    ]
