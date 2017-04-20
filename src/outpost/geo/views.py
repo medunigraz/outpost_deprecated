@@ -42,6 +42,7 @@ class RoomCategoryViewSet(RevisionMixin, ModelViewSet):
 class RoomViewSet(GeoModelViewSet):
     queryset = models.Room.objects.all()
     serializer_class = serializers.RoomSerializer
+    pagination_class = None
     bbox_filter_field = 'layout'
     filter_backends = (
         DjangoFilterBackend,
@@ -63,6 +64,7 @@ class RoomSearchViewSet(HaystackViewSet):
 class DoorViewSet(GeoModelViewSet):
     queryset = models.Door.objects.all()
     serializer_class = serializers.DoorSerializer
+    pagination_class = None
     bbox_filter_field = 'line'
     filter_backends = (
         InBBoxFilter,
@@ -73,6 +75,7 @@ class DoorViewSet(GeoModelViewSet):
 class FloorViewSet(RevisionMixin, ModelViewSet):
     queryset = models.Floor.objects.all()
     serializer_class = serializers.FloorSerializer
+    pagination_class = None
     filter_backends = (
         DjangoFilterBackend,
     )
@@ -84,6 +87,7 @@ class FloorViewSet(RevisionMixin, ModelViewSet):
 class BuildingViewSet(GeoModelViewSet):
     queryset = models.Building.objects.all()
     serializer_class = serializers.BuildingSerializer
+    pagination_class = None
     bbox_filter_field = 'outline'
     filter_backends = (
         DjangoFilterBackend,
