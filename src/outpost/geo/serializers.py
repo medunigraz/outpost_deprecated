@@ -34,6 +34,7 @@ class RoomSerializer(GeoFeatureModelSerializer):
         geo_field = 'layout'
         exclude = (
             'polymorphic_ctype',
+            'origin',
         )
         id_field = 'id'
 
@@ -61,6 +62,7 @@ class FloorSerializer(ModelSerializer):
         model = models.Floor
         exclude = (
             'order',
+            'origin',
         )
 
 
@@ -73,6 +75,9 @@ class BuildingSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = models.Building
         geo_field = 'outline'
+        exclude = (
+            'origin',
+        )
 
 
 class DoorSerializer(GeoFeatureModelSerializer):
@@ -82,6 +87,7 @@ class DoorSerializer(GeoFeatureModelSerializer):
         exclude = (
             'polymorphic_ctype',
             'rooms',
+            'origin',
         )
         id_field = 'id'
 
