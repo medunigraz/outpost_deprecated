@@ -78,9 +78,10 @@ class BuildingSerializer(GeoFeatureModelSerializer):
 class DoorSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = models.Door
-        geo_field = 'line'
+        geo_field = 'layout'
         exclude = (
             'polymorphic_ctype',
+            'rooms',
         )
         id_field = 'id'
 
