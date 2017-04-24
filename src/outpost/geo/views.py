@@ -12,6 +12,13 @@ from rest_framework_gis.filters import InBBoxFilter
 # from rest_framework_extensions.cache.mixins import (
 #     CacheResponseMixin,
 # )
+from rest_framework_extensions.cache.mixins import (
+    ListCacheResponseMixin,
+)
+from rest_framework_extensions.etag.mixins import (
+    ListETAGMixin,
+)
+
 from reversion.views import RevisionMixin
 
 from outpost.base.mixins import MediatypeNegotiationMixin
@@ -20,8 +27,8 @@ from . import (
     filters,
     models,
     serializers,
+    key_constructors as keys,
 )
-from .key_constructors import RoutingEdgeKeyConstructor
 
 
 class GeoModelViewSet(MediatypeNegotiationMixin, RevisionMixin, ModelViewSet):
@@ -39,7 +46,7 @@ class RoomCategoryViewSet(RevisionMixin, ModelViewSet):
     )
 
 
-class RoomViewSet(GeoModelViewSet):
+class RoomViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
     queryset = models.Room.objects.all()
     serializer_class = serializers.RoomSerializer
     pagination_class = None
@@ -54,6 +61,8 @@ class RoomViewSet(GeoModelViewSet):
         'campusonline',
     )
     bbox_filter_include_overlapping = True
+    list_cache_key_func = keys.RoomListKeyConstructor()
+    list_etag_func = keys.RoomListKeyConstructor()
 
 
 class RoomSearchViewSet(HaystackViewSet):
@@ -61,7 +70,7 @@ class RoomSearchViewSet(HaystackViewSet):
     serializer_class = serializers.RoomSearchSerializer
 
 
-class DoorViewSet(GeoModelViewSet):
+class DoorViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
     queryset = models.Door.objects.all()
     serializer_class = serializers.DoorSerializer
     pagination_class = None
@@ -70,9 +79,11 @@ class DoorViewSet(GeoModelViewSet):
         InBBoxFilter,
     )
     bbox_filter_include_overlapping = True
+    list_cache_key_func = keys.DoorListKeyConstructor()
+    list_etag_func = keys.DoorListKeyConstructor()
 
 
-class FloorViewSet(RevisionMixin, ModelViewSet):
+class FloorViewSet(ListETAGMixin, ListCacheResponseMixin, RevisionMixin, ModelViewSet):
     queryset = models.Floor.objects.all()
     serializer_class = serializers.FloorSerializer
     pagination_class = None
@@ -82,9 +93,11 @@ class FloorViewSet(RevisionMixin, ModelViewSet):
     filter_fields = (
         'campusonline',
     )
+    list_cache_key_func = keys.FloorListKeyConstructor()
+    list_etag_func = keys.FloorListKeyConstructor()
 
 
-class BuildingViewSet(GeoModelViewSet):
+class BuildingViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
     queryset = models.Building.objects.all()
     serializer_class = serializers.BuildingSerializer
     pagination_class = None
@@ -97,9 +110,11 @@ class BuildingViewSet(GeoModelViewSet):
         'campusonline',
     )
     bbox_filter_include_overlapping = True
+    list_cache_key_func = keys.BuildingListKeyConstructor()
+    list_etag_func = keys.BuildingListKeyConstructor()
 
 
-class NodeViewSet(GeoModelViewSet):
+class NodeViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
     queryset = models.Node.objects.all()
     serializer_class = serializers.NodeSerializer
     pagination_class = None
@@ -112,9 +127,11 @@ class NodeViewSet(GeoModelViewSet):
         'floor',
     )
     bbox_filter_include_overlapping = True
+    list_cache_key_func = keys.NodeListKeyConstructor()
+    list_etag_func = keys.NodeListKeyConstructor()
 
 
-class EdgeViewSet(GeoModelViewSet):
+class EdgeViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
     """
     Get edges from the navigation mesh.
 
@@ -141,6 +158,8 @@ class EdgeViewSet(GeoModelViewSet):
     )
     filter_class = filters.EdgeFilter
     bbox_filter_include_overlapping = True
+    list_cache_key_func = keys.EdgeListKeyConstructor()
+    list_etag_func = keys.EdgeListKeyConstructor()
 
 
 class BeaconViewSet(GeoModelViewSet):
@@ -157,7 +176,7 @@ class PointOfInterestViewSet(GeoModelViewSet):
     serializer_class = serializers.PointOfInterestInstanceSerializer
 
 
-class RoutingEdgeViewSet(MediatypeNegotiationMixin, ReadOnlyModelViewSet):
+class RoutingEdgeViewSet(ListETAGMixin, ListCacheResponseMixin, MediatypeNegotiationMixin, ReadOnlyModelViewSet):
     """
     Query the edge graph for a route between two nodes:
 
@@ -173,7 +192,8 @@ class RoutingEdgeViewSet(MediatypeNegotiationMixin, ReadOnlyModelViewSet):
     serializer_class = serializers.RoutingEdgeSerializer
     bbox_filter_field = 'path'
     pagination_class = None
-    list_cache_key_func = RoutingEdgeKeyConstructor()
+    list_cache_key_func = keys.RoutingEdgeListKeyConstructor()
+    list_etag_func = keys.RoutingEdgeListKeyConstructor()
 
     statement = ("""
         SELECT
