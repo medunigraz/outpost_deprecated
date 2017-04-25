@@ -66,9 +66,8 @@ class FloorSerializer(GeoFeatureModelSerializer):
 
     class Meta:
         model = models.Floor
-        geo_field = 'layout'
+        geo_field = 'outline'
         exclude = (
-            'order',
             'origin',
         )
 
