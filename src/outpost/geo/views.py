@@ -30,6 +30,11 @@ class GeoModelViewSet(MediatypeNegotiationMixin, RevisionMixin, ModelViewSet):
     pass
 
 
+class LevelViewSet(ModelViewSet):
+    queryset = models.Level.objects.all()
+    serializer_class = serializers.LevelSerializer
+
+
 class RoomCategoryViewSet(RevisionMixin, ModelViewSet):
     queryset = models.RoomCategory.objects.all()
     serializer_class = serializers.RoomCategorySerializer

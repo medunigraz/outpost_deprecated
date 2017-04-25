@@ -13,6 +13,12 @@ from . import (
 from ..campusonline import serializers as campusonline
 
 
+class LevelSerializer(ModelSerializer):
+
+    class Meta:
+        model = models.Level
+
+
 class RoomCategorySerializer(ModelSerializer):
     campusonline = campusonline.RoomSerializer(
         many=False,

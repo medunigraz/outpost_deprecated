@@ -15,6 +15,16 @@ class OriginMixin(models.Model):
         abstract = True
 
 
+class Level(OrderedModel):
+    name = models.CharField(max_length=16)
+
+    class Meta(OrderedModel.Meta):
+        pass
+
+    def __str__(self):
+        return self.name
+
+
 @signal_connect
 class Building(OriginMixin, models.Model):
     name = models.TextField()
@@ -45,9 +55,10 @@ class Building(OriginMixin, models.Model):
 
 
 @signal_connect
-class Floor(OriginMixin, OrderedModel):
+class Floor(OriginMixin, models.Model):
     name = models.TextField()
     building = models.ForeignKey('Building')
+    level = models.ForeignKey('Level', null=True)
     outline = models.MultiPolygonField(
         null=True,
         blank=True,
@@ -61,9 +72,6 @@ class Floor(OriginMixin, OrderedModel):
         blank=True,
         related_name='+'
     )
-
-    class Meta(OrderedModel.Meta):
-        pass
 
     def __str__(self):
         return '{s.name} ({s.building})'.format(s=self)

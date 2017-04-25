@@ -28,6 +28,11 @@ class RoomAdmin(VersionAdmin, admin.ModelAdmin):
     ]
 
 
+@admin.register(models.Level)
+class LevelAdmin(OrderedModelAdmin):
+    list_display = ('name', 'move_up_down_links')
+
+
 @admin.register(models.Edge)
 class EdgeAdmin(VersionAdmin, admin.ModelAdmin):
     pass
@@ -44,8 +49,8 @@ class BuildingAdmin(VersionAdmin, admin.ModelAdmin):
 
 
 @admin.register(models.Floor)
-class FloorAdmin(VersionAdmin, OrderedModelAdmin):
-    list_display = ('name', 'move_up_down_links')
+class FloorAdmin(VersionAdmin, admin.ModelAdmin):
+    pass
 
 
 @admin.register(models.Beacon)
