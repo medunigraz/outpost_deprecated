@@ -5,10 +5,6 @@ from reversion.admin import VersionAdmin
 from . import models
 
 
-# class DoorInline(admin.TabularInline):
-#    model = models.Door
-
-
 class SourceEdgeInline(admin.TabularInline):
     model = models.Edge
     fk_name = "source"
