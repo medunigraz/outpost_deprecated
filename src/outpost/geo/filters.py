@@ -6,6 +6,21 @@ from django.db.models import Q
 from . import models
 
 
+class RoomFilter(django_filters.FilterSet):
+    level = django_filters.NumberFilter(
+        name='floor__level'
+    )
+    campusonline = django_filters.NumberFilter(
+        name='campusonline'
+    )
+    category = django_filters.NumberFilter(
+        name='category'
+    )
+
+    class Meta:
+        model = models.Room
+
+
 class EdgeFilter(django_filters.FilterSet):
     floor = django_filters.NumberFilter(
         action=lambda q, v: EdgeFilter.filter_floor(q, v)

@@ -68,11 +68,7 @@ class RoomViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
         DjangoFilterBackend,
         InBBoxFilter,
     )
-    filter_fields = (
-        'category',
-        'floor',
-        'campusonline',
-    )
+    filter_class = filters.RoomFilter
     bbox_filter_include_overlapping = True
     list_cache_key_func = keys.RoomListKeyConstructor()
     list_etag_func = keys.RoomListKeyConstructor()
