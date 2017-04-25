@@ -3,6 +3,10 @@ from rest_framework_extensions.key_constructor.constructors import (
     DefaultKeyConstructor,
 )
 
+from outpost.base.key_constructors import (
+    UpdatedAtKeyBit,
+)
+
 
 class RoutingEdgeListKeyConstructor(DefaultKeyConstructor):
     route = bits.QueryParamsKeyBit(['from', 'to', 'accessible'])
@@ -10,10 +14,12 @@ class RoutingEdgeListKeyConstructor(DefaultKeyConstructor):
 
 class EdgeListKeyConstructor(DefaultKeyConstructor):
     list_sql = bits.ListSqlQueryKeyBit()
+    updated_at = UpdatedAtKeyBit()
 
 
 class NodeListKeyConstructor(DefaultKeyConstructor):
     list_sql = bits.ListSqlQueryKeyBit()
+    updated_at = UpdatedAtKeyBit()
 
 
 class RoomListKeyConstructor(NodeListKeyConstructor):
@@ -30,3 +36,12 @@ class FloorListKeyConstructor(NodeListKeyConstructor):
 
 class BuildingListKeyConstructor(NodeListKeyConstructor):
     pass
+
+
+class PointOfInterestInstanceListKeyConstructor(NodeListKeyConstructor):
+    pass
+
+
+class PointOfInterestListKeyConstructor(DefaultKeyConstructor):
+    list_sql = bits.ListSqlQueryKeyBit()
+    updated_at = UpdatedAtKeyBit()
