@@ -58,7 +58,7 @@ class RoomSearchSerializer(HaystackSerializer):
         ]
 
 
-class FloorSerializer(ModelSerializer):
+class FloorSerializer(GeoFeatureModelSerializer):
     campusonline = campusonline.FloorSerializer(
         many=False,
         read_only=True
@@ -66,6 +66,7 @@ class FloorSerializer(ModelSerializer):
 
     class Meta:
         model = models.Floor
+        geo_field = 'layout'
         exclude = (
             'order',
             'origin',
