@@ -15,6 +15,18 @@ class OriginMixin(models.Model):
         abstract = True
 
 
+class Background(models.Model):
+    name = models.CharField(max_length=16)
+    outline = models.MultiPolygonField(
+        null=True,
+        blank=True,
+        srid=settings.DEFAULT_SRID
+    )
+
+    def __str__(self):
+        return self.name
+
+
 class Level(OrderedModel):
     name = models.CharField(max_length=16)
 

@@ -30,6 +30,19 @@ class GeoModelViewSet(MediatypeNegotiationMixin, RevisionMixin, ModelViewSet):
     pass
 
 
+class BackgroundViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
+    queryset = models.Background.objects.all()
+    serializer_class = serializers.BackgroundSerializer
+    pagination_class = None
+    bbox_filter_field = 'layout'
+    filter_backends = (
+        InBBoxFilter,
+    )
+    bbox_filter_include_overlapping = True
+    list_cache_key_func = keys.BackgroundListKeyConstructor()
+    list_etag_func = keys.BackgroundListKeyConstructor()
+
+
 class LevelViewSet(ModelViewSet):
     queryset = models.Level.objects.all()
     serializer_class = serializers.LevelSerializer

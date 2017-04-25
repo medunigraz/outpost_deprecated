@@ -8,6 +8,11 @@ class RoutingEdgeListKeyConstructor(DefaultKeyConstructor):
     route = bits.QueryParamsKeyBit(['from', 'to', 'accessible'])
 
 
+class BackgroundListKeyConstructor(DefaultKeyConstructor):
+    list_sql = bits.ListSqlQueryKeyBit()
+    updated_at = UpdatedAtKeyBit()
+
+
 class EdgeListKeyConstructor(DefaultKeyConstructor):
     list_sql = bits.ListSqlQueryKeyBit()
     updated_at = UpdatedAtKeyBit()

@@ -13,6 +13,13 @@ from . import (
 from ..campusonline import serializers as campusonline
 
 
+class BackgroundSerializer(GeoFeatureModelSerializer):
+
+    class Meta:
+        model = models.Background
+        geo_field = 'outline'
+
+
 class LevelSerializer(ModelSerializer):
 
     class Meta:

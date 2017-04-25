@@ -11,6 +11,10 @@ from ..typo3 import views as typo3
 
 v1 = DefaultRouter()
 v1.register(
+    r'geo/background',
+    geo.BackgroundViewSet
+)
+v1.register(
     r'geo/level',
     geo.LevelViewSet
 )
