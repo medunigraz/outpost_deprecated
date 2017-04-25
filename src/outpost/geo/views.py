@@ -60,6 +60,19 @@ class RoomCategoryViewSet(RevisionMixin, ModelViewSet):
 
 
 class RoomViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
+    """
+    Get rooms with geographic layout and metadata.
+
+    Several filters are supported:
+
+        ?level__eq=<id>
+        ?campusonline__eq=<id>
+        ?category__eq=<id>
+
+    Filters can be combined:
+
+        ?level__eq=<id>&category__eq=<id>
+    """
     queryset = models.Room.objects.all()
     serializer_class = serializers.RoomSerializer
     pagination_class = None
