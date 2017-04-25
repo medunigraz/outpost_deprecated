@@ -24,6 +24,9 @@ class LevelSerializer(ModelSerializer):
 
     class Meta:
         model = models.Level
+        exclude = (
+            'order',
+        )
 
 
 class RoomCategorySerializer(ModelSerializer):
