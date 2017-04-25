@@ -11,6 +11,10 @@ from ..typo3 import views as typo3
 
 v1 = DefaultRouter()
 v1.register(
+    r'geo/level',
+    geo.LevelViewSet
+)
+v1.register(
     r'geo/rooms',
     geo.RoomViewSet,
     base_name='geo-room-list'
@@ -49,6 +53,10 @@ v1.register(
 v1.register(
     r'geo/pointofinterest',
     geo.PointOfInterestViewSet
+)
+v1.register(
+    r'geo/pointofinterestinstance',
+    geo.PointOfInterestInstanceViewSet
 )
 v1.register(
     r'geo/routing/edges',
