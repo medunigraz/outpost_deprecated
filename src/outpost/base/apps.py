@@ -1,4 +1,5 @@
 from django.apps import AppConfig
+
 fromd jango.conf import settings
 
 

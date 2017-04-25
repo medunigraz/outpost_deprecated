@@ -1,10 +1,9 @@
-import logging
 import datetime
+import logging
+
 from django.core.cache import cache
 from django.utils.encoding import force_text
-from rest_framework_extensions.key_constructor.bits import (
-    KeyBitBase,
-)
+from rest_framework_extensions.key_constructor.bits import KeyBitBase
 
 logger = logging.getLogger(__name__)
 

@@ -5,29 +5,24 @@ from rest_framework.viewsets import (
     ModelViewSet,
     ReadOnlyModelViewSet,
 )
-from rest_framework_gis.filters import InBBoxFilter
 # from rest_framework_extensions.mixins import (
 #     CacheResponseAndETAGMixin,
 # )
 # from rest_framework_extensions.cache.mixins import (
 #     CacheResponseMixin,
 # )
-from rest_framework_extensions.cache.mixins import (
-    ListCacheResponseMixin,
-)
-from rest_framework_extensions.etag.mixins import (
-    ListETAGMixin,
-)
-
+from rest_framework_extensions.cache.mixins import ListCacheResponseMixin
+from rest_framework_extensions.etag.mixins import ListETAGMixin
+from rest_framework_gis.filters import InBBoxFilter
 from reversion.views import RevisionMixin
 
 from outpost.base.mixins import MediatypeNegotiationMixin
 
+from . import key_constructors as keys
 from . import (
     filters,
     models,
     serializers,
-    key_constructors as keys,
 )
 
 

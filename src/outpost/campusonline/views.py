@@ -1,8 +1,7 @@
 from drf_haystack.viewsets import HaystackViewSet
 from rest_framework.filters import DjangoFilterBackend
-from rest_framework.viewsets import (
-    ReadOnlyModelViewSet,
-)
+from rest_framework.viewsets import ReadOnlyModelViewSet
+
 # from rest_framework_extensions.mixins import (
 #     CacheResponseAndETAGMixin,
 # )

@@ -1,9 +1,14 @@
-from django.contrib.gis.geos import MultiPolygon
-from django.contrib.gis.gdal import DataSource
 from django.conf import settings
-from django.core.management.base import BaseCommand, CommandError
-from ... import models
+from django.contrib.gis.gdal import DataSource
+from django.contrib.gis.geos import MultiPolygon
+from django.core.management.base import (
+    BaseCommand,
+    CommandError,
+)
+
 from outpost.campusonline import models as co
+
+from ... import models
 
 
 class Command(BaseCommand):

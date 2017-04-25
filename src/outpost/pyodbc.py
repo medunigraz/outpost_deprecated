@@ -1,7 +1,7 @@
 import re
 
-from sqlalchemy.dialects.oracle.base import OracleDialect
 from sqlalchemy.connectors.pyodbc import PyODBCConnector
+from sqlalchemy.dialects.oracle.base import OracleDialect
 from sqlalchemy.exc import DBAPIError
 
 

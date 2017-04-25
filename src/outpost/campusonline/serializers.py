@@ -1,10 +1,6 @@
-from rest_framework.serializers import (
-    ModelSerializer,
-)
+from rest_framework.serializers import ModelSerializer
 
-from . import (
-    models,
-)
+from . import models
 
 
 class RoomCategorySerializer(ModelSerializer):

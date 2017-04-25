@@ -5,9 +5,9 @@ from django.conf.urls import (
 from rest_framework.routers import DefaultRouter
 
 from ..attendance import views as attendance
+from ..campusonline import views as campusonline
 from ..geo import views as geo
 from ..typo3 import views as typo3
-from ..campusonline import views as campusonline
 
 v1 = DefaultRouter()
 v1.register(

@@ -1,5 +1,5 @@
-from haystack import indexes
 from celery_haystack.indexes import CelerySearchIndex
+from haystack import indexes
 
 from .models import Room
 

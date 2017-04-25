@@ -4,11 +4,13 @@ Django settings for Outpost project.
 
 import json
 import os
+
 import ldap
-
+from django_auth_ldap.config import (
+    GroupOfNamesType,
+    LDAPSearch,
+)
 from docutils.core import publish_parts
-from django_auth_ldap.config import LDAPSearch, GroupOfNamesType
-
 
 BASE_DIR = os.path.abspath(os.path.join(__file__, '../../..'))
 

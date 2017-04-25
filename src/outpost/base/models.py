@@ -1,10 +1,9 @@
+from django.db import models
 from PIL import (
     Image,
-    ImageOps,
     ImageColor,
+    ImageOps,
 )
-
-from django.db import models
 
 from .utils import Uuid4Upload
 

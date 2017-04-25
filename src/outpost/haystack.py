@@ -1,4 +1,7 @@
-from xapian_backend import XapianSearchBackend, XapianEngine
+from xapian_backend import (
+    XapianEngine,
+    XapianSearchBackend,
+)
 
 
 class SearchBackend(XapianSearchBackend):

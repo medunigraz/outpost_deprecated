@@ -1,7 +1,5 @@
 from drf_haystack.serializers import HaystackSerializerMixin
-from rest_framework.serializers import (
-    ModelSerializer,
-)
+from rest_framework.serializers import ModelSerializer
 
 from . import (
     models,
