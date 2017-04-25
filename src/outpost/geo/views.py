@@ -169,11 +169,32 @@ class BeaconViewSet(GeoModelViewSet):
     serializer_class = serializers.BeaconSerializer
 
 
-class PointOfInterestViewSet(GeoModelViewSet):
+class PointOfInterestViewSet(ListETAGMixin, ListCacheResponseMixin, ModelViewSet):
+    """
+    """
+    queryset = models.PointOfInterest.objects.all()
+    serializer_class = serializers.PointOfInterestSerializer
+    pagination_class = None
+    list_cache_key_func = keys.PointOfInterestListKeyConstructor()
+    list_etag_func = keys.PointOfInterestListKeyConstructor()
+
+
+class PointOfInterestInstanceViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
     """
     """
     queryset = models.PointOfInterestInstance.objects.all()
     serializer_class = serializers.PointOfInterestInstanceSerializer
+    filter_backends = (
+        DjangoFilterBackend,
+        InBBoxFilter,
+    )
+    filter_fields = (
+        'name',
+    )
+    bbox_filter_field = 'center'
+    bbox_filter_include_overlapping = True
+    list_cache_key_func = keys.PointOfInterestInstanceListKeyConstructor()
+    list_etag_func = keys.PointOfInterestInstanceListKeyConstructor()
 
 
 class RoutingEdgeViewSet(ListETAGMixin, ListCacheResponseMixin, MediatypeNegotiationMixin, ReadOnlyModelViewSet):
