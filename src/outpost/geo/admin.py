@@ -46,7 +46,7 @@ class BuildingAdmin(VersionAdmin, admin.ModelAdmin):
 
 @admin.register(models.Floor)
 class FloorAdmin(VersionAdmin, admin.ModelAdmin):
-    pass
+    list_display = ('__str__', 'level', 'campusonline')
 
 
 @admin.register(models.Beacon)
