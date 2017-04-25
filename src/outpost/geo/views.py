@@ -151,12 +151,12 @@ class EdgeViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
     queryset = models.Edge.objects.all()
     serializer_class = serializers.EdgeSerializer
     pagination_class = None
-    bbox_filter_field = 'path'
     filter_backends = (
         DjangoFilterBackend,
         InBBoxFilter,
     )
     filter_class = filters.EdgeFilter
+    bbox_filter_field = 'path'
     bbox_filter_include_overlapping = True
     list_cache_key_func = keys.EdgeListKeyConstructor()
     list_etag_func = keys.EdgeListKeyConstructor()
