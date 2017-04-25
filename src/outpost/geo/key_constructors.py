@@ -24,7 +24,8 @@ class NodeListKeyConstructor(DefaultKeyConstructor):
 
 
 class RoomListKeyConstructor(NodeListKeyConstructor):
-    pass
+    # TODO: Narrow down allowed filters so we can use them here.
+    query_params = bits.QueryParamsKeyBit()
 
 
 class DoorListKeyConstructor(NodeListKeyConstructor):
