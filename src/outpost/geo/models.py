@@ -5,6 +5,7 @@ from ordered_model.models import OrderedModel
 from polymorphic.models import PolymorphicModel
 
 from outpost.base.decorators import signal_connect
+from outpost.base.key_constructors import UpdatedAtKeyBit
 
 
 class OriginMixin(models.Model):
@@ -14,6 +15,7 @@ class OriginMixin(models.Model):
         abstract = True
 
 
+@signal_connect
 class Building(OriginMixin, models.Model):
     name = models.TextField()
     outline = models.MultiPolygonField(
@@ -35,7 +37,14 @@ class Building(OriginMixin, models.Model):
             return self.name or 'Building'
         return '{s.name} [CO: {s.campusonline}]'.format(s=self)
 
+    def post_save(self, *args, **kwargs):
+        UpdatedAtKeyBit.update(self)
 
+    def post_delete(self, *args, **kwargs):
+        UpdatedAtKeyBit.update(self)
+
+
+@signal_connect
 class Floor(OriginMixin, OrderedModel):
     name = models.TextField()
     building = models.ForeignKey('Building')
@@ -59,7 +68,14 @@ class Floor(OriginMixin, OrderedModel):
     def __str__(self):
         return '{s.name} ({s.building})'.format(s=self)
 
+    def post_save(self, *args, **kwargs):
+        UpdatedAtKeyBit.update(self)
 
+    def post_delete(self, *args, **kwargs):
+        UpdatedAtKeyBit.update(self)
+
+
+@signal_connect
 class Node(PolymorphicModel):
     floor = models.ForeignKey('Floor')
     center = models.PointField(srid=settings.DEFAULT_SRID)
@@ -67,7 +83,14 @@ class Node(PolymorphicModel):
     def __str__(self):
         return 'Node at {s.floor}'.format(s=self)
 
+    def post_save(self, *args, **kwargs):
+        UpdatedAtKeyBit.update(self)
 
+    def post_delete(self, *args, **kwargs):
+        UpdatedAtKeyBit.update(self)
+
+
+@signal_connect
 class Edge(models.Model):
     source = models.ForeignKey(
         'node',
@@ -84,6 +107,12 @@ class Edge(models.Model):
 
     def __str__(self):
         return 'Edge between {s.source} and {s.destination}'.format(s=self)
+
+    def post_save(self, *args, **kwargs):
+        UpdatedAtKeyBit.update(self)
+
+    def post_delete(self, *args, **kwargs):
+        UpdatedAtKeyBit.update(self)
 
 
 class RoomCategory(models.Model):
@@ -153,6 +182,12 @@ class Room(OriginMixin, Node):
             max_y = max(map(lambda k: y(k), c[0]))
             self.marker = Point(min(filter(lambda k: y(k) == max_y, c[0]), key=lambda k: x(k)), srid=settings.DEFAULT_SRID)
 
+    def post_save(self, *args, **kwargs):
+        UpdatedAtKeyBit.update(self)
+
+    def post_delete(self, *args, **kwargs):
+        UpdatedAtKeyBit.update(self)
+
 
 @signal_connect
 class Door(OriginMixin, Node):
@@ -166,6 +201,12 @@ class Door(OriginMixin, Node):
     def pre_save(self, *args, **kwargs):
         if self.layout:
             self.center = self.layout.centroid
+
+    def post_save(self, *args, **kwargs):
+        UpdatedAtKeyBit.update(self)
+
+    def post_delete(self, *args, **kwargs):
+        UpdatedAtKeyBit.update(self)
 
 
 class PointOfInterest(models.Model):
@@ -188,12 +229,19 @@ class PointOfInterest(models.Model):
         return self.name
 
 
+@signal_connect
 class PointOfInterestInstance(Node):
     name = models.ForeignKey('PointOfInterest')
     description = models.TextField(null=True)
 
     def __str__(self):
         return str(self.name)
+
+    def post_save(self, *args, **kwargs):
+        UpdatedAtKeyBit.update(self)
+
+    def post_delete(self, *args, **kwargs):
+        UpdatedAtKeyBit.update(self)
 
 
 class Beacon(models.Model):
