@@ -24,6 +24,11 @@ class RoomAdmin(VersionAdmin, admin.ModelAdmin):
     ]
 
 
+@admin.register(models.Background)
+class BackgroundAdmin(admin.ModelAdmin):
+    pass
+
+
 @admin.register(models.Level)
 class LevelAdmin(OrderedModelAdmin):
     list_display = ('name', 'move_up_down_links')
