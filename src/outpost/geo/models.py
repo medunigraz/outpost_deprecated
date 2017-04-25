@@ -209,6 +209,7 @@ class Door(OriginMixin, Node):
         UpdatedAtKeyBit.update(self)
 
 
+@signal_connect
 class PointOfInterest(models.Model):
     name = models.CharField(
         max_length=128
@@ -227,6 +228,12 @@ class PointOfInterest(models.Model):
 
     def __str__(self):
         return self.name
+
+    def post_save(self, *args, **kwargs):
+        UpdatedAtKeyBit.update(self)
+
+    def post_delete(self, *args, **kwargs):
+        UpdatedAtKeyBit.update(self)
 
 
 @signal_connect
