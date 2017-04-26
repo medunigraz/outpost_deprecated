@@ -17,6 +17,7 @@ class DestinationEdgeInline(admin.TabularInline):
 
 @admin.register(models.Room)
 class RoomAdmin(VersionAdmin, admin.ModelAdmin):
+    list_display = ('__str__', 'floor', 'campusonline', 'origin')
     inlines = [
         # DoorInline,
         DestinationEdgeInline,
@@ -31,7 +32,7 @@ class BackgroundAdmin(admin.ModelAdmin):
 
 @admin.register(models.Level)
 class LevelAdmin(OrderedModelAdmin):
-    list_display = ('name', 'move_up_down_links')
+    list_display = ('__str__', 'move_up_down_links')
 
 
 @admin.register(models.Edge)
@@ -51,7 +52,7 @@ class BuildingAdmin(VersionAdmin, admin.ModelAdmin):
 
 @admin.register(models.Floor)
 class FloorAdmin(VersionAdmin, admin.ModelAdmin):
-    list_display = ('__str__', 'level', 'campusonline')
+    list_display = ('__str__', 'level', 'campusonline', 'origin')
 
 
 @admin.register(models.Beacon)
