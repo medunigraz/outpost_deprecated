@@ -41,7 +41,7 @@ class Command(BaseCommand):
                 defaults = {
                     'origin': feature.get('id'),
                     'layout': feature.geom.geos,
-                    'floor': models.Floor.objects.get(pk=feature.get('floor_id'))
+                    'floor': models.Floor.objects.get(origin=feature.get('floor_id'))
                 }
                 obj, created = models.Door.objects.update_or_create(
                     origin=feature.get('id'),
@@ -60,7 +60,7 @@ class Command(BaseCommand):
                 defaults = {
                     'origin': feature.get('id'),
                     'layout': feature.geom.geos,
-                    'floor': models.Floor.objects.get(pk=feature.get('floor_id'))
+                    'floor': models.Floor.objects.get(origin=feature.get('floor_id'))
                 }
                 if feature.get('campusonli'):
                     try:
@@ -84,7 +84,7 @@ class Command(BaseCommand):
                 defaults = {
                     'origin': feature.get('id'),
                     'outline': MultiPolygon(feature.geom.geos),
-                    'building': models.Building.objects.get(pk=feature.get('building_i'))
+                    'building': models.Building.objects.get(origin=feature.get('building_i'))
                 }
                 obj, created = models.Floor.objects.update_or_create(
                     origin=feature.get('id'),
