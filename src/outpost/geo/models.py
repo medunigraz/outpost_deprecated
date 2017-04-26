@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.gis.db import models
 from django.contrib.gis.geos import Point
 from ordered_model.models import OrderedModel
@@ -101,7 +102,10 @@ class Node(PolymorphicModel):
     center = models.PointField(srid=settings.DEFAULT_SRID)
 
     def __str__(self):
-        return 'Node at {s.floor}'.format(s=self)
+        return '{t} at {s.level}'.format(
+            t=ContentType.objects.get_for_id(self.polymorphic_ctype_id),
+            s=self
+        )
 
     def post_save(self, *args, **kwargs):
         UpdatedAtKeyBit.update(self)
