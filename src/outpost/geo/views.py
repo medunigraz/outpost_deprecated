@@ -65,13 +65,13 @@ class RoomViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
 
     Several filters are supported:
 
-        ?level__eq=<id>
-        ?campusonline__eq=<id>
-        ?category__eq=<id>
+        ?level=<id>
+        ?campusonline=<id>
+        ?category=<id>
 
     Filters can be combined:
 
-        ?level__eq=<id>&category__eq=<id>
+        ?level=<id>&category=<id>
     """
     queryset = models.Room.objects.all()
     serializer_class = serializers.RoomSerializer
@@ -96,10 +96,12 @@ class DoorViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
     queryset = models.Door.objects.all()
     serializer_class = serializers.DoorSerializer
     pagination_class = None
-    bbox_filter_field = 'line'
     filter_backends = (
+        DjangoFilterBackend,
         InBBoxFilter,
     )
+    filter_class = filters.DoorFilter
+    bbox_filter_field = 'layout'
     bbox_filter_include_overlapping = True
     list_cache_key_func = keys.DoorListKeyConstructor()
     list_etag_func = keys.DoorListKeyConstructor()
@@ -111,10 +113,11 @@ class FloorViewSet(ListETAGMixin, ListCacheResponseMixin, RevisionMixin, ModelVi
     pagination_class = None
     filter_backends = (
         DjangoFilterBackend,
+        InBBoxFilter,
     )
-    filter_fields = (
-        'campusonline',
-    )
+    filter_class = filters.FloorFilter
+    bbox_filter_field = 'outline'
+    bbox_filter_include_overlapping = True
     list_cache_key_func = keys.FloorListKeyConstructor()
     list_etag_func = keys.FloorListKeyConstructor()
 
@@ -123,14 +126,12 @@ class BuildingViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
     queryset = models.Building.objects.all()
     serializer_class = serializers.BuildingSerializer
     pagination_class = None
-    bbox_filter_field = 'outline'
     filter_backends = (
         DjangoFilterBackend,
         InBBoxFilter,
     )
-    filter_fields = (
-        'campusonline',
-    )
+    filter_class = filters.BuildingFilter
+    bbox_filter_field = 'outline'
     bbox_filter_include_overlapping = True
     list_cache_key_func = keys.BuildingListKeyConstructor()
     list_etag_func = keys.BuildingListKeyConstructor()
@@ -140,14 +141,12 @@ class NodeViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
     queryset = models.Node.objects.all()
     serializer_class = serializers.NodeSerializer
     pagination_class = None
-    bbox_filter_field = 'center'
     filter_backends = (
         DjangoFilterBackend,
         InBBoxFilter,
     )
-    filter_fields = (
-        'floor',
-    )
+    filter_class = filters.NodeFilter
+    bbox_filter_field = 'center'
     bbox_filter_include_overlapping = True
     list_cache_key_func = keys.NodeListKeyConstructor()
     list_etag_func = keys.NodeListKeyConstructor()
@@ -157,18 +156,18 @@ class EdgeViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
     """
     Get edges from the navigation mesh.
 
-    There are two options to filter edges by floors:
+    There are two options to filter edges by level:
 
     First you can get all edges whose `source` or `destination` nodes are on a
-    specific floor:
+    specific level:
 
-        ...?floor=<id>
+        ...?level=<id>
 
-    The other way is to filter specifically by the floor either the `source` or
+    The other way is to filter specifically by the level either the `source` or
     the `destination` node is on:
 
-        ...?source__floor=<id>
-        ...?destination__floor=<id>
+        ...?source__level=<id>
+        ...?destination__level=<id>
     """
     queryset = models.Edge.objects.all()
     serializer_class = serializers.EdgeSerializer
@@ -210,9 +209,7 @@ class PointOfInterestInstanceViewSet(ListETAGMixin, ListCacheResponseMixin, GeoM
         DjangoFilterBackend,
         InBBoxFilter,
     )
-    filter_fields = (
-        'name',
-    )
+    filter_class = filters.PointOfInterestInstanceFilter
     bbox_filter_field = 'center'
     bbox_filter_include_overlapping = True
     list_cache_key_func = keys.PointOfInterestInstanceListKeyConstructor()
