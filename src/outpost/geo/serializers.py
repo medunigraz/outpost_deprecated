@@ -126,14 +126,21 @@ class NodeSerializer(GeoFeatureModelSerializer):
     def get_ctype(self, obj):
         return obj.polymorphic_ctype.name
 
+class NestedNodeSerializer(NodeSerializer):
+
+    class Meta(NodeSerializer.Meta):
+        exclude = (
+            'polymorphic_ctype',
+        )
+
 
 class EdgeSerializer(GeoFeatureModelSerializer):
-    source_node = NodeSerializer(
+    source_node = NestedNodeSerializer(
         source='source',
         many=False,
         read_only=True
     )
-    destination_node = NodeSerializer(
+    destination_node = NestedNodeSerializer(
         source='destination',
         many=False,
         read_only=True
