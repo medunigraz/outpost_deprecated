@@ -97,7 +97,7 @@ class Floor(OriginMixin, models.Model):
 
 @signal_connect
 class Node(PolymorphicModel):
-    floor = models.ForeignKey('Floor')
+    level = models.ForeignKey('Level')
     center = models.PointField(srid=settings.DEFAULT_SRID)
 
     def __str__(self):
@@ -275,7 +275,7 @@ class Beacon(models.Model):
     uuid = models.UUIDField()
     major = models.PositiveIntegerField()
     minor = models.PositiveIntegerField()
-    floor = models.ForeignKey('Floor')
+    level = models.ForeignKey('Level')
     position = models.PointField(
         srid=settings.DEFAULT_SRID
     )

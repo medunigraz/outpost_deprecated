@@ -17,7 +17,7 @@ class DestinationEdgeInline(admin.TabularInline):
 
 @admin.register(models.Room)
 class RoomAdmin(VersionAdmin, admin.ModelAdmin):
-    list_display = ('__str__', 'floor', 'campusonline', 'origin')
+    list_display = ('__str__', 'level', 'campusonline', 'origin')
     inlines = [
         # DoorInline,
         DestinationEdgeInline,

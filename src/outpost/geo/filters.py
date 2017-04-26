@@ -26,10 +26,6 @@ class FloorFilter(django_filters.FilterSet):
 
 
 class NodeFilter(django_filters.FilterSet):
-    level = django_filters.ModelChoiceFilter(
-        name='floor__level',
-        queryset=models.Level.objects.all()
-    )
 
     class Meta:
         model = models.Node
@@ -68,10 +64,10 @@ class EdgeFilter(django_filters.FilterSet):
         action=lambda q, v: EdgeFilter.filter_level(q, v)
     )
     source_level = django_filters.NumberFilter(
-        name='source__floor__level'
+        name='source__level'
     )
     destination_level = django_filters.NumberFilter(
-        name='destination__floor__level'
+        name='destination__level'
     )
 
     class Meta:
@@ -80,11 +76,11 @@ class EdgeFilter(django_filters.FilterSet):
     @staticmethod
     def filter_level(queryset, value):
         fields = [
-            'source__floor__level__exact',
-            'destination__floor__level__exact',
+            'source__level__exact',
+            'destination__level__exact',
         ]
-        floors = reduce(
+        levels = reduce(
             lambda x, y: x | y,
             [Q(**{field: value}) for field in fields]
         )
-        return queryset.filter(floors)
+        return queryset.filter(levels)
