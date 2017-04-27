@@ -52,9 +52,11 @@ class RoomSerializer(GeoFeatureModelSerializer):
         exclude = (
             'polymorphic_ctype',
             'origin',
-            'level',
             'virtual',
         )
+        extra_kwargs = {
+            'level': {'write_only': True}
+        }
         id_field = 'id'
 
 
@@ -82,8 +84,10 @@ class FloorSerializer(GeoFeatureModelSerializer):
         geo_field = 'outline'
         exclude = (
             'origin',
-            'level',
         )
+        extra_kwargs = {
+            'level': {'write_only': True}
+        }
 
 
 class BuildingSerializer(GeoFeatureModelSerializer):
@@ -107,8 +111,10 @@ class DoorSerializer(GeoFeatureModelSerializer):
         exclude = (
             'polymorphic_ctype',
             'origin',
-            'level',
         )
+        extra_kwargs = {
+            'level': {'write_only': True}
+        }
         id_field = 'id'
 
 
@@ -121,8 +127,10 @@ class NodeSerializer(GeoFeatureModelSerializer):
         geo_field = 'center'
         exclude = (
             'polymorphic_ctype',
-            'level',
         )
+        extra_kwargs = {
+            'level': {'write_only': True}
+        }
 
     def get_ctype(self, obj):
         return obj.polymorphic_ctype.name
@@ -183,8 +191,10 @@ class PointOfInterestInstanceSerializer(GeoFeatureModelSerializer):
         geo_field = 'center'
         exclude = (
             'polymorphic_ctype',
-            'level',
         )
+        extra_kwargs = {
+            'level': {'write_only': True}
+        }
         id_field = 'id'
 
 
