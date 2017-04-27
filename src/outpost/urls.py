@@ -52,6 +52,6 @@ urlpatterns.extend([
     ),
     url(
         r'^',
-        include('outpost.base.urls')
+        include('outpost.base.urls', namespace='base')
     ),
 ])

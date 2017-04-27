@@ -1,3 +1,4 @@
+from django.urls import reverse_lazy as reverse
 from drf_haystack.serializers import HaystackSerializer
 from rest_framework.serializers import (
     IntegerField,
@@ -163,17 +164,28 @@ class BeaconSerializer(GeoFeatureModelSerializer):
 
 
 class PointOfInterestSerializer(ModelSerializer):
+    icon = SerializerMethodField()
 
     class Meta:
         model = models.PointOfInterest
+        exclude = (
+            'color',
+        )
+
+    def get_icon(self, obj):
+        return reverse('base:icon', kwargs={'pk': obj.icon.pk, 'color': obj.color})
 
 
 class PointOfInterestInstanceSerializer(GeoFeatureModelSerializer):
-    name = PointOfInterestSerializer()
 
     class Meta:
         model = models.PointOfInterestInstance
         geo_field = 'center'
+        exclude = (
+            'polymorphic_ctype',
+            'level',
+        )
+        id_field = 'id'
 
 
 class AutocompleteSerializer(HaystackSerializer):
