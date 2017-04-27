@@ -127,6 +127,9 @@ STATICFILES_FINDERS = (
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
 COMPRESS_PRECOMPILERS = [
     ('text/less', 'outpost.compressor.DjangoLessFilter'),
     ('text/x-scss', 'django_pyscss.compressor.DjangoScssFilter'),

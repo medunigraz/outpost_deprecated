@@ -7,9 +7,21 @@ from django.conf.urls import (
     include,
     url,
 )
+from django.conf.urls.static import static
 from django.contrib import admin
 
-urlpatterns = [
+urlpatterns = []
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns.extend(
+        static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    )
+    urlpatterns.extend([
+        url(r'^__debug__/', include(debug_toolbar.urls)),
+    ])
+
+urlpatterns.extend([
     url(
         r'^admin/',
         admin.site.urls
@@ -42,10 +54,4 @@ urlpatterns = [
         r'^',
         include('outpost.base.urls')
     ),
-]
-
-if settings.DEBUG:
-    import debug_toolbar
-    urlpatterns.append(
-        url(r'^__debug__/', include(debug_toolbar.urls)),
-    )
+])
