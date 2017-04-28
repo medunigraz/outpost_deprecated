@@ -129,11 +129,12 @@ class NodeSerializer(GeoFeatureModelSerializer):
             'polymorphic_ctype',
         )
         extra_kwargs = {
-            'level': {'write_only': True}
+            'level': {'write_only': True, 'required': False}
         }
 
     def get_ctype(self, obj):
         return obj.polymorphic_ctype.name
+
 
 class NestedNodeSerializer(NodeSerializer):
 
