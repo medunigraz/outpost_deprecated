@@ -7,6 +7,7 @@ from polymorphic.models import PolymorphicModel
 
 from outpost.base.decorators import signal_connect
 from outpost.base.key_constructors import UpdatedAtKeyBit
+from outpost.base.fields import LowerCaseCharField
 
 
 class OriginMixin(models.Model):
@@ -242,7 +243,7 @@ class PointOfInterest(models.Model):
         'base.Icon',
         null=True
     )
-    color = models.CharField(
+    color = LowerCaseCharField(
         max_length=6,
         default='007b3c'
     )
