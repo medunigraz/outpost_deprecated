@@ -194,7 +194,7 @@ class PointOfInterestInstanceSerializer(GeoFeatureModelSerializer):
             'polymorphic_ctype',
         )
         extra_kwargs = {
-            'level': {'write_only': True}
+            'level': {'write_only': True, 'required': False}
         }
         id_field = 'id'
 
