@@ -251,15 +251,39 @@ RUNSERVERPLUS_SERVER_ADDRESS_PORT = '0.0.0.0:8088'
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'formatter': 'simple'
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
         },
     },
     'loggers': {
-        'django_python3_ldap': {
+        'django': {
             'handlers': ['console'],
             'level': 'INFO',
+        },
+        'outpost': {
+            'handlers': ['console', 'mail_admins'],
+            'level': 'DEBUG',
         },
     },
 }
