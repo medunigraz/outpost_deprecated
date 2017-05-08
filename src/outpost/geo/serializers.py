@@ -208,13 +208,15 @@ class AutocompleteSerializer(HaystackSerializer):
             search_indexes.RoomIndex,
         ]
         fields = [
-            'autocomplete',
+            'presentation',
             'id',
             'ctype',
             'level',
+            'autocomplete',
         ]
         ignore_fields = [
             'text',
+            'autocomplete',
         ]
         field_aliases = {
             'q': 'autocomplete',

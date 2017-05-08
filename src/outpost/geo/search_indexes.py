@@ -39,6 +39,7 @@ class RoomIndex(CelerySearchIndex, indexes.Indexable):
         null=True
     )
 
+    presentation = indexes.CharField(use_template=True)
     autocomplete = indexes.EdgeNgramField(use_template=True)
 
     def get_model(self):
