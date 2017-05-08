@@ -10,6 +10,10 @@ class RoomIndex(CelerySearchIndex, indexes.Indexable):
         model_attr='name',
         null=True
     )
+    level = indexes.IntegerField(
+        model_attr='level__pk',
+        null=True
+    )
     category = indexes.CharField(
         model_attr='category__name',
         null=True

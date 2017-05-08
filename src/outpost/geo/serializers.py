@@ -211,6 +211,7 @@ class AutocompleteSerializer(HaystackSerializer):
             'autocomplete',
             'id',
             'ctype',
+            'level',
         ]
         ignore_fields = [
             'text',
