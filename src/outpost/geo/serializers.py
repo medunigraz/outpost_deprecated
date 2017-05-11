@@ -142,6 +142,7 @@ class NestedNodeSerializer(NodeSerializer):
         exclude = (
             'polymorphic_ctype',
         )
+        extra_kwargs = {}
 
 
 class EdgeSerializer(GeoFeatureModelSerializer):
