@@ -1,0 +1,35 @@
+{% extends "outpost/base.html" %}
+
+{% load i18n %}
+
+{% block content %}
+  <div class="page-header">
+    <div class="btn-toolbar pull-right">
+      <div class="btn-group">
+        <a class="btn btn-primary" href="{% url 'oauth2_provider:register' %}">
+          <span class="glyphicon glyphicon-plus"></span>
+          {% trans "Application" %}
+        </a>
+      </div>
+    </div>
+    <h1>
+      {% trans "Your applications" %}
+    </h1>
+  </div>
+  {% if applications %}
+  <div class="list-group">
+    {% for application in applications %}
+    <a href="{{ application.get_absolute_url }}" class="list-group-item">
+      <span class="glyphicon glyphicon-file"></span>
+      {{ application.name }}
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="alert alert-warning" role="alert">
+    <strong><span class="glyphicon glyphicon-info-sign"></span></strong>
+    {% trans "No applications defined" %}.
+  </div>
+  {% endif %}
+  </div>
+{% endblock content %}

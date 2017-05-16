@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'outpost.geo',
     'outpost.attendance',
     'outpost.typo3',
+    'outpost.oauth2',
     'django.contrib.admin',
     'django_extensions',
     'crispy_forms',
@@ -59,12 +60,14 @@ INSTALLED_APPS = [
     'push_notifications',
     'ordered_model',
     'celery_haystack',
+    'rules.apps.AutodiscoverRulesConfig',
+    'overextends',
 ]
 
 MIDDLEWARE_CLASSES = [
     'corsheaders.middleware.CorsMiddleware',
-    'oauth2_provider.middleware.OAuth2TokenMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'oauth2_provider.middleware.OAuth2TokenMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -139,9 +142,10 @@ LOGIN_URL = 'accounts:login'
 LOGOUT_REDIRECT_URL = '/'
 
 AUTHENTICATION_BACKENDS = (
+    'guardian.backends.ObjectPermissionBackend',
     'django.contrib.auth.backends.ModelBackend',
     'django_auth_ldap.backend.LDAPBackend',
-    'guardian.backends.ObjectPermissionBackend',
+    'oauth2_provider.backends.OAuth2Backend',
 )
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -224,6 +228,16 @@ HAYSTACK_CONNECTIONS = {
 }
 
 HAYSTACK_SIGNAL_PROCESSOR = 'celery_haystack.signals.CelerySignalProcessor'
+
+OAUTH2_PROVIDER = {
+    'SCOPES': {
+        'read': 'Read scope',
+        'write': 'Write scope',
+        'groups': 'Access to your groups',
+        'editor': 'Edit objects',
+    }
+}
+
 
 CORS_ORIGIN_ALLOW_ALL = True
 
