@@ -237,6 +237,7 @@ OAUTH2_PROVIDER = {
         'editor': 'Edit objects',
     }
 }
+OAUTH2_PROVIDER_APPLICATION_MODEL = 'oauth2.Application'
 
 
 CORS_ORIGIN_ALLOW_ALL = True
