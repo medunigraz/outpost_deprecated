@@ -54,9 +54,6 @@ class RoomSerializer(GeoFeatureModelSerializer):
             'origin',
             'virtual',
         )
-        extra_kwargs = {
-            'level': {'write_only': True}
-        }
         id_field = 'id'
 
 
