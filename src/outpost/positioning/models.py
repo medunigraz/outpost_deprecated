@@ -33,6 +33,9 @@ class Beacon(models.Model):
         decimal_places=2
     )
 
+    def __str__(self):
+        return '{s.mac} ({s.level})'.format(s=self)
+
 
 class AccessPoint(models.Model):
     mac = MACAddressField(

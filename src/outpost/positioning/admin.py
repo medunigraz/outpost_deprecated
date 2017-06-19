@@ -5,4 +5,18 @@ from . import models
 
 @admin.register(models.Beacon)
 class BeaconAdmin(admin.ModelAdmin):
-    pass
+    list_display = (
+        'mac',
+        'level',
+        'deployed',
+        'seen',
+        'charge',
+        'active',
+    )
+    list_filter = (
+        'level',
+        'active',
+    )
+    search_fields = (
+        'mac',
+    )
