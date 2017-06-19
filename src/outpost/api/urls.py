@@ -7,9 +7,19 @@ from rest_framework.routers import DefaultRouter
 from ..attendance import views as attendance
 from ..campusonline import views as campusonline
 from ..geo import views as geo
+from ..positioning import views as positioning
 from ..typo3 import views as typo3
 
 v1 = DefaultRouter()
+v1.register(
+    r'positioning/locate',
+    positioning.LocateView,
+    base_name='positioning-locate'
+)
+v1.register(
+    r'positioning/beacons',
+    positioning.BeaconViewSet
+)
 v1.register(
     r'geo/background',
     geo.BackgroundViewSet

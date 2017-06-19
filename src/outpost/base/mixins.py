@@ -1,3 +1,5 @@
+from rest_framework.viewsets import ModelViewSet
+from reversion.views import RevisionMixin
 from rest_framework.utils.mediatypes import (
     media_type_matches,
     order_by_precedence,
@@ -20,3 +22,7 @@ class MediatypeNegotiationMixin(object):
         if serializer:
             return serializer
         return super(MediatypeNegotiationMixin, self).get_serializer_class()
+
+
+class GeoModelViewSet(MediatypeNegotiationMixin, RevisionMixin, ModelViewSet):
+    pass

@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.gis',
     'outpost.base',
     'outpost.campusonline',
+    'outpost.positioning',
     'outpost.geo',
     'outpost.attendance',
     'outpost.typo3',
@@ -62,6 +63,7 @@ INSTALLED_APPS = [
     'celery_haystack',
     'rules.apps.AutodiscoverRulesConfig',
     'overextends',
+    'netfields',
 ]
 
 MIDDLEWARE_CLASSES = [
