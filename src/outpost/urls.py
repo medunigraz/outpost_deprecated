@@ -44,7 +44,7 @@ urlpatterns.extend([
     ),
     url(
         r'^',
-        include('outpost.api.urls')
+        include('outpost.api.urls', namespace='api')
     ),
     url(
         r'^',
