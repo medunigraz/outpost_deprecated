@@ -183,13 +183,6 @@ class EdgeViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
     list_etag_func = keys.EdgeListKeyConstructor()
 
 
-class BeaconViewSet(GeoModelViewSet):
-    """
-    """
-    queryset = models.Beacon.objects.filter(active=True)
-    serializer_class = serializers.BeaconSerializer
-
-
 class PointOfInterestViewSet(ListETAGMixin, ListCacheResponseMixin, ModelViewSet):
     """
     """

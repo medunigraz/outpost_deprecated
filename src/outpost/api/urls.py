@@ -51,10 +51,6 @@ v1.register(
     geo.EdgeViewSet
 )
 v1.register(
-    r'geo/beacons',
-    geo.BeaconViewSet
-)
-v1.register(
     r'geo/pointofinterest',
     geo.PointOfInterestViewSet
 )

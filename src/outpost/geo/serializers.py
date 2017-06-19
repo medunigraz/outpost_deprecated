@@ -163,13 +163,6 @@ class RoutingEdgeSerializer(EdgeSerializer):
     pass
 
 
-class BeaconSerializer(GeoFeatureModelSerializer):
-
-    class Meta:
-        model = models.Beacon
-        geo_field = 'position'
-
-
 class PointOfInterestSerializer(ModelSerializer):
     icon = SerializerMethodField()
 

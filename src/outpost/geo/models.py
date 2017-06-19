@@ -274,22 +274,3 @@ class PointOfInterestInstance(Node):
 
     def post_delete(self, *args, **kwargs):
         UpdatedAtKeyBit.update(self)
-
-
-class Beacon(models.Model):
-    uuid = models.UUIDField()
-    major = models.PositiveIntegerField()
-    minor = models.PositiveIntegerField()
-    level = models.ForeignKey('Level')
-    position = models.PointField(
-        srid=settings.DEFAULT_SRID
-    )
-    deployed = models.DateTimeField(
-        auto_now_add=True
-    )
-    seen = models.DateTimeField(
-        auto_now_add=True
-    )
-    active = models.BooleanField(
-        default=False
-    )
