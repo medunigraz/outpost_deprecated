@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.gis',
     'outpost.base',
+    'outpost.api',
     'outpost.campusonline',
     'outpost.positioning',
     'outpost.geo',
