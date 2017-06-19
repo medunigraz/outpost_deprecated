@@ -11,6 +11,9 @@ class RoomCategorySerializer(ModelSerializer):
 class FloorSerializer(ModelSerializer):
     class Meta:
         model = models.Floor
+        exclude = (
+            'short',
+        )
 
 
 class BuildingSerializer(ModelSerializer):
@@ -25,3 +28,7 @@ class RoomSerializer(ModelSerializer):
 
     class Meta:
         model = models.Room
+        exclude = (
+            'area',
+            'height',
+        )
