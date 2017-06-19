@@ -3,6 +3,14 @@ $ci_dark: #007B3C;
 $ci_background: #333333;
 $ci_white: #FFFFFF;
 
+@-webkit-keyframes flip {
+    from {-webkit-transform: rotateY(0deg);}
+    to {-webkit-transform: rotateY(360deg);}
+}
+@keyframes flip {
+    from {transform: rotateY(0deg);}
+    to {transform: rotateY(360deg);}
+}
 body {
   margin-top: 70px;
 }
@@ -11,8 +19,12 @@ label {
 }
 .navbar {
   .logo {
-    padding: 5px;
-    height: 50px;
+    padding: 10px;
+    height: 63px;
+    &:hover {
+      -webkit-animation: flip 10s infinite linear;
+      animation: flip 10s infinite linear;
+    }
   }
 }
 .navbar-inverse {
