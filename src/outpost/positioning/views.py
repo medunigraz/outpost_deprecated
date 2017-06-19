@@ -1,4 +1,6 @@
+import json
 import re
+from django.contrib.gis.geos import GEOSGeometry
 from django.db import connection
 from rest_framework import viewsets
 from rest_framework.response import Response
@@ -36,12 +38,47 @@ class LocateView(viewsets.ViewSet):
         AllowAny,
     ]
     pattern = re.compile(r"^mac\[(?P<mac>(?:[0-9A-Fa-f]{2}[:-]){5}(?:[0-9A-Fa-f]{2}))\]$")
+    query = """
+        SELECT
+            ST_ClosestPoint(e.path, b.position) AS position,
+            e.id AS edge
+        FROM
+            geo_edge e,
+            positioning_beacon b
+        WHERE
+            b.mac = %s AND
+            (
+                b.level_id = (
+                    SELECT level_id FROM geo_node WHERE id = e.source_id
+                )
+                OR
+                b.level_id = (
+                    SELECT level_id FROM geo_node WHERE id = e.source_id
+                )
+            )
+        ORDER BY
+            ST_Distance(ST_ClosestPoint(e.path, b.position), b.position)
+        LIMIT 1
+    """
 
     def list(self, request, format=None):
-        #with connection.cursor() as cursor:
-        #    cursor.execute("UPDATE bar SET foo = 1 WHERE baz = %s", [self.baz])
-        #    cursor.execute("SELECT foo FROM bar WHERE baz = %s", [self.baz])
-        #    row = cursor.fetchone()
         macs = {self.pattern.search(m).groupdict().get('mac'): float(v) for m, v in request.GET.items() if m.startswith('mac')}
-        return Response(macs)
+        if not macs:
+            return Response()
+        mac = max(macs, key=macs.get)
+        with connection.cursor() as cursor:
+            cursor.execute(self.query, [mac])
+            point, edge = cursor.fetchone()
+            geometry = GEOSGeometry(point)
 
+
+            return Response({
+                'geometry': {
+                    'type': 'Point',
+                    'coordinates': list(geometry)
+                },
+                'properties': {
+                    'edge': edge,
+                },
+                'type': 'Feature',
+            })
