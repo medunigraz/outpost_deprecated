@@ -41,7 +41,7 @@ class Command(BaseCommand):
                 defaults = {
                     'origin': feature.get('id'),
                     'layout': feature.geom.geos,
-                    'floor': models.Floor.objects.get(origin=feature.get('floor_id'))
+                    'level': models.Floor.objects.get(origin=feature.get('floor_id')).level
                 }
                 obj, created = models.Door.objects.update_or_create(
                     origin=feature.get('id'),
@@ -60,7 +60,7 @@ class Command(BaseCommand):
                 defaults = {
                     'origin': feature.get('id'),
                     'layout': feature.geom.geos,
-                    'floor': models.Floor.objects.get(origin=feature.get('floor_id'))
+                    'level': models.Floor.objects.get(origin=feature.get('floor_id')).level
                 }
                 if feature.get('campusonli'):
                     try:
