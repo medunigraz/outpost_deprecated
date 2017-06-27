@@ -206,6 +206,7 @@ class PointOfInterestInstanceViewSet(ListETAGMixin, ListCacheResponseMixin, GeoM
     """
     queryset = models.PointOfInterestInstance.objects.all()
     serializer_class = serializers.PointOfInterestInstanceSerializer
+    pagination_class = None
     filter_backends = (
         DjangoFilterBackend,
         InBBoxFilter,
