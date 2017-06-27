@@ -188,9 +188,7 @@ class Room(OriginMixin, Node):
     )
 
     def __str__(self):
-        if not self.campusonline:
-            return self.name or 'Room'
-        return '{s.name} [CO: {s.campusonline}]'.format(s=self)
+        return '{s.name} on {s.level} [CO: {s.campusonline}]'.format(s=self)
 
     def pre_save(self, *args, **kwargs):
         if self.layout:
