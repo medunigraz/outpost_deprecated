@@ -8,6 +8,7 @@ from rest_framework.permissions import (
     AllowAny,
     IsAuthenticatedOrReadOnly,
 )
+from rest_framework.filters import DjangoFilterBackend
 # from rest_framework_extensions.mixins import (
 #     CacheResponseAndETAGMixin,
 # )
@@ -30,6 +31,12 @@ class BeaconViewSet(GeoModelViewSet):
     permission_classes = [
         IsAuthenticatedOrReadOnly,
     ]
+    filter_backends = (
+        DjangoFilterBackend,
+    )
+    filter_fields = (
+        'level',
+    )
 
 
 class LocateView(viewsets.ViewSet):
