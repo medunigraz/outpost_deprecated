@@ -14,6 +14,11 @@ class Beacon(models.Model):
         primary_key=True,
         db_index=True
     )
+    name = models.CharField(
+        max_length=16,
+        db_index=True,
+        unique=True
+    )
     level = models.ForeignKey('geo.Level')
     position = models.PointField(
         srid=settings.DEFAULT_SRID
