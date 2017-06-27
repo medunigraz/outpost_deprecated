@@ -28,6 +28,7 @@ class BeaconViewSet(GeoModelViewSet):
     """
     queryset = models.Beacon.objects.filter(active=True)
     serializer_class = serializers.BeaconSerializer
+    pagination_class = None
     permission_classes = [
         IsAuthenticatedOrReadOnly,
     ]
