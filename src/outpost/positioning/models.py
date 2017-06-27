@@ -34,6 +34,7 @@ class Beacon(models.Model):
     )
     charge = models.DecimalField(
         null=True,
+        default=0,
         max_digits=5,
         decimal_places=2
     )
