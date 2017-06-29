@@ -10,9 +10,10 @@ logger = logging.getLogger(__name__)
 
 
 class Beacon(models.Model):
-    mac = MACAddressField(
-        primary_key=True,
-        db_index=True
+    mac = models.CharField(
+        max_length=17,
+        db_index=True,
+        unique=True
     )
     name = models.CharField(
         max_length=16,
@@ -44,9 +45,10 @@ class Beacon(models.Model):
 
 
 class AccessPoint(models.Model):
-    mac = MACAddressField(
-        primary_key=True,
-        db_index=True
+    mac = models.CharField(
+        max_length=17,
+        db_index=True,
+        unique=True
     )
     level = models.ForeignKey('geo.Level')
     position = models.PointField(

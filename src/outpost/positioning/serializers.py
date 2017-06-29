@@ -14,12 +14,7 @@ from ..campusonline import serializers as campusonline
 
 
 class BeaconSerializer(GeoFeatureModelSerializer):
-    id = SerializerMethodField()
 
     class Meta:
         model = models.Beacon
         geo_field = 'position'
-        id_field = 'id'
-
-    def get_id(self, obj):
-        return str(obj.mac)
