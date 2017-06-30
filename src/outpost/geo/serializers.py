@@ -142,6 +142,12 @@ class NestedNodeSerializer(NodeSerializer):
         extra_kwargs = {}
 
 
+class EdgeCategorySerializer(ModelSerializer):
+
+    class Meta:
+        model = models.EdgeCategory
+
+
 class EdgeSerializer(GeoFeatureModelSerializer):
     source_node = NestedNodeSerializer(
         source='source',

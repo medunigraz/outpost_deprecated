@@ -115,6 +115,23 @@ class Node(PolymorphicModel):
         UpdatedAtKeyBit.update(self)
 
 
+class EdgeCategory(models.Model):
+    name = models.CharField(
+        max_length=64
+    )
+    weight = models.DecimalField(
+        max_digits=4,
+        decimal_places=1,
+        default=1.0
+    )
+
+    class Meta:
+        ordering = ('weight',)
+
+    def __str__(self):
+        return self.name or 'Undefined'
+
+
 @signal_connect
 class Edge(models.Model):
     source = models.ForeignKey(
@@ -127,7 +144,9 @@ class Edge(models.Model):
     )
     one_way = models.BooleanField(default=False)
     accessible = models.BooleanField(default=False)
-    weight = models.IntegerField(default=1)
+    category = models.ForeignKey(
+        'EdgeCategory'
+    )
     path = models.LineStringField(srid=settings.DEFAULT_SRID)
 
     def __str__(self):

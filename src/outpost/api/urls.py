@@ -57,6 +57,10 @@ v1.register(
     geo.NodeViewSet
 )
 v1.register(
+    r'geo/edgecategory',
+    geo.EdgeCategoryViewSet
+)
+v1.register(
     r'geo/edges',
     geo.EdgeViewSet
 )

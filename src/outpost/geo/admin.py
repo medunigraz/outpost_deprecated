@@ -80,6 +80,11 @@ class LevelAdmin(OrderedModelAdmin):
     list_display = ('__str__', 'move_up_down_links')
 
 
+@admin.register(models.EdgeCategory)
+class EdgeCategoryAdmin(VersionAdmin, admin.ModelAdmin):
+    list_display = ('__str__', 'weight')
+
+
 @admin.register(models.Edge)
 class EdgeAdmin(VersionAdmin, admin.ModelAdmin):
     pass

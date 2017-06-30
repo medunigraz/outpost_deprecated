@@ -160,6 +160,14 @@ class NodeViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
     list_etag_func = keys.NodeListKeyConstructor()
 
 
+class EdgeCategoryViewSet(ModelViewSet):
+    """
+    """
+    queryset = models.EdgeCategory.objects.all()
+    serializer_class = serializers.EdgeCategorySerializer
+    pagination_class = None
+
+
 class EdgeViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
     """
     Get edges from the navigation mesh.
@@ -248,7 +256,7 @@ class RoutingEdgeViewSet(ListETAGMixin, ListCacheResponseMixin, MediatypeNegotia
                     e.id AS id,
                     ns.id AS source,
                     nd.id AS target,
-                    ST_LENGTH(e.path) * e.weight AS cost,
+                    ST_LENGTH(e.path) * c.weight AS cost,
                     CASE
                         e.one_way
                     WHEN
@@ -256,7 +264,7 @@ class RoutingEdgeViewSet(ListETAGMixin, ListCacheResponseMixin, MediatypeNegotia
                     THEN
                         -1
                     ELSE
-                        ST_LENGTH(e.path) * e.weight
+                        ST_LENGTH(e.path) * c.weight
                     END AS reverse_cost,
                     ST_X(ns.center) AS x1,
                     ST_Y(ns.center) AS y1,
@@ -264,11 +272,13 @@ class RoutingEdgeViewSet(ListETAGMixin, ListCacheResponseMixin, MediatypeNegotia
                     ST_Y(ns.center) AS y2
                 FROM
                     geo_edge e,
+                    geo_edgecategory c,
                     geo_node nd,
                     geo_node ns
                 WHERE
                     e.destination_id = nd.id AND
                     e.source_id = ns.id AND
+                    e.category_id = c.id AND
                     CASE
                         e.accessible
                     WHEN
