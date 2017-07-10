@@ -1,9 +1,11 @@
 import json
 import re
+from django.db.models import Q
 from django.contrib.gis.geos import GEOSGeometry
 from django.db import connection
 from rest_framework import viewsets
 from rest_framework.response import Response
+from rest_framework.exceptions import NotFound
 from rest_framework.permissions import (
     AllowAny,
     IsAuthenticatedOrReadOnly,
@@ -17,6 +19,7 @@ from rest_framework.filters import DjangoFilterBackend
 # )
 
 from outpost.base.mixins import GeoModelViewSet
+from outpost.geo.models import Edge
 from . import (
     models,
     serializers,
@@ -70,15 +73,28 @@ class LocateView(viewsets.ViewSet):
     """
 
     def list(self, request, format=None):
-        macs = {self.pattern.search(m).groupdict().get('mac'): float(v) for m, v in request.GET.items() if m.startswith('mac')}
+        if 'edge' not in request.GET:
+            return Response()
+        macs = {self.pattern.search(m).groupdict().get('mac'): abs(float(v)) for m, v in request.GET.items() if m.startswith('mac')}
         if not macs:
             return Response()
-        mac = max(macs, key=macs.get)
+        conditions = [
+            Q(mac__in=macs),
+            Q(active=True),
+        ]
+        try:
+            e = Edge.objects.get(pk=request.GET.get('edge'))
+            conditions.append(Q(level=e.source.level) | Q(level=e.destination.level))
+        except Edge.DoesNotExist:
+            pass
+        beacons = models.Beacon.objects.filter(*conditions)
+        if not beacons:
+            raise NotFound(detail='No matching beacon found')
+        mac = max(beacons, key=lambda b: macs.get(b.mac))
         with connection.cursor() as cursor:
-            cursor.execute(self.query, [mac])
+            cursor.execute(self.query, [str(mac.mac)])
             point, edge = cursor.fetchone()
             geometry = GEOSGeometry(point)
-
 
             return Response({
                 'geometry': {
