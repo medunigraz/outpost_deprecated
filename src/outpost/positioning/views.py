@@ -93,6 +93,8 @@ class LocateView(viewsets.ViewSet):
         mac = max(beacons, key=lambda b: macs.get(b.mac))
         with connection.cursor() as cursor:
             cursor.execute(self.query, [str(mac.mac)])
+            if cursor.rowcount != 1:
+                raise NotFound(detail='No matching beacon found')
             point, edge = cursor.fetchone()
             geometry = GEOSGeometry(point)
 
