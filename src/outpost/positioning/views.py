@@ -64,7 +64,7 @@ class LocateView(viewsets.ViewSet):
                 )
                 OR
                 b.level_id = (
-                    SELECT level_id FROM geo_node WHERE id = e.source_id
+                    SELECT level_id FROM geo_node WHERE id = e.destination_id
                 )
             )
         ORDER BY
