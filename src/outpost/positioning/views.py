@@ -79,7 +79,7 @@ class LocateView(viewsets.ViewSet):
         if not macs:
             return Response()
         conditions = [
-            Q(mac__in=macs),
+            Q(mac__in=macs.keys()),
             Q(active=True),
         ]
         try:
