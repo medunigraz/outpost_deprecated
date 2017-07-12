@@ -105,6 +105,7 @@ class LocateView(viewsets.ViewSet):
                 },
                 'properties': {
                     'edge': edge,
+                    'level': mac.level.pk,
                 },
                 'type': 'Feature',
             })
