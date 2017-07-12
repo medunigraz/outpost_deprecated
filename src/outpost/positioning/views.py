@@ -75,7 +75,7 @@ class LocateView(viewsets.ViewSet):
     def list(self, request, format=None):
         if 'edge' not in request.GET:
             return Response()
-        macs = {self.pattern.search(m).groupdict().get('mac'): abs(float(v)) for m, v in request.GET.items() if m.startswith('mac')}
+        macs = {self.pattern.search(m).groupdict().get('mac'): float(v) for m, v in request.GET.items() if m.startswith('mac')}
         if not macs:
             return Response()
         conditions = [
