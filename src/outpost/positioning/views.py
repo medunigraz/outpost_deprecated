@@ -48,7 +48,7 @@ class LocateView(viewsets.ViewSet):
     permission_classes = [
         AllowAny,
     ]
-    pattern = re.compile(r"^mac\[(?P<mac>(?:[0-9A-Fa-f]{2}[:-]){5}(?:[0-9A-Fa-f]{2}))\]$")
+    pattern = re.compile(r"^name\[(?P<name>\w{4})\]$")
     query = """
         SELECT
             ST_ClosestPoint(e.path, b.position) AS position,
@@ -57,7 +57,7 @@ class LocateView(viewsets.ViewSet):
             geo_edge e,
             positioning_beacon b
         WHERE
-            b.mac = %s AND
+            b.name = %s AND
             (
                 b.level_id = (
                     SELECT level_id FROM geo_node WHERE id = e.source_id
@@ -73,26 +73,26 @@ class LocateView(viewsets.ViewSet):
     """
 
     def list(self, request, format=None):
-        if 'edge' not in request.GET:
-            return Response()
-        macs = {self.pattern.search(m).groupdict().get('mac'): float(v) for m, v in request.GET.items() if m.startswith('mac')}
-        if not macs:
-            return Response()
+        names = {self.pattern.search(m).groupdict().get('name'): float(v) for m, v in request.GET.items() if m.startswith('name')}
+        print(names)
+        if not names:
+            raise NotFound(detail='No incoming signal data')
         conditions = [
-            Q(mac__in=macs.keys()),
+            Q(name__in=names.keys()),
             Q(active=True),
         ]
-        try:
-            e = Edge.objects.get(pk=request.GET.get('edge'))
-            conditions.append(Q(level=e.source.level) | Q(level=e.destination.level))
-        except Edge.DoesNotExist:
-            pass
+        if 'edge' in request.GET:
+            try:
+                e = Edge.objects.get(pk=request.GET.get('edge'))
+                conditions.append(Q(level=e.source.level) | Q(level=e.destination.level))
+            except Edge.DoesNotExist:
+                pass
         beacons = models.Beacon.objects.filter(*conditions)
         if not beacons:
             raise NotFound(detail='No matching beacon found')
-        mac = max(beacons, key=lambda b: macs.get(b.mac))
+        beacon = max(beacons, key=lambda b: names.get(b.name))
         with connection.cursor() as cursor:
-            cursor.execute(self.query, [str(mac.mac)])
+            cursor.execute(self.query, [str(beacon.name)])
             if cursor.rowcount != 1:
                 raise NotFound(detail='No matching beacon found')
             point, edge = cursor.fetchone()
@@ -105,7 +105,7 @@ class LocateView(viewsets.ViewSet):
                 },
                 'properties': {
                     'edge': edge,
-                    'level': mac.level.pk,
+                    'level': beacon.level.pk,
                 },
                 'type': 'Feature',
             })

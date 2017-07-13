@@ -6,7 +6,7 @@ from . import models
 @admin.register(models.Beacon)
 class BeaconAdmin(admin.ModelAdmin):
     list_display = (
-        'mac',
+        'name',
         'level',
         'deployed',
         'seen',
@@ -18,5 +18,5 @@ class BeaconAdmin(admin.ModelAdmin):
         'active',
     )
     search_fields = (
-        'mac',
+        'name',
     )

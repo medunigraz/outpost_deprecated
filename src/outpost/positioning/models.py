@@ -10,11 +10,6 @@ logger = logging.getLogger(__name__)
 
 
 class Beacon(models.Model):
-    mac = models.CharField(
-        max_length=17,
-        db_index=True,
-        unique=True
-    )
     name = models.CharField(
         max_length=16,
         db_index=True,
@@ -41,7 +36,7 @@ class Beacon(models.Model):
     )
 
     def __str__(self):
-        return '{s.mac} ({s.level})'.format(s=self)
+        return '{s.name} ({s.level})'.format(s=self)
 
 
 class AccessPoint(models.Model):
