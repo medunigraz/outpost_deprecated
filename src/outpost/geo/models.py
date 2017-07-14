@@ -252,7 +252,7 @@ class Door(OriginMixin, Node):
 
 
 @signal_connect
-class PointOfInterest(models.Model):
+class PointOfInterest(OrderedModel):
     name = models.CharField(
         max_length=128
     )
@@ -267,6 +267,9 @@ class PointOfInterest(models.Model):
     selected = models.BooleanField(
         default=False
     )
+
+    class Meta(OrderedModel.Meta):
+        pass
 
     def __str__(self):
         return self.name

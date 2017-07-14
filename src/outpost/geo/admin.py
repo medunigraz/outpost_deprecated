@@ -95,7 +95,8 @@ class PointOfInterestInstanceInline(admin.TabularInline):
 
 
 @admin.register(models.PointOfInterest)
-class PointOfInterestAdmin(admin.ModelAdmin):
+class PointOfInterestAdmin(OrderedModelAdmin):
+    list_display = ('__str__', 'move_up_down_links')
     inlines = [
         PointOfInterestInstanceInline,
     ]
