@@ -103,7 +103,7 @@ class LocateView(viewsets.ViewSet):
         with connection.cursor() as cursor:
             cursor.execute(self.query, [str(beacon.name)])
             if cursor.rowcount != 1:
-                raise NotFound(detail='No matching beacon found')
+                raise NotFound(detail='No matching edge found')
             point, edge = cursor.fetchone()
             geometry = GEOSGeometry(point)
 
