@@ -48,7 +48,7 @@ class LocateView(viewsets.ViewSet):
     permission_classes = [
         AllowAny,
     ]
-    pattern = re.compile(r"^name\[(?P<name>\w{4})\]$")
+    pattern = re.compile(r"^name\[(?P<name>\w+)\]$")
     query = """
         SELECT
             ST_ClosestPoint(e.path, b.position) AS position,
@@ -73,8 +73,17 @@ class LocateView(viewsets.ViewSet):
     """
 
     def list(self, request, format=None):
-        names = {self.pattern.search(m).groupdict().get('name'): float(v) for m, v in request.GET.items() if m.startswith('name')}
-        print(names)
+        names = dict()
+        for k, v in request.GET.items():
+            if not k.startswith('name'):
+                continue
+            match = self.pattern.search(k)
+            if not match:
+                continue
+            try:
+                names[match.groupdict().get('name')] = float(v)
+            except ValueError:
+                continue
         if not names:
             raise NotFound(detail='No incoming signal data')
         conditions = [
