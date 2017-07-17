@@ -5,7 +5,7 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from drf_haystack.filters import HaystackAutocompleteFilter
 from drf_haystack.viewsets import HaystackViewSet
-from oauth2_provider.ext.rest_framework import TokenHasScope
+from oauth2_provider.ext.rest_framework import IsAuthenticatedOrTokenHasScope
 from rest_framework.filters import DjangoFilterBackend
 from rest_framework.permissions import (
     AllowAny,
@@ -175,8 +175,8 @@ class NodeViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
     queryset = models.Node.objects.all()
     serializer_class = serializers.NodeSerializer
     permission_classes = (
+        IsAuthenticatedOrTokenHasScope,
         DjangoModelPermissions,
-        TokenHasScope,
     )
     pagination_class = None
     filter_backends = (
@@ -199,8 +199,8 @@ class EdgeCategoryViewSet(ModelViewSet):
     queryset = models.EdgeCategory.objects.all()
     serializer_class = serializers.EdgeCategorySerializer
     permission_classes = (
+        IsAuthenticatedOrTokenHasScope,
         DjangoModelPermissions,
-        TokenHasScope,
     )
     pagination_class = None
     required_scopes = (
@@ -228,8 +228,8 @@ class EdgeViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
     queryset = models.Edge.objects.all()
     serializer_class = serializers.EdgeSerializer
     permission_classes = (
+        IsAuthenticatedOrTokenHasScope,
         DjangoModelPermissions,
-        TokenHasScope,
     )
     pagination_class = None
     filter_backends = (
