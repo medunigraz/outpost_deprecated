@@ -11,11 +11,11 @@
 <p class="lead">
   {% trans "Are you sure to delete the application" %} {{ application.name }}?
 </p>
-<form method="post" action="{% url 'oauth2_provider:delete' application.pk %}">
+<form method="post" action="{% url 'oauth2:delete' pk=application.pk %}">
   {% csrf_token %}
   <div class="control-group">
     <div class="controls">
-      <a class="btn btn-default" href="{% url "oauth2_provider:list" %}">
+      <a class="btn btn-default" href="{% url "oauth2:list" %}">
         <span class="glyphicon glyphicon-chevron-left"></span>
         {% trans "Cancel" %}
       </a>

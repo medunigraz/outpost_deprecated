@@ -11,6 +11,42 @@
 <form>
   <div class="form-group">
     <label class="control-label">
+      {% trans "Description" %}
+    </label>
+    <p class="form-control-static">
+      {{ application.description }}
+    </p>
+  </div>
+  <div class="form-group">
+    <label class="control-label">
+      {% trans "Logo" %}
+    </label>
+    <p class="form-control-static">
+      <img src="{{ application.logo.url }}"/>
+    </p>
+  </div>
+  <div class="form-group">
+    <label class="control-label">
+      {% trans "Website" %}
+    </label>
+    <p class="form-control-static">
+      <a href="{{ application.website }}" target="_blank">
+        {{ application.website }}
+      </a>
+    </p>
+  </div>
+  <div class="form-group">
+    <label class="control-label">
+      {% trans "Privacy" %}
+    </label>
+    <p class="form-control-static">
+      <a href="{{ application.privacy }}" target="_blank">
+        {{ application.privacy }}
+      </a>
+    </p>
+  </div>
+  <div class="form-group">
+    <label class="control-label">
       {% trans "Client id" %}
     </label>
     <input class="form-control" type="text" value="{{ application.client_id }}" readonly>
@@ -44,15 +80,15 @@
     <textarea class="form-control" readonly>{{ application.redirect_uris }}</textarea>
   </div>
   <div class="btn-toolbar">
-    <a class="btn btn-default" href="{% url "oauth2_provider:list" %}">
+    <a class="btn btn-default" href="{% url "oauth2:list" %}">
       <span class="glyphicon glyphicon-chevron-left"></span>
       {% trans "Go Back" %}
     </a>
-    <a class="btn btn-primary" href="{% url "oauth2_provider:update" application.id %}">
-      <span class="glyphicon glyphicon-pencil"></span>
+    <a class="btn btn-primary" href="{% url "oauth2:edit" pk=application.pk %}">
+      <span class="glyphicon glyphicon-edit"></span>
       {% trans "Edit" %}
     </a>
-    <a class="btn btn-danger" href="{% url "oauth2_provider:delete" application.id %}">
+    <a class="btn btn-danger" href="{% url "oauth2:delete" pk=application.pk %}">
       <span class="glyphicon glyphicon glyphicon-remove"></span>
       {% trans "Delete" %}
     </a>

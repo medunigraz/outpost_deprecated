@@ -10,6 +10,8 @@ from rest_framework.filters import DjangoFilterBackend
 from rest_framework.permissions import (
     AllowAny,
     IsAuthenticatedOrReadOnly,
+    DjangoModelPermissions,
+    DjangoModelPermissionsOrAnonReadOnly,
 )
 from rest_framework.viewsets import (
     ModelViewSet,
@@ -41,6 +43,9 @@ from . import (
 class BackgroundViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
     queryset = models.Background.objects.all()
     serializer_class = serializers.BackgroundSerializer
+    permission_classes = (
+        DjangoModelPermissionsOrAnonReadOnly,
+    )
     pagination_class = None
     bbox_filter_field = 'layout'
     filter_backends = (
@@ -54,11 +59,17 @@ class BackgroundViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
 class LevelViewSet(ModelViewSet):
     queryset = models.Level.objects.all()
     serializer_class = serializers.LevelSerializer
+    permission_classes = (
+        DjangoModelPermissionsOrAnonReadOnly,
+    )
 
 
 class RoomCategoryViewSet(RevisionMixin, ModelViewSet):
     queryset = models.RoomCategory.objects.all()
     serializer_class = serializers.RoomCategorySerializer
+    permission_classes = (
+        DjangoModelPermissionsOrAnonReadOnly,
+    )
     filter_backends = (
         DjangoFilterBackend,
     )
@@ -83,6 +94,9 @@ class RoomViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
     """
     queryset = models.Room.objects.all()
     serializer_class = serializers.RoomSerializer
+    permission_classes = (
+        DjangoModelPermissionsOrAnonReadOnly,
+    )
     pagination_class = None
     bbox_filter_field = 'layout'
     filter_backends = (
@@ -98,11 +112,17 @@ class RoomViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
 class RoomSearchViewSet(HaystackViewSet):
     index_models = [models.Room]
     serializer_class = serializers.RoomSearchSerializer
+    permission_classes = (
+        AllowAny,
+    )
 
 
 class DoorViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
     queryset = models.Door.objects.all()
     serializer_class = serializers.DoorSerializer
+    permission_classes = (
+        DjangoModelPermissionsOrAnonReadOnly,
+    )
     pagination_class = None
     filter_backends = (
         DjangoFilterBackend,
@@ -118,6 +138,9 @@ class DoorViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
 class FloorViewSet(ListETAGMixin, ListCacheResponseMixin, RevisionMixin, ModelViewSet):
     queryset = models.Floor.objects.all()
     serializer_class = serializers.FloorSerializer
+    permission_classes = (
+        DjangoModelPermissionsOrAnonReadOnly,
+    )
     pagination_class = None
     filter_backends = (
         DjangoFilterBackend,
@@ -133,6 +156,9 @@ class FloorViewSet(ListETAGMixin, ListCacheResponseMixin, RevisionMixin, ModelVi
 class BuildingViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
     queryset = models.Building.objects.all()
     serializer_class = serializers.BuildingSerializer
+    permission_classes = (
+        DjangoModelPermissionsOrAnonReadOnly,
+    )
     pagination_class = None
     filter_backends = (
         DjangoFilterBackend,
@@ -148,6 +174,10 @@ class BuildingViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
 class NodeViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
     queryset = models.Node.objects.all()
     serializer_class = serializers.NodeSerializer
+    permission_classes = (
+        DjangoModelPermissions,
+        TokenHasScope,
+    )
     pagination_class = None
     filter_backends = (
         DjangoFilterBackend,
@@ -158,6 +188,9 @@ class NodeViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
     bbox_filter_include_overlapping = True
     list_cache_key_func = keys.NodeListKeyConstructor()
     list_etag_func = keys.NodeListKeyConstructor()
+    required_scopes = (
+        'editor',
+    )
 
 
 class EdgeCategoryViewSet(ModelViewSet):
@@ -165,7 +198,14 @@ class EdgeCategoryViewSet(ModelViewSet):
     """
     queryset = models.EdgeCategory.objects.all()
     serializer_class = serializers.EdgeCategorySerializer
+    permission_classes = (
+        DjangoModelPermissions,
+        TokenHasScope,
+    )
     pagination_class = None
+    required_scopes = (
+        'editor',
+    )
 
 
 class EdgeViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
@@ -187,6 +227,10 @@ class EdgeViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
     """
     queryset = models.Edge.objects.all()
     serializer_class = serializers.EdgeSerializer
+    permission_classes = (
+        DjangoModelPermissions,
+        TokenHasScope,
+    )
     pagination_class = None
     filter_backends = (
         DjangoFilterBackend,
@@ -197,6 +241,9 @@ class EdgeViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
     bbox_filter_include_overlapping = True
     list_cache_key_func = keys.EdgeListKeyConstructor()
     list_etag_func = keys.EdgeListKeyConstructor()
+    required_scopes = (
+        'editor',
+    )
 
 
 class PointOfInterestViewSet(ListETAGMixin, ListCacheResponseMixin, ModelViewSet):
@@ -204,6 +251,9 @@ class PointOfInterestViewSet(ListETAGMixin, ListCacheResponseMixin, ModelViewSet
     """
     queryset = models.PointOfInterest.objects.all()
     serializer_class = serializers.PointOfInterestSerializer
+    permission_classes = (
+        DjangoModelPermissionsOrAnonReadOnly,
+    )
     pagination_class = None
     list_cache_key_func = keys.PointOfInterestListKeyConstructor()
     list_etag_func = keys.PointOfInterestListKeyConstructor()
@@ -214,6 +264,9 @@ class PointOfInterestInstanceViewSet(ListETAGMixin, ListCacheResponseMixin, GeoM
     """
     queryset = models.PointOfInterestInstance.objects.all()
     serializer_class = serializers.PointOfInterestInstanceSerializer
+    permission_classes = (
+        DjangoModelPermissionsOrAnonReadOnly,
+    )
     pagination_class = None
     filter_backends = (
         DjangoFilterBackend,
@@ -240,6 +293,9 @@ class RoutingEdgeViewSet(ListETAGMixin, ListCacheResponseMixin, MediatypeNegotia
     get from **source** to **target**.
     """
     serializer_class = serializers.RoutingEdgeSerializer
+    permission_classes = (
+        AllowAny,
+    )
     bbox_filter_field = 'path'
     pagination_class = None
     list_cache_key_func = keys.RoutingEdgeListKeyConstructor()
@@ -321,9 +377,12 @@ class AutocompleteViewSet(HaystackViewSet):
     This can be used to do further queries at other endpoints.
     """
     serializer_class = serializers.AutocompleteSerializer
-    index_models = [
+    index_models = (
         models.Room,
-    ]
-    filter_backends = [
+    )
+    permission_classes = (
+        AllowAny,
+    )
+    filter_backends = (
         HaystackAutocompleteFilter,
-    ]
+    )

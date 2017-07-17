@@ -7,8 +7,8 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
 from rest_framework.permissions import (
-    AllowAny,
     IsAuthenticatedOrReadOnly,
+    DjangoModelPermissions,
 )
 from rest_framework.filters import DjangoFilterBackend
 # from rest_framework_extensions.mixins import (
@@ -31,10 +31,10 @@ class BeaconViewSet(GeoModelViewSet):
     """
     queryset = models.Beacon.objects.filter(active=True)
     serializer_class = serializers.BeaconSerializer
+    permission_classes = (
+        DjangoModelPermissions,
+    )
     pagination_class = None
-    permission_classes = [
-        IsAuthenticatedOrReadOnly,
-    ]
     filter_backends = (
         DjangoFilterBackend,
     )
@@ -45,9 +45,9 @@ class BeaconViewSet(GeoModelViewSet):
 
 class LocateView(viewsets.ViewSet):
     authentication_classes = []
-    permission_classes = [
-        AllowAny,
-    ]
+    permission_classes = (
+        IsAuthenticatedOrReadOnly,
+    )
     pattern = re.compile(r"^name\[(?P<name>\w+)\]$")
     query = """
         SELECT

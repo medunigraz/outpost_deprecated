@@ -1,4 +1,4 @@
-{% extends "outpost/base.html" %}
+{% extends 'outpost/base.html' %}
 
 {% load i18n %}
 
@@ -6,29 +6,39 @@
   <div class="page-header">
     <div class="btn-toolbar pull-right">
       <div class="btn-group">
-        <a class="btn btn-primary" href="{% url 'oauth2_provider:register' %}">
+        <a class="btn btn-primary" href="{% url 'oauth2:create' %}">
           <span class="glyphicon glyphicon-plus"></span>
-          {% trans "Application" %}
+          {% trans 'Application' %}
         </a>
       </div>
     </div>
     <h1>
-      {% trans "Your applications" %}
+      {% trans 'Your applications' %}
     </h1>
   </div>
   {% if applications %}
   <div class="list-group">
     {% for application in applications %}
-    <a href="{{ application.get_absolute_url }}" class="list-group-item">
-      <span class="glyphicon glyphicon-file"></span>
-      {{ application.name }}
-    </a>
+    <div href="{% url 'oauth2:detail' pk=application.pk %}" class="list-group-item clearfix">
+        {{ application.name }}
+      <span class="pull-right">
+        <a href="{% url 'oauth2:detail' pk=application.pk %}" class="btn btn-xs btn-default">
+          <span class="glyphicon glyphicon-option-horizontal" aria-hidden="true"></span>
+        </a>
+        <a href="{% url 'oauth2:edit' pk=application.pk %}" class="btn btn-xs btn-default">
+          <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+        </a>
+        <a href="{% url 'oauth2:delete' pk=application.pk %}" class="btn btn-xs btn-danger">
+          <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+        </a>
+      </span>
+    </div>
     {% endfor %}
   </div>
   {% else %}
   <div class="alert alert-warning" role="alert">
     <strong><span class="glyphicon glyphicon-info-sign"></span></strong>
-    {% trans "No applications defined" %}.
+    {% trans 'No applications defined' %}.
   </div>
   {% endif %}
   </div>

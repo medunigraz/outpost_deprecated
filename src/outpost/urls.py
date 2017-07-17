@@ -27,10 +27,6 @@ urlpatterns.extend([
         admin.site.urls
     ),
     url(
-        r'^o/',
-        include('oauth2_provider.urls', namespace='oauth2_provider')
-    ),
-    url(
         r'^auth/api/',
         include('rest_framework.urls', namespace='rest_framework')
     ),
@@ -41,6 +37,10 @@ urlpatterns.extend([
     url(
         r'^auth/',
         include('djoser.urls.authtoken', namespace='djoser')
+    ),
+    url(
+        r'^oauth2/',
+        include('outpost.oauth2.urls', namespace='oauth2')
     ),
     url(
         r'^',
