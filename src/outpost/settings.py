@@ -66,7 +66,7 @@ INSTALLED_APPS = [
     'netfields',
 ]
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -78,7 +78,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.sites.middleware.CurrentSiteMiddleware',
-    'django_downloadview.SmartDownloadMiddleware',
+    #'django_downloadview.SmartDownloadMiddleware',
 ]
 
 ROOT_URLCONF = 'outpost.urls'
