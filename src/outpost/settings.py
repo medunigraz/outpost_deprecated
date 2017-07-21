@@ -71,6 +71,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'corsheaders.middleware.CorsPostCsrfMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
@@ -245,6 +246,7 @@ OAUTH2_PROVIDER_APPLICATION_MODEL = 'oauth2.Application'
 
 
 CORS_ORIGIN_ALLOW_ALL = True
+CORS_REPLACE_HTTPS_REFERER = True
 
 DEFAULT_SRID = 3857
 
