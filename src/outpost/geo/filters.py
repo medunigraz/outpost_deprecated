@@ -72,6 +72,11 @@ class EdgeFilter(django_filters.FilterSet):
 
     class Meta:
         model = models.Edge
+        fields = (
+            'level',
+            'source_level',
+            'destination_level',
+        )
 
     @staticmethod
     def filter_level(queryset, value):
