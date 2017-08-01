@@ -317,8 +317,7 @@ class Migration(migrations.Migration):
             (starttime = 0 OR to_timestamp(starttime) < NOW()) AND
             (endtime = 0 OR to_timestamp(endtime) > NOW()) AND
             deleted = 0 AND
-            hidden = 0 AND
-            archive = 0;
+            hidden = 0;
         """,
     ]
     reverse = [
