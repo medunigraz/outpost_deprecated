@@ -311,8 +311,7 @@ class Migration(migrations.Migration):
             author_email AS email,
             keywords,
             tags,
-            istopnews = 1 AS topnews,
-            description
+            istopnews = 1 AS topnews
         FROM "typo3"."news"
         WHERE
             (starttime = 0 OR to_timestamp(starttime) < NOW()) AND

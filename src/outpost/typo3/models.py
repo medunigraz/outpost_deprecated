@@ -122,7 +122,6 @@ class News(models.Model):
     keywords = models.TextField(blank=True, null=True)
     tags = models.IntegerField(blank=True, null=True)
     topnews = models.BooleanField()
-    description = models.TextField(blank=True, null=True)
 
     class Meta:
         managed = False
