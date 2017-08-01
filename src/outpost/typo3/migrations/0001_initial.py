@@ -106,6 +106,7 @@ class Migration(migrations.Migration):
         """
         CREATE FOREIGN TABLE "typo3"."news" (
             uid integer,
+            pid integer,
             tstamp integer,
             crdate integer,
             sys_language_uid integer,
@@ -286,6 +287,7 @@ class Migration(migrations.Migration):
         """
         CREATE VIEW "public"."typo3_news" AS SELECT
             uid AS id,
+            pid AS page,
             CASE WHEN
                 sys_language_uid > 0
             THEN

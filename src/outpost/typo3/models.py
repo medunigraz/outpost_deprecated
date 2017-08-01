@@ -100,6 +100,7 @@ class Event(models.Model):
 
 class News(models.Model):
     id = models.IntegerField(primary_key=True)
+    page = models.IntegerField(blank=True, null=True)
     language = models.ForeignKey(
         'Language',
         models.SET_NULL,

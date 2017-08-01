@@ -61,6 +61,14 @@ class NewsViewSet(ReadOnlyModelViewSet):
     permission_classes = (
         AllowAny,
     )
+    filter_backends = (
+        DjangoFilterBackend,
+    )
+    filter_fields = (
+        'page',
+        'topnews',
+        'email',
+    )
 
 
 class NewsSearchViewSet(HaystackViewSet):
