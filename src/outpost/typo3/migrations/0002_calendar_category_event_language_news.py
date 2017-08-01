@@ -83,8 +83,8 @@ class Migration(migrations.Migration):
             name='News',
             fields=[
                 ('id', models.IntegerField(primary_key=True, serialize=False)),
-                ('start', models.DateTimeField(blank=True, null=True)),
-                ('end', models.DateTimeField(blank=True, null=True)),
+                ('page', models.IntegerField(blank=True, null=True)),
+                ('datetime', models.DateTimeField(blank=True, null=True)),
                 ('title', models.TextField(blank=True, null=True)),
                 ('teaser', models.TextField(blank=True, null=True)),
                 ('body', models.TextField(blank=True, null=True)),

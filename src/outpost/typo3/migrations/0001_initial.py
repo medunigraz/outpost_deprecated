@@ -296,23 +296,14 @@ class Migration(migrations.Migration):
                 NULL
             END AS language_id,
             CASE
-                starttime
+                datetime
             WHEN
                 0
             THEN
                 NULL
             ELSE
-                to_timestamp(starttime)
-            END AS start,
-            CASE
-                endtime
-            WHEN
-                0
-            THEN
-                NULL
-            ELSE
-                to_timestamp(endtime)
-            END AS end,
+                to_timestamp(datetime)
+            END AS datetime,
             title,
             teaser,
             bodytext AS body,

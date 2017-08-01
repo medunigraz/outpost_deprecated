@@ -1,3 +1,4 @@
+from datetime import datetime
 from drf_haystack.viewsets import HaystackViewSet
 from rest_framework.filters import DjangoFilterBackend
 from rest_framework.viewsets import ReadOnlyModelViewSet
@@ -40,7 +41,7 @@ class CalendarViewSet(ReadOnlyModelViewSet):
 
 
 class EventViewSet(ReadOnlyModelViewSet):
-    queryset = models.Event.objects.all()
+    queryset = models.Event.objects.filter(end__gte=datetime.now())
     serializer_class = serializers.EventSerializer
     permission_classes = (
         AllowAny,
