@@ -61,7 +61,7 @@ class PointOfInterestInstanceFilter(NodeFilter):
 
 class EdgeFilter(django_filters.FilterSet):
     level = django_filters.NumberFilter(
-        method=lambda q, v: EdgeFilter.filter_level(q, v)
+        method=lambda q, n, v: EdgeFilter.filter_level(q, v)
     )
     source_level = django_filters.NumberFilter(
         name='source__level'
