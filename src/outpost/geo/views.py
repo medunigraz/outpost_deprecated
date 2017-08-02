@@ -307,7 +307,8 @@ class RoutingEdgeViewSet(ListETAGMixin, ListCacheResponseMixin, MediatypeNegotia
             e.*
         FROM
             geo_edge e,
-            pgr_aStar('
+            pgr_aStar(
+                '
                 SELECT
                     e.id AS id,
                     ns.id AS source,
@@ -344,7 +345,12 @@ class RoutingEdgeViewSet(ListETAGMixin, ListCacheResponseMixin, MediatypeNegotia
                     ELSE
                         FALSE
                     END
-            ', %(source)s, %(target)s) r
+                '::text,
+                %(source)s::integer,
+                %(target)s::integer,
+                directed := false,
+                heuristic := 3
+            ) r
         WHERE
             r.edge = e.id AND
             r.edge >= 0
