@@ -51,3 +51,19 @@ class BuildingViewSet(ReadOnlyModelViewSet):
     permission_classes = (
         AllowAny,
     )
+
+
+class OrganizationViewSet(ReadOnlyModelViewSet):
+    queryset = models.Organization.objects.all()
+    serializer_class = serializers.OrganizationSerializer
+    permission_classes = (
+        AllowAny,
+    )
+
+
+class PersonViewSet(ReadOnlyModelViewSet):
+    queryset = models.Person.objects.all()
+    serializer_class = serializers.PersonSerializer
+    permission_classes = (
+        AllowAny,
+    )

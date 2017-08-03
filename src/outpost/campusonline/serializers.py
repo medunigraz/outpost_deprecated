@@ -32,3 +32,15 @@ class RoomSerializer(ModelSerializer):
             'area',
             'height',
         )
+
+
+class OrganizationSerializer(ModelSerializer):
+    class Meta:
+        model = models.Organization
+
+
+class PersonSerializer(ModelSerializer):
+    room = RoomSerializer()
+
+    class Meta:
+        model = models.Person

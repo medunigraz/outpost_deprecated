@@ -116,6 +116,16 @@ v1.register(
     base_name='campusonline-building-list'
 )
 v1.register(
+    r'campusonline/organization',
+    campusonline.OrganizationViewSet,
+    base_name='campusonline-organization-list'
+)
+v1.register(
+    r'campusonline/person',
+    campusonline.PersonViewSet,
+    base_name='campusonline-person-list'
+)
+v1.register(
     r'typo3/languages',
     typo3.LanguageViewSet
 )

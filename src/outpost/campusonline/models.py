@@ -137,3 +137,76 @@ class Building(models.Model):
 
     def __str__(self):
         return '{s.name} ({s.short})'.format(s=self)
+
+
+class Organization(models.Model):
+    id = models.IntegerField(
+        primary_key=True
+    )
+    name = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True
+    )
+    address = models.TextField(
+        blank=True,
+        null=True
+    )
+    email = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True
+    )
+    phone = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True
+    )
+    url = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True
+    )
+
+    class Meta:
+        managed = False
+        db_table = 'campusonline_organization'
+
+    def __str__(self):
+        return self.name
+
+
+class Person(models.Model):
+    id = models.IntegerField(
+        primary_key=True
+    )
+    first_name = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True
+    )
+    last_name = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True
+    )
+    title = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True
+    )
+    room = models.ForeignKey(
+        'Room',
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        related_name='+'
+    )
+
+    class Meta:
+        managed = False
+        db_table = 'campusonline_person'
+
+    def __str__(self):
+        return '{s.last_name}, {s.first_name}'.format(s=self)
