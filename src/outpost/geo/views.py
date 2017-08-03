@@ -232,6 +232,9 @@ class EdgeViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
         IsAuthenticatedOrTokenHasScope,
         DjangoModelPermissions,
     )
+    required_scopes = (
+        'editor',
+    )
     pagination_class = None
     filter_backends = (
         DjangoFilterBackend,
@@ -242,9 +245,6 @@ class EdgeViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
     bbox_filter_include_overlapping = True
     list_cache_key_func = keys.EdgeListKeyConstructor()
     list_etag_func = keys.EdgeListKeyConstructor()
-    required_scopes = (
-        'editor',
-    )
 
 
 class PointOfInterestViewSet(ListETAGMixin, ListCacheResponseMixin, ModelViewSet):
