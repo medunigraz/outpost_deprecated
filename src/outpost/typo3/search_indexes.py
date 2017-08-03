@@ -15,12 +15,8 @@ class NewsIndex(CelerySearchIndex, indexes.Indexable):
     language = indexes.FacetCharField(
         model_attr='language__title'
     )
-    start = indexes.DateTimeField(
-        model_attr='start',
-        null=True
-    )
-    end = indexes.DateTimeField(
-        model_attr='end',
+    datetime = indexes.DateTimeField(
+        model_attr='datetime',
         null=True
     )
     topnews = indexes.FacetBooleanField(

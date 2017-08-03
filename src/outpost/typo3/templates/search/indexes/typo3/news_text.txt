@@ -1,7 +1,6 @@
-{{ object.title }}
-{{ object.teaser }}
-{{ object.body }}
+{% filter striptags|cut:"&nbsp;" %}{{ object.title|safe }}
+{{ object.teaser|safe }}
+{{ object.body|safe }}
 {{ object.author }}
-{{ object.description }}
 {{ object.keywords }}
-{{ object.tags }}
+{{ object.tags }}{% endfilter %}

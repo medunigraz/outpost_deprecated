@@ -1,5 +1,4 @@
 {{ object.title }}
 {{ object.organizer }}
 {{ object.location }}
-{{ object.teaser }}
-{{ object.description }}
+{{ object.teaser|striptags }}
