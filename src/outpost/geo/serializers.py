@@ -1,7 +1,6 @@
 from django.urls import reverse_lazy as reverse
 from drf_haystack.serializers import HaystackSerializer
 from rest_framework.serializers import (
-    IntegerField,
     ModelSerializer,
     SerializerMethodField,
 )
@@ -194,30 +193,3 @@ class PointOfInterestInstanceSerializer(GeoFeatureModelSerializer):
             'level': {'write_only': True, 'required': False}
         }
         id_field = 'id'
-
-
-class AutocompleteSerializer(HaystackSerializer):
-    id = IntegerField(source='pk')
-    ctype = SerializerMethodField()
-
-    class Meta:
-        index_classes = [
-            search_indexes.RoomIndex,
-        ]
-        fields = [
-            'presentation',
-            'id',
-            'ctype',
-            'level',
-            'autocomplete',
-        ]
-        ignore_fields = [
-            'text',
-            'autocomplete',
-        ]
-        field_aliases = {
-            'q': 'autocomplete',
-        }
-
-    def get_ctype(self, obj):
-        return obj.content_type()

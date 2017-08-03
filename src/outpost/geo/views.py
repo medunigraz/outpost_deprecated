@@ -3,7 +3,6 @@ import re
 from django.db import connection
 from rest_framework import viewsets
 from rest_framework.response import Response
-from drf_haystack.filters import HaystackAutocompleteFilter
 from drf_haystack.viewsets import HaystackViewSet
 from oauth2_provider.ext.rest_framework import IsAuthenticatedOrTokenHasScope
 from rest_framework.filters import DjangoFilterBackend
@@ -371,24 +370,3 @@ class RoutingEdgeViewSet(ListETAGMixin, ListCacheResponseMixin, MediatypeNegotia
                 target=target
             )
         )
-
-
-class AutocompleteViewSet(HaystackViewSet):
-    """
-    Get autocomplete suggestions for geographic objects:
-
-        .../?q=<Word>
-
-    The `ctype` property determines the content type of each suggested item.
-    This can be used to do further queries at other endpoints.
-    """
-    serializer_class = serializers.AutocompleteSerializer
-    index_models = (
-        models.Room,
-    )
-    permission_classes = (
-        AllowAny,
-    )
-    filter_backends = (
-        HaystackAutocompleteFilter,
-    )

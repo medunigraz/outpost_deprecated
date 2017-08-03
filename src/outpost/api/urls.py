@@ -4,6 +4,7 @@ from django.conf.urls import (
 )
 from rest_framework.routers import DefaultRouter
 
+from . import views as api
 from ..attendance import views as attendance
 from ..campusonline import views as campusonline
 from ..geo import views as geo
@@ -12,6 +13,11 @@ from ..typo3 import views as typo3
 from ..structure import views as structure
 
 v1 = DefaultRouter()
+v1.register(
+    r'api/autocomplete',
+    api.AutocompleteViewSet,
+    base_name='autocomplete'
+)
 v1.register(
     r'positioning/locate',
     positioning.LocateView,
@@ -82,11 +88,6 @@ v1.register(
     r'geo/search/rooms',
     geo.RoomSearchViewSet,
     base_name='room-search'
-)
-v1.register(
-    r'geo/autocomplete',
-    geo.AutocompleteViewSet,
-    base_name='autocomplete'
 )
 v1.register(
     r'structure/organization',
