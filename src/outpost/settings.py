@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'outpost.attendance',
     'outpost.typo3',
     'outpost.oauth2',
+    'outpost.structure',
     'django.contrib.admin',
     'django_extensions',
     'crispy_forms',

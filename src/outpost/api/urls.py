@@ -9,6 +9,7 @@ from ..campusonline import views as campusonline
 from ..geo import views as geo
 from ..positioning import views as positioning
 from ..typo3 import views as typo3
+from ..structure import views as structure
 
 v1 = DefaultRouter()
 v1.register(
@@ -86,6 +87,14 @@ v1.register(
     r'geo/autocomplete',
     geo.AutocompleteViewSet,
     base_name='autocomplete'
+)
+v1.register(
+    r'structure/organization',
+    structure.OrganizationViewSet,
+)
+v1.register(
+    r'structure/person',
+    structure.PersonViewSet,
 )
 v1.register(
     r'attendance/holdings',
