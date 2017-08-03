@@ -11,6 +11,7 @@ from rest_framework.permissions import (
     DjangoModelPermissions,
 )
 from rest_framework.filters import DjangoFilterBackend
+from oauth2_provider.ext.rest_framework import IsAuthenticatedOrTokenHasScope
 # from rest_framework_extensions.mixins import (
 #     CacheResponseAndETAGMixin,
 # )
@@ -32,7 +33,11 @@ class BeaconViewSet(GeoModelViewSet):
     queryset = models.Beacon.objects.filter(active=True)
     serializer_class = serializers.BeaconSerializer
     permission_classes = (
+        IsAuthenticatedOrTokenHasScope,
         DjangoModelPermissions,
+    )
+    required_scopes = (
+        'editor',
     )
     pagination_class = None
     filter_backends = (
