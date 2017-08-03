@@ -1,5 +1,8 @@
 from django.conf.urls import url
-from oauth2_provider.views import base
+from oauth2_provider.views import (
+    AuthorizationView,
+    TokenView,
+)
 
 from .views import ApplicationListView, ApplicationDetailView, ApplicationCreateView, ApplicationEditView, ApplicationDeleteView
 
@@ -32,12 +35,12 @@ urlpatterns = [
     ),
     url(
         r'^authorize/$',
-        base.AuthorizationView.as_view(),
+        AuthorizationView.as_view(),
         name='authorize'
     ),
     url(
         r'^token/$',
-        base.TokenView.as_view(),
+        TokenView.as_view(),
         name='token'
     ),
 ]
