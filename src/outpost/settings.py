@@ -57,7 +57,6 @@ INSTALLED_APPS = [
     #'dynamic_scraper',
     'haystack',
     'polymorphic',
-    'redis_admin',
     'push_notifications',
     'ordered_model',
     'celery_haystack',
