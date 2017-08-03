@@ -1,17 +1,28 @@
 import json
 import re
-from django.db.models import Q
+
 from django.contrib.gis.geos import GEOSGeometry
 from django.db import connection
-from rest_framework import viewsets
-from rest_framework.response import Response
-from rest_framework.exceptions import NotFound
-from rest_framework.permissions import (
-    IsAuthenticatedOrReadOnly,
-    DjangoModelPermissions,
-)
-from rest_framework.filters import DjangoFilterBackend
+from django.db.models import Q
 from oauth2_provider.ext.rest_framework import IsAuthenticatedOrTokenHasScope
+from rest_framework import viewsets
+from rest_framework.exceptions import NotFound
+from rest_framework.filters import DjangoFilterBackend
+from rest_framework.permissions import (
+    DjangoModelPermissions,
+    IsAuthenticatedOrReadOnly,
+)
+from rest_framework.response import Response
+
+from outpost.base.mixins import GeoModelViewSet
+from outpost.geo.models import Edge
+
+from . import (
+    models,
+    serializers,
+)
+
+
 # from rest_framework_extensions.mixins import (
 #     CacheResponseAndETAGMixin,
 # )
@@ -19,12 +30,6 @@ from oauth2_provider.ext.rest_framework import IsAuthenticatedOrTokenHasScope
 #     CacheResponseMixin,
 # )
 
-from outpost.base.mixins import GeoModelViewSet
-from outpost.geo.models import Edge
-from . import (
-    models,
-    serializers,
-)
 
 
 class BeaconViewSet(GeoModelViewSet):

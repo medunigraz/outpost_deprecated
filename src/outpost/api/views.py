@@ -1,12 +1,8 @@
-from drf_haystack.viewsets import HaystackViewSet
 from drf_haystack.filters import HaystackAutocompleteFilter
-from rest_framework.permissions import (
-    AllowAny,
-)
-from . import (
-    serializers,
-)
+from drf_haystack.viewsets import HaystackViewSet
+from rest_framework.permissions import AllowAny
 
+from . import serializers
 from ..geo import models as geo
 from ..structure import models as structure
 

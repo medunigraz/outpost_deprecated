@@ -1,8 +1,8 @@
-from celery.task import PeriodicTask
-from datetime import timedelta
-from django.db import connection
-
 import logging
+from datetime import timedelta
+
+from celery.task import PeriodicTask
+from django.db import connection
 
 logger = logging.getLogger(__name__)
 

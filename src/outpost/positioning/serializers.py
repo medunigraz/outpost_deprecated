@@ -7,9 +7,7 @@ from rest_framework.serializers import (
 )
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
-from . import (
-    models,
-)
+from . import models
 from ..campusonline import serializers as campusonline
 
 

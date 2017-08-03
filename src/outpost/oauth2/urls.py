@@ -4,8 +4,13 @@ from oauth2_provider.views import (
     TokenView,
 )
 
-from .views import ApplicationListView, ApplicationDetailView, ApplicationCreateView, ApplicationEditView, ApplicationDeleteView
-
+from .views import (
+    ApplicationCreateView,
+    ApplicationDeleteView,
+    ApplicationDetailView,
+    ApplicationEditView,
+    ApplicationListView,
+)
 
 urlpatterns = [
     url(

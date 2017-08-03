@@ -1,22 +1,22 @@
 import re
 
+from braces.views import CsrfExemptMixin
 from django.db import connection
-from rest_framework import viewsets
-from rest_framework.response import Response
 from drf_haystack.viewsets import HaystackViewSet
 from oauth2_provider.ext.rest_framework import IsAuthenticatedOrTokenHasScope
+from rest_framework import viewsets
 from rest_framework.filters import DjangoFilterBackend
 from rest_framework.permissions import (
     AllowAny,
-    IsAuthenticatedOrReadOnly,
     DjangoModelPermissions,
     DjangoModelPermissionsOrAnonReadOnly,
+    IsAuthenticatedOrReadOnly,
 )
+from rest_framework.response import Response
 from rest_framework.viewsets import (
     ModelViewSet,
     ReadOnlyModelViewSet,
 )
-from braces.views import CsrfExemptMixin
 # from rest_framework_extensions.mixins import (
 #     CacheResponseAndETAGMixin,
 # )
@@ -28,8 +28,10 @@ from rest_framework_extensions.etag.mixins import ListETAGMixin
 from rest_framework_gis.filters import InBBoxFilter
 from reversion.views import RevisionMixin
 
-from outpost.base.mixins import MediatypeNegotiationMixin
-from outpost.base.mixins import GeoModelViewSet
+from outpost.base.mixins import (
+    GeoModelViewSet,
+    MediatypeNegotiationMixin,
+)
 
 from . import key_constructors as keys
 from . import (

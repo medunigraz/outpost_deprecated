@@ -1,8 +1,8 @@
 from rest_framework.serializers import ModelSerializer
 
+from . import models
 from ..campusonline import serializers as campusonline
 from ..geo import serializers as geo
-from . import models
 
 
 class OrganizationSerializer(ModelSerializer):

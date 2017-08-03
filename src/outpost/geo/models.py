@@ -6,8 +6,8 @@ from ordered_model.models import OrderedModel
 from polymorphic.models import PolymorphicModel
 
 from outpost.base.decorators import signal_connect
-from outpost.base.key_constructors import UpdatedAtKeyBit
 from outpost.base.fields import LowerCaseCharField
+from outpost.base.key_constructors import UpdatedAtKeyBit
 
 
 class OriginMixin(models.Model):

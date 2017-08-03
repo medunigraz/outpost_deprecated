@@ -1,5 +1,5 @@
-from django.db import models
 from django.core.validators import URLValidator
+from django.db import models
 from oauth2_provider.models import AbstractApplication
 
 

@@ -1,9 +1,9 @@
-from rest_framework.viewsets import ModelViewSet
-from reversion.views import RevisionMixin
 from rest_framework.utils.mediatypes import (
     media_type_matches,
     order_by_precedence,
 )
+from rest_framework.viewsets import ModelViewSet
+from reversion.views import RevisionMixin
 
 
 class MediatypeNegotiationMixin(object):
