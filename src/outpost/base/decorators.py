@@ -3,6 +3,7 @@ from functools import wraps
 from django.db.models.signals import (
     post_save,
     pre_save,
+    post_delete,
 )
 
 
@@ -26,6 +27,9 @@ def signal_connect(cls):
 
     if hasattr(cls, 'post_save'):
         cls.post_save = connect(post_save, cls.post_save)
+
+    if hasattr(cls, 'post_delete'):
+        cls.post_delete = connect(post_save, cls.post_delete)
 
     return cls
 
