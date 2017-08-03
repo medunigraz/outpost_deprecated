@@ -9,3 +9,6 @@ class Application(AbstractApplication):
     website = models.TextField(validators=[URLValidator()])
     privacy = models.TextField(validators=[URLValidator()])
     description = models.TextField()
+
+    class Meta(AbstractApplication.Meta):
+        pass
