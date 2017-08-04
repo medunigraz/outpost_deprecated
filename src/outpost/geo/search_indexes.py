@@ -10,10 +10,6 @@ class RoomIndex(CelerySearchIndex, indexes.Indexable):
         model_attr='name',
         null=True
     )
-    level = indexes.IntegerField(
-        model_attr='level__pk',
-        null=True
-    )
     category = indexes.CharField(
         model_attr='category__name',
         null=True
@@ -36,6 +32,14 @@ class RoomIndex(CelerySearchIndex, indexes.Indexable):
     )
     campusonline_id = indexes.CharField(
         model_attr='campusonline__name_full',
+        null=True
+    )
+    level_id = indexes.IntegerField(
+        model_attr='level__pk',
+        null=True
+    )
+    room_id = indexes.IntegerField(
+        model_attr='pk',
         null=True
     )
 

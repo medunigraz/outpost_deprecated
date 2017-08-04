@@ -21,7 +21,8 @@ class AutocompleteSerializer(HaystackSerializer):
             'presentation',
             'id',
             'ctype',
-            'level',
+            'level_id',
+            'room_id',
             'autocomplete',
         ]
         ignore_fields = [

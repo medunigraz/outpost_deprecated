@@ -17,6 +17,14 @@ class OrganizationIndex(CelerySearchIndex, indexes.Indexable):
         model_attr='campusonline__address',
         null=True
     )
+    level_id = indexes.IntegerField(
+        model_attr='office__level__pk',
+        null=True
+    )
+    room_id = indexes.IntegerField(
+        model_attr='office__pk',
+        null=True
+    )
     presentation = indexes.CharField(use_template=True)
     autocomplete = indexes.EdgeNgramField(use_template=True)
 
@@ -35,6 +43,14 @@ class PersonIndex(CelerySearchIndex, indexes.Indexable):
     )
     last_name = indexes.CharField(
         model_attr='campusonline__last_name',
+        null=True
+    )
+    level_id = indexes.IntegerField(
+        model_attr='room__level__pk',
+        null=True
+    )
+    room_id = indexes.IntegerField(
+        model_attr='room__pk',
         null=True
     )
     presentation = indexes.CharField(use_template=True)
