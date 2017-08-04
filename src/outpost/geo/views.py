@@ -93,7 +93,7 @@ class RoomViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
 
         ?level=<id>&category=<id>
     """
-    queryset = models.Room.objects.all()
+    queryset = models.Room.objects.filter(deprecated=False)
     serializer_class = serializers.RoomSerializer
     permission_classes = (
         DjangoModelPermissionsOrAnonReadOnly,
@@ -119,7 +119,7 @@ class RoomSearchViewSet(HaystackViewSet):
 
 
 class DoorViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
-    queryset = models.Door.objects.all()
+    queryset = models.Door.objects.filter(deprecated=False)
     serializer_class = serializers.DoorSerializer
     permission_classes = (
         DjangoModelPermissionsOrAnonReadOnly,

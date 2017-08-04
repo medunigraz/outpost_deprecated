@@ -52,6 +52,7 @@ class RoomSerializer(GeoFeatureModelSerializer):
             'polymorphic_ctype',
             'origin',
             'virtual',
+            'deprecated',
         )
         id_field = 'id'
 
@@ -107,6 +108,7 @@ class DoorSerializer(GeoFeatureModelSerializer):
         exclude = (
             'polymorphic_ctype',
             'origin',
+            'deprecated',
         )
         extra_kwargs = {
             'level': {'write_only': True}

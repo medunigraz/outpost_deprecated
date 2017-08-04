@@ -5,6 +5,7 @@ from django.core.management.base import (
     BaseCommand,
     CommandError,
 )
+from django.utils import timezone
 
 from outpost.campusonline import models as co
 
@@ -35,7 +36,7 @@ class Command(BaseCommand):
                 self.rooms(DataSource(building))
 
     def doors(self, source):
-        models.Door.objects.all().update(deprecated=True)
+        now = timezone.now()
         for layer in source:
             self.stdout.write('Layer: {}'.format(layer.name))
             for feature in layer:
@@ -55,9 +56,10 @@ class Command(BaseCommand):
                 else:
                     msg = self.style.SUCCESS('Updated door {}'.format(obj))
                 self.stdout.write(msg)
+        models.Door.objects.filter(modified__lt=now).update(deprecated=True)
 
     def rooms(self, source):
-        models.Room.objects.all().update(deprecated=True)
+        now = timezone.now()
         for layer in source:
             self.stdout.write('Layer: {}'.format(layer.name))
             for feature in layer:
@@ -94,6 +96,7 @@ class Command(BaseCommand):
                 else:
                     msg = self.style.SUCCESS('Updated room {}'.format(obj))
                 self.stdout.write(msg)
+        models.Room.objects.filter(modified__lt=now).update(deprecated=True)
 
     def floors(self, source):
         for layer in source:
