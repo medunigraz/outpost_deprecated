@@ -19,3 +19,11 @@ class ColorizedIconView(View):
         image = icon.colorize(color)
         image.save(response, 'PNG')
         return response
+
+
+class Template404View(TemplateView):
+    template_name = 'outpost/404.html'
+
+
+class Template500View(TemplateView):
+    template_name = 'outpost/500.html'

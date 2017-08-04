@@ -4,6 +4,7 @@ Django settings for Outpost project.
 
 import json
 import os
+import raven
 
 import ldap
 from django_auth_ldap.config import (
@@ -64,9 +65,12 @@ INSTALLED_APPS = [
     'rules.apps.AutodiscoverRulesConfig',
     'overextends',
     'netfields',
+    'raven.contrib.django.raven_compat',
 ]
 
 MIDDLEWARE = [
+    'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
+    'raven.contrib.django.raven_compat.middleware.Sentry404CatchMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -269,6 +273,10 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 RUNSERVERPLUS_SERVER_ADDRESS_PORT = '0.0.0.0:8088'
 
+RAVEN_CONFIG = {
+    'release': raven.fetch_git_sha(BASE_DIR),
+}
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -296,8 +304,16 @@ LOGGING = {
             'level': 'ERROR',
             'class': 'django.utils.log.AdminEmailHandler',
         },
+        'sentry': {
+            'level': 'ERROR',
+            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
+        },
     },
     'loggers': {
+        'root': {
+            'level': 'WARNING',
+            'handlers': ['console', 'sentry'],
+        },
         'django': {
             'handlers': ['console'],
             'level': 'DEBUG',
@@ -309,6 +325,16 @@ LOGGING = {
         'outpost': {
             'handlers': ['console', 'mail_admins'],
             'level': 'DEBUG',
+        },
+        'raven': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'sentry.errors': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+            'propagate': False,
         },
     },
 }
