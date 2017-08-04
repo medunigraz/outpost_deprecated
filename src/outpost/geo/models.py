@@ -4,6 +4,7 @@ from django.contrib.gis.db import models
 from django.contrib.gis.geos import Point
 from ordered_model.models import OrderedModel
 from polymorphic.models import PolymorphicModel
+from django_extensions.db.models import TimeStampedModel
 
 from outpost.base.decorators import signal_connect
 from outpost.base.fields import LowerCaseCharField
@@ -98,9 +99,10 @@ class Floor(OriginMixin, models.Model):
 
 
 @signal_connect
-class Node(PolymorphicModel):
+class Node(TimeStampedModel, PolymorphicModel):
     level = models.ForeignKey('Level')
     center = models.PointField(srid=settings.DEFAULT_SRID)
+    deprecated = models.BooleanField(default=False)
 
     def __str__(self):
         return '{t} at {s.level}'.format(
