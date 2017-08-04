@@ -1,6 +1,7 @@
 from drf_haystack.filters import HaystackAutocompleteFilter
 from drf_haystack.viewsets import HaystackViewSet
 from rest_framework.permissions import AllowAny
+from rest_framework.pagination import LimitOffsetPagination
 
 from . import serializers
 from ..geo import models as geo
@@ -38,6 +39,7 @@ class AutocompleteViewSet(HaystackViewSet):
     filter_backends = (
         HaystackAutocompleteFilter,
     )
+    pagination_class = LimitOffsetPagination
 
     def get_queryset(self, index_models=[]):
         queryset = self.object_class()._clone()
