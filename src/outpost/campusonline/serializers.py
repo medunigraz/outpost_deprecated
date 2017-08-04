@@ -44,3 +44,12 @@ class PersonSerializer(ModelSerializer):
 
     class Meta:
         model = models.Person
+
+
+class PersonNameSerializer(ModelSerializer):
+
+    class Meta:
+        model = models.Person
+        exclude = (
+            'room',
+        )

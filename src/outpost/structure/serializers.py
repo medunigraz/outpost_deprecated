@@ -23,7 +23,7 @@ class OrganizationSerializer(ModelSerializer):
 
 
 class PersonSerializer(ModelSerializer):
-    campusonline = campusonline.PersonSerializer(
+    campusonline = campusonline.PersonNameSerializer(
         many=False,
         read_only=True
     )
