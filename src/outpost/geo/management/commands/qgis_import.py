@@ -35,13 +35,16 @@ class Command(BaseCommand):
                 self.rooms(DataSource(building))
 
     def doors(self, source):
+        models.Door.objects.all().update(deprecated=True)
         for layer in source:
             self.stdout.write('Layer: {}'.format(layer.name))
             for feature in layer:
+                fl_id = feature.get('floor_id')
                 defaults = {
                     'origin': feature.get('id'),
                     'layout': feature.geom.geos,
-                    'level': models.Floor.objects.get(origin=feature.get('floor_id')).level
+                    'level': models.Floor.objects.get(origin=fl_id).level,
+                    'deprecated': False
                 }
                 obj, created = models.Door.objects.update_or_create(
                     origin=feature.get('id'),
@@ -54,19 +57,22 @@ class Command(BaseCommand):
                 self.stdout.write(msg)
 
     def rooms(self, source):
+        models.Room.objects.all().update(deprecated=True)
         for layer in source:
             self.stdout.write('Layer: {}'.format(layer.name))
             for feature in layer:
+                co_id = feature.get('campusonli')
+                fl_id = feature.get('floor_id')
                 defaults = {
                     'origin': feature.get('id'),
                     'layout': feature.geom.geos,
-                    'level': models.Floor.objects.get(origin=feature.get('floor_id')).level
+                    'level': models.Floor.objects.get(origin=fl_id).level,
+                    'deprecated': False
                 }
-                co_id = feature.get('campusonli')
                 if co_id:
                     template = '{f.building.campusonline.short}{f.campusonline.short}.{c:03d}'
                     try:
-                        f = models.Floor.objects.get(origin=feature.get('floor_id'))
+                        f = models.Floor.objects.get(origin=fl_id)
                         name = template.format(f=f, c=int(co_id))
                         defaults['campusonline'] = co.Room.objects.get(name_full=name)
                     except co.Room.DoesNotExist as e:
