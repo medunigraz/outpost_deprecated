@@ -62,11 +62,23 @@ class Command(BaseCommand):
                     'layout': feature.geom.geos,
                     'level': models.Floor.objects.get(origin=feature.get('floor_id')).level
                 }
-                if feature.get('campusonli'):
+                co_id = feature.get('campusonli')
+                if co_id:
+                    template = '{f.building.campusonline.short}{f.campusonline.short}.{c:03d}'
                     try:
-                        defaults['campusonline'] = co.Room.objects.get(name_full=feature.get('campusonli'))
+                        f = models.Floor.objects.get(origin=feature.get('floor_id'))
+                        name = template.format(f=f, c=int(co_id))
+                        defaults['campusonline'] = co.Room.objects.get(name_full=name)
                     except co.Room.DoesNotExist as e:
                         defaults['campusonline'] = None
+                    except ValueError as e:
+                        defaults['campusonline'] = None
+                        self.stdout.write(
+                            self.style.ERROR(
+                                'Unable to parse CO identifier: {}'.format(co_id)
+                            )
+                        )
+
                 obj, created = models.Room.objects.update_or_create(
                     origin=feature.get('id'),
                     defaults=defaults
@@ -81,11 +93,19 @@ class Command(BaseCommand):
         for layer in source:
             self.stdout.write('Layer: {}'.format(layer.name))
             for feature in layer:
+                b = models.Building.objects.get(origin=feature.get('building_i'))
+                name = '{b.campusonline.short}{n}'
                 defaults = {
                     'origin': feature.get('id'),
                     'outline': MultiPolygon(feature.geom.geos),
-                    'building': models.Building.objects.get(origin=feature.get('building_i'))
+                    'building': b,
+                    'name': name.format(b=b, n=feature.get('name').split('.')[-1])
                 }
+                short = feature.get('name').split('.')[-1]
+                try:
+                    defaults['campusonline'] = co.Floor.objects.get(short=short)
+                except co.Floor.DoesNotExist as e:
+                    defaults['campusonline'] = None
                 obj, created = models.Floor.objects.update_or_create(
                     origin=feature.get('id'),
                     defaults=defaults
@@ -107,7 +127,7 @@ class Command(BaseCommand):
                 if feature.get('campusonli'):
                     try:
                         defaults['campusonline'] = co.Building.objects.get(short=feature.get('campusonli'))
-                    except co.Room.DoesNotExist as e:
+                    except co.Building.DoesNotExist as e:
                         defaults['campusonline'] = None
                 obj, created = models.Building.objects.update_or_create(
                     origin=feature.get('id'),
