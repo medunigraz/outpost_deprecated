@@ -6,6 +6,7 @@ from django.core.management.base import (
     CommandError,
 )
 from django.utils import timezone
+from tqdm import tqdm
 
 from outpost.campusonline import models as co
 
@@ -37,9 +38,12 @@ class Command(BaseCommand):
 
     def doors(self, source):
         now = timezone.now()
+        tsource = tqdm(source)
+        tsource.desc = 'Doors'
         for layer in source:
-            self.stdout.write('Layer: {}'.format(layer.name))
-            for feature in layer:
+            tlayer = tqdm(layer)
+            tlayer.desc = layer.name
+            for feature in tlayer:
                 fl_id = feature.get('floor_id')
                 defaults = {
                     'origin': feature.get('id'),
@@ -51,18 +55,16 @@ class Command(BaseCommand):
                     origin=feature.get('id'),
                     defaults=defaults
                 )
-                if created:
-                    msg = self.style.SUCCESS('Created door {}'.format(obj))
-                else:
-                    msg = self.style.SUCCESS('Updated door {}'.format(obj))
-                self.stdout.write(msg)
         models.Door.objects.filter(modified__lt=now).update(deprecated=True)
 
     def rooms(self, source):
         now = timezone.now()
+        tsource = tqdm(source)
+        tsource.desc = 'Rooms'
         for layer in source:
-            self.stdout.write('Layer: {}'.format(layer.name))
-            for feature in layer:
+            tlayer = tqdm(layer)
+            tlayer.desc = layer.name
+            for feature in tlayer:
                 co_id = feature.get('campusonli')
                 fl_id = feature.get('floor_id')
                 defaults = {
@@ -91,17 +93,15 @@ class Command(BaseCommand):
                     origin=feature.get('id'),
                     defaults=defaults
                 )
-                if created:
-                    msg = self.style.SUCCESS('Created room {}'.format(obj))
-                else:
-                    msg = self.style.SUCCESS('Updated room {}'.format(obj))
-                self.stdout.write(msg)
         models.Room.objects.filter(modified__lt=now).update(deprecated=True)
 
     def floors(self, source):
+        tsource = tqdm(source)
+        tsource.desc = 'Floors'
         for layer in source:
-            self.stdout.write('Layer: {}'.format(layer.name))
-            for feature in layer:
+            tlayer = tqdm(layer)
+            tlayer.desc = layer.name
+            for feature in tlayer:
                 b = models.Building.objects.get(origin=feature.get('building_i'))
                 name = '{b.campusonline.short}{n}'
                 defaults = {
@@ -119,16 +119,14 @@ class Command(BaseCommand):
                     origin=feature.get('id'),
                     defaults=defaults
                 )
-                if created:
-                    msg = self.style.SUCCESS('Created floor {}'.format(obj))
-                else:
-                    msg = self.style.SUCCESS('Updated floor {}'.format(obj))
-                self.stdout.write(msg)
 
     def buildings(self, source):
+        tsource = tqdm(source)
+        tsource.desc = 'Buildings'
         for layer in source:
-            self.stdout.write('Layer: {}'.format(layer.name))
-            for feature in layer:
+            tlayer = tqdm(layer)
+            tlayer.desc = layer.name
+            for feature in tlayer:
                 defaults = {
                     'origin': feature.get('id'),
                     'outline': MultiPolygon(feature.geom.geos)
@@ -142,8 +140,3 @@ class Command(BaseCommand):
                     origin=feature.get('id'),
                     defaults=defaults
                 )
-                if created:
-                    msg = self.style.SUCCESS('Created building {}'.format(obj))
-                else:
-                    msg = self.style.SUCCESS('Updated building {}'.format(obj))
-                self.stdout.write(msg)
