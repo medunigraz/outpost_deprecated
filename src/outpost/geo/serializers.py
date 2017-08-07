@@ -126,9 +126,6 @@ class NodeSerializer(GeoFeatureModelSerializer):
         exclude = (
             'polymorphic_ctype',
         )
-        extra_kwargs = {
-            'level': {'write_only': True, 'required': False}
-        }
 
     def get_ctype(self, obj):
         return obj.polymorphic_ctype.name
