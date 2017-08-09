@@ -322,7 +322,7 @@ class RoutingEdgeViewSet(ListETAGMixin, ListCacheResponseMixin, MediatypeNegotia
                     THEN
                         -1
                     ELSE
-                        (ST_LENGTH(e.path) + c.addition) * c.multiplicator AS cost
+                        (ST_LENGTH(e.path) + c.addition) * c.multiplicator
                     END AS reverse_cost,
                     ST_X(ns.center) AS x1,
                     ST_Y(ns.center) AS y1,
