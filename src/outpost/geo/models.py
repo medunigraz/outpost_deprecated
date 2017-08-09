@@ -121,14 +121,19 @@ class EdgeCategory(models.Model):
     name = models.CharField(
         max_length=64
     )
-    weight = models.DecimalField(
+    multiplicator = models.DecimalField(
         max_digits=4,
         decimal_places=1,
         default=1.0
     )
+    addition = models.DecimalField(
+        max_digits=5,
+        decimal_places=1,
+        default=0
+    )
 
     class Meta:
-        ordering = ('weight',)
+        ordering = ('multiplicator', 'addition')
 
     def __str__(self):
         return self.name or 'Undefined'

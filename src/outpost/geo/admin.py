@@ -82,7 +82,7 @@ class LevelAdmin(OrderedModelAdmin):
 
 @admin.register(models.EdgeCategory)
 class EdgeCategoryAdmin(VersionAdmin, admin.ModelAdmin):
-    list_display = ('__str__', 'weight')
+    list_display = ('__str__', 'multiplicator', 'addition')
 
 
 @admin.register(models.Edge)
