@@ -106,36 +106,6 @@ v1.register(
     attendance.EntryViewSet
 )
 v1.register(
-    r'campusonline/roomcategory',
-    campusonline.RoomCategoryViewSet,
-    base_name='campusonline-roomcategory-list'
-)
-v1.register(
-    r'campusonline/room',
-    campusonline.RoomViewSet,
-    base_name='campusonline-room-list'
-)
-v1.register(
-    r'campusonline/floor',
-    campusonline.FloorViewSet,
-    base_name='campusonline-floor-list'
-)
-v1.register(
-    r'campusonline/building',
-    campusonline.BuildingViewSet,
-    base_name='campusonline-building-list'
-)
-v1.register(
-    r'campusonline/organization',
-    campusonline.OrganizationViewSet,
-    base_name='campusonline-organization-list'
-)
-v1.register(
-    r'campusonline/person',
-    campusonline.PersonViewSet,
-    base_name='campusonline-person-list'
-)
-v1.register(
     r'typo3/languages',
     typo3.LanguageViewSet
 )
