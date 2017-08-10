@@ -11,6 +11,7 @@ class OrganizationAdmin(admin.ModelAdmin):
         'hidden',
     )
     search_fields = (
+        'name',
         'campusonline__name',
     )
 
