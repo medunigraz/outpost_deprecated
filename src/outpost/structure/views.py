@@ -1,5 +1,6 @@
 from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.filters import DjangoFilterBackend
 
 from . import (
     models,
@@ -14,6 +15,14 @@ class OrganizationViewSet(ModelViewSet):
         DjangoModelPermissionsOrAnonReadOnly,
     )
     pagination_class = None
+    filter_backends = (
+        DjangoFilterBackend,
+    )
+    filter_fields = (
+        'color',
+        'campusonline',
+        'office',
+    )
 
 
 class PersonViewSet(ModelViewSet):
@@ -21,4 +30,11 @@ class PersonViewSet(ModelViewSet):
     serializer_class = serializers.PersonSerializer
     permission_classes = (
         DjangoModelPermissionsOrAnonReadOnly,
+    )
+    filter_backends = (
+        DjangoFilterBackend,
+    )
+    filter_fields = (
+        'color',
+        'campusonline',
     )

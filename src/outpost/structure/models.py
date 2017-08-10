@@ -4,11 +4,18 @@ from outpost.base.fields import LowerCaseCharField
 
 
 class Organization(models.Model):
+    name = models.CharField(
+        max_length=128,
+        blank=True,
+        null=True
+    )
     campusonline = models.ForeignKey(
         'campusonline.Organization',
         models.CASCADE,
         db_constraint=False,
-        related_name='+'
+        related_name='+',
+        blank=True,
+        null=True
     )
     color = LowerCaseCharField(
         max_length=6,
@@ -29,7 +36,9 @@ class Organization(models.Model):
         )
 
     def __str__(self):
-        return self.campusonline.name
+        if self.campusonline and not self.name:
+            return self.campusonline.name
+        return self.name
 
 
 class Person(models.Model):
