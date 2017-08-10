@@ -13,6 +13,7 @@ class OrganizationViewSet(ModelViewSet):
     permission_classes = (
         DjangoModelPermissionsOrAnonReadOnly,
     )
+    pagination_class = None
 
 
 class PersonViewSet(ModelViewSet):
