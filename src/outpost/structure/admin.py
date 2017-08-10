@@ -7,7 +7,11 @@ from . import models
 class OrganizationAdmin(admin.ModelAdmin):
     list_display = (
         '__str__',
+        'office',
         'hidden',
+    )
+    search_fields = (
+        'campusonline__name',
     )
 
 
@@ -16,4 +20,8 @@ class PersonAdmin(admin.ModelAdmin):
     list_display = (
         '__str__',
         'hidden',
+    )
+    search_fields = (
+        'campusonline__first_name',
+        'campusonline__last_name',
     )
