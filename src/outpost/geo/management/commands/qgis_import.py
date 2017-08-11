@@ -103,13 +103,19 @@ class Command(BaseCommand):
             tlayer.desc = layer.name
             for feature in tlayer:
                 b = models.Building.objects.get(origin=feature.get('building_i'))
-                name = '{b.campusonline.short}{n}'
                 defaults = {
                     'origin': feature.get('id'),
                     'outline': MultiPolygon(feature.geom.geos),
                     'building': b,
-                    'name': name.format(b=b, n=feature.get('name').split('.')[-1])
+                    'name': ''
                 }
+                if b.campusonline:
+                    name = '{b.campusonline.short}{n}'
+                    defaults['name'] = name.format(
+                        b=b,
+                        n=feature.get('name').split('.')[-1]
+                    )
+
                 short = feature.get('name').split('.')[-1]
                 try:
                     defaults['campusonline'] = co.Floor.objects.get(short=short)
