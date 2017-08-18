@@ -47,6 +47,10 @@ urlpatterns.extend([
         include('outpost.oauth2.urls', namespace='oauth2')
     ),
     url(
+        r'^video/',
+        include('outpost.video.urls', namespace='video')
+    ),
+    url(
         r'^',
         include('outpost.api.urls', namespace='api')
     ),

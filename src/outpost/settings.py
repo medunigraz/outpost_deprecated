@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'outpost.attendance',
     'outpost.typo3',
     'outpost.oauth2',
+    'outpost.video',
     'outpost.structure',
     'django.contrib.admin',
     'django_extensions',
@@ -67,6 +68,8 @@ INSTALLED_APPS = [
     'overextends',
     'netfields',
     'raven.contrib.django.raven_compat',
+    'imagekit',
+    'taggit',
     'django_uwsgi',
 ]
 
