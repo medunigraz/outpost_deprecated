@@ -1,4 +1,6 @@
+from celery.result import AsyncResult
 from django.http import HttpResponse
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.generic import (
     TemplateView,
@@ -19,6 +21,18 @@ class ColorizedIconView(View):
         image = icon.colorize(color)
         image.save(response, 'PNG')
         return response
+
+
+class TaskView(View):
+
+    def get(self, request, task):
+        result = AsyncResult(task)
+        return JsonResponse(
+            {
+                'state': result.state,
+                'info': result.info
+            }
+        )
 
 
 class Template404View(TemplateView):
