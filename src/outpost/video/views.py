@@ -6,6 +6,7 @@ from django.http import (
 )
 from django.shortcuts import get_object_or_404
 from django.views.generic import View, TemplateView, ListView, DetailView
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
 from .models import Stream, Token, Broadcast, Recording, Export
 from .tasks import ExportTask
@@ -43,12 +44,14 @@ class PublishDoneView(NginxRTMPBackend):
         return HttpResponse()
 
 
-class RecordingListView(ListView):
+class RecordingListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Recording
+    permission_required = 'video.change_recording'
 
 
-class RecordingDetailView(DetailView):
+class RecordingDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Recording
+    permission_required = 'video.change_recording'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -58,7 +61,8 @@ class RecordingDetailView(DetailView):
         return context
 
 
-class RecordingExportView(View):
+class RecordingExportView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    permission_required = 'video.change_recording'
 
     def post(self, request, pk, exporter):
         task = ExportTask.delay(pk, exporter)
