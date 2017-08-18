@@ -11,8 +11,6 @@ import outpost.base.utils
 
 class Migration(migrations.Migration):
 
-    replaces = [('video', '0001_initial'), ('video', '0002_recording'), ('video', '0003_auto_20170807_1216'), ('video', '0004_auto_20170814_2122')]
-
     initial = True
 
     dependencies = [
