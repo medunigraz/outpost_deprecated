@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'overextends',
     'netfields',
     'raven.contrib.django.raven_compat',
+    'django_uwsgi',
 ]
 
 MIDDLEWARE = [
