@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'polymorphic',
     'push_notifications',
     'ordered_model',
+    'django_celery_results',
     'celery_haystack',
     'rules.apps.AutodiscoverRulesConfig',
     'overextends',
@@ -268,6 +269,7 @@ DOWNLOADVIEW_RULES = [
 ]
 
 CELERY_BROKER_URL = 'amqp://guest:guest@localhost//'
+CELERY_RESULTS_BACKEND = 'django-db'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
