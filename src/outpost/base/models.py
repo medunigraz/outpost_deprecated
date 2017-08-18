@@ -30,3 +30,8 @@ class Icon(models.Model):
         result = result.convert('RGBA')
         result.putalpha(image.split()[3])
         return result
+
+
+class License(models.Model):
+    name = models.CharField(max_length=128)
+    text = models.TextField()
