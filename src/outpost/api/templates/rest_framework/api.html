@@ -26,7 +26,6 @@
 
   <!-- Content -->
   <div id="content">
-
     {% if 'GET' in allowed_methods %}
       <form id="get-form" class="pull-right">
         <fieldset>
@@ -60,7 +59,6 @@
 
     {% if delete_form %}
       <button class="btn btn-danger button-form js-tooltip" title="Make a DELETE request on the {{ name }} resource" data-toggle="modal" data-target="#deleteModal">DELETE</button>
-
       <!-- Delete Modal -->
       <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">

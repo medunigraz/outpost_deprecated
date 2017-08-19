@@ -3,6 +3,7 @@ from rest_framework.serializers import (
     IntegerField,
     SerializerMethodField,
 )
+
 from outpost.geo import search_indexes as geo
 from outpost.structure import search_indexes as structure
 

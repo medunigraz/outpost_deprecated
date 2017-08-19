@@ -1,6 +1,6 @@
+from rest_framework.filters import DjangoFilterBackend
 from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.filters import DjangoFilterBackend
 
 from . import (
     models,

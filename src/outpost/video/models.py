@@ -1,20 +1,25 @@
-import re
-import requests
 import base64
-from hashlib import sha256, md5
 import json
 import logging
+import re
 import subprocess
 import uuid
-from base64 import urlsafe_b64encode, b64encode
+from base64 import (
+    b64encode,
+    urlsafe_b64encode,
+)
+from hashlib import (
+    md5,
+    sha256,
+)
 from tempfile import NamedTemporaryFile
 from uuid import uuid4
-from purl import URL
 
 import asyncssh
-from django.db import models
-from django.core.files import File
+import requests
 from django.contrib.postgres.fields import JSONField
+from django.core.files import File
+from django.db import models
 from django_extensions.db.models import TimeStampedModel
 from imagekit.models import ProcessedImageField
 from polymorphic.models import PolymorphicModel

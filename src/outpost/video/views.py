@@ -1,3 +1,7 @@
+from django.contrib.auth.mixins import (
+    LoginRequiredMixin,
+    PermissionRequiredMixin,
+)
 from django.http import (
     HttpResponse,
     HttpResponseForbidden,
@@ -5,10 +9,20 @@ from django.http import (
     JsonResponse,
 )
 from django.shortcuts import get_object_or_404
-from django.views.generic import View, TemplateView, ListView, DetailView
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.views.generic import (
+    DetailView,
+    ListView,
+    TemplateView,
+    View,
+)
 
-from .models import Stream, Token, Broadcast, Recording, Export
+from .models import (
+    Broadcast,
+    Export,
+    Recording,
+    Stream,
+    Token,
+)
 from .tasks import ExportTask
 
 

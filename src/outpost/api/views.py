@@ -1,7 +1,7 @@
 from drf_haystack.filters import HaystackAutocompleteFilter
 from drf_haystack.viewsets import HaystackViewSet
-from rest_framework.permissions import AllowAny
 from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.permissions import AllowAny
 
 from . import serializers
 from ..geo import models as geo

@@ -1,6 +1,8 @@
 from celery.result import AsyncResult
-from django.http import HttpResponse
-from django.http import JsonResponse
+from django.http import (
+    HttpResponse,
+    JsonResponse,
+)
 from django.shortcuts import get_object_or_404
 from django.views.generic import (
     TemplateView,
@@ -12,6 +14,7 @@ from . import models
 
 class IndexView(TemplateView):
     template_name = 'outpost/index.html'
+
 
 class ColorizedIconView(View):
 
