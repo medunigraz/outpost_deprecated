@@ -39,6 +39,7 @@ class EpiphanAdmin(admin.ModelAdmin):
         'server',
         'fingerprint',
         'active',
+        'recording',
     )
     list_filter = (
         'server',

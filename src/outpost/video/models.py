@@ -1,4 +1,5 @@
 import re
+import requests
 import base64
 from hashlib import sha256, md5
 import json
@@ -8,6 +9,7 @@ import uuid
 from base64 import urlsafe_b64encode, b64encode
 from tempfile import NamedTemporaryFile
 from uuid import uuid4
+from purl import URL
 
 import asyncssh
 from django.db import models
@@ -86,13 +88,6 @@ class Epiphan(Recorder):
     server = models.ForeignKey('Server', related_name='+')
     key = models.BinaryField(null=False)
 
-    def _get_session(self):
-        if self._session:
-            return self._session
-        s = requests.Session()
-        if self.username and self.password:
-            s.auth = (self.username, self.password)
-        return s
 
     @property
     def fingerprint(self):
@@ -106,6 +101,16 @@ class Epiphan(Recorder):
     def private_key(self):
         return self.key.tobytes().decode('ascii')
 
+    def post_init(self, *args, **kwargs):
+        self.session = requests.Session()
+        if self.username and self.password:
+            self.session.auth = (self.username, self.password)
+        self.url = URL(
+            scheme='http',
+            host=self.hostname,
+            path='/admin/channelm1/'
+        )
+
     def pre_save(self, *args, **kwargs):
         if self.key:
             return
@@ -116,8 +121,11 @@ class Epiphan(Recorder):
 
     @property
     def recording(self):
-        s = self._get_session()
-        r = s.get('http://{s.hostname}/admin/channelm1/get_params.cgi?rec_enabled')
+        url = self.url.add_path_segment('get_params.cgi').query_param('rec_enabled', '')
+        try:
+            r = self.session.get(url.as_string(), timeout=2)
+        except requests.exceptions.ConnectionError:
+            return False
         return re.match('^rec_enabled = on$', r.text) is not None
 
 
