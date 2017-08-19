@@ -2,8 +2,10 @@ from functools import wraps
 
 from django.db.models.signals import (
     post_delete,
+    post_init,
     post_save,
     pre_delete,
+    pre_init,
     pre_save,
 )
 
@@ -26,11 +28,17 @@ def signal_connect(cls):
     if hasattr(cls, 'post_delete'):
         cls.post_delete = connect(post_delete, cls.post_delete)
 
+    if hasattr(cls, 'post_init'):
+        cls.post_init = connect(post_init, cls.post_init)
+
     if hasattr(cls, 'post_save'):
         cls.post_save = connect(post_save, cls.post_save)
 
     if hasattr(cls, 'pre_delete'):
         cls.pre_delete = connect(pre_delete, cls.pre_delete)
+
+    if hasattr(cls, 'pre_init'):
+        cls.pre_init = connect(pre_init, cls.pre_init)
 
     if hasattr(cls, 'pre_save'):
         cls.pre_save = connect(pre_save, cls.pre_save)
