@@ -147,6 +147,7 @@ class Export(PolymorphicModel):
     )
 
 
+@signal_connect
 class SideBySideExport(Export):
     data = models.FileField(
         upload_to=Uuid4Upload
@@ -173,6 +174,8 @@ class SideBySideExport(Export):
             FFMPEGProcess(args, notify)
             self.data.save(output.name, File(output.file))
 
+    def pre_delete(self, *args, **kwargs):
+        self.data.delete(False)
 
 #class Publisher(PolymorphicModel):
 #    name = models.CharField(max_length=128)
