@@ -33,8 +33,8 @@ class ProcessRecordingTask(Task):
         rec = Recording.objects.get(pk=pk)
         probe = subprocess.run(
             [
-                "ffprobe",
-                "-v",
+                'ffprobe',
+                '-v',
                 'quiet',
                 '-print_format',
                 'json',
@@ -44,8 +44,7 @@ class ProcessRecordingTask(Task):
             ],
             stdout=subprocess.PIPE
         )
-        info = json.loads(probe.stdout)
-        rec.info = info
+        rec.info = json.loads(probe.stdout.decode('utf-8'))
         rec.save()
         logger.info('Finished recording: {}'.format(pk))
 

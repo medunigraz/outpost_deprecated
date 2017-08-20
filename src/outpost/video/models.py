@@ -134,16 +134,32 @@ class Epiphan(Recorder):
         return re.match('^rec_enabled = on$', r.text) is not None
 
 
+class EpiphanChannel(models.Model):
+    epiphan = models.ForeignKey('Epiphan')
+    name = models.CharField(max_length=128)
+    path = models.CharField(max_length=10)
+
+    def __str__(self):
+        return '{s.epiphan}, {s.name}'.format(s=self)
+
+
 @signal_connect
 class Recording(TimeStampedModel):
     recorder = models.ForeignKey('Recorder')
     data = models.FileField(
         upload_to=Uuid4Upload
     )
-    info = JSONField()
+    info = JSONField(null=True)
 
     def pre_delete(self, *args, **kwargs):
         self.data.delete(False)
+
+    def __str__(self):
+        return 'Recorded by {s.recorder} on {s.modified}'.format(s=self)
+
+
+class EpiphanRecording(Recording):
+    channel = models.ForeignKey('EpiphanChannel', null=True)
 
 
 class Export(PolymorphicModel):
@@ -162,12 +178,23 @@ class SideBySideExport(Export):
         verbose_name = 'Side-by-Side'
 
     def process(self, notify):
+        def list_ids(codec):
+            for stream in self.recording.info['streams']:
+                if stream['codec_type'] == codec:
+                    yield '[i:{}]'.format(stream['id'])
+        video = list(list_ids('video'))
+        audio = list(list_ids('audio'))
+        fc = '{v}hstack=inputs={vl}[v];{a}amerge[a]'.format(
+            v=''.join(video),
+            vl=len(video),
+            a=''.join(audio)
+        )
         with NamedTemporaryFile(suffix='.mp4') as output:
             args = [
                 '-i',
                 self.recording.data.path,
                 '-filter_complex',
-                '[i:0x100][i:0x102]hstack=inputs=2[v];[i:0x101][i:0x103]amerge[a]',
+                fc,
                 '-map',
                 '[v]',
                 '-map',

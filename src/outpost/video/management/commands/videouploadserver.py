@@ -1,19 +1,28 @@
 import asyncio
 import logging
 import os
+import re
 import sys
 from datetime import datetime
-from functools import partial, wraps
+from functools import (
+    partial,
+    wraps,
+)
 from pathlib import Path
 
 import asyncssh
+from django.core.files.base import ContentFile
 from django.core.management.base import (
     BaseCommand,
     CommandError,
 )
-from django.core.files.base import ContentFile
 
-from ...models import (Epiphan, Server, Recording)
+from ...models import (
+    Epiphan,
+    EpiphanChannel,
+    EpiphanRecording,
+    Server,
+)
 from ...tasks import ProcessRecordingTask
 
 logger = logging.getLogger(__name__)
@@ -71,6 +80,8 @@ class SSHServer(asyncssh.SSHServer):
 
 class SFTPServer(asyncssh.SFTPServer):
 
+    pattern = re.compile(r'^(?P<stream>[\w]+)_(?P<created>\w{3}\d{2}_\d{2}-\d{2}-\d{2})\.(?P<extension>\w+)$')
+
     def __init__(self, server, conn):
         username = conn.get_extra_info('username')
         self._server = server
@@ -106,15 +117,26 @@ class SFTPServer(asyncssh.SFTPServer):
     def open(self, raw, pflags, attrs):
         path = Path(raw.decode('utf-8'))
         logger.info('Uploading video: {}'.format(path.name))
-        rec = Recording(
+        matches = self.pattern.match(path.name)
+        channel = None
+        try:
+            stream = matches.groupdict().get('stream')
+            if stream:
+                channel = EpiphanChannel.objects.get(
+                    epiphan=self._epiphan,
+                    name=stream
+                )
+        except EpiphanChannel.DoesNotExists:
+            pass
+        rec = EpiphanRecording(
             recorder=self._epiphan,
-            info={}
+            info={},
+            channel=channel
         )
         rec.data.save(path.name, ContentFile(b''))
         if not rec.data.file.closed:
             rec.data.file.close()
         rec.data.file.open('wb')
-        rec.save()
         return rec
 
     def close(self, rec):

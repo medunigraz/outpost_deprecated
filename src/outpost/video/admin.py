@@ -4,8 +4,12 @@ from django.utils.html import linebreaks
 from . import models
 
 
-class RecordingInlineAdmin(admin.TabularInline):
-    model = models.Recording
+class EpiphanRecordingInlineAdmin(admin.TabularInline):
+    model = models.EpiphanRecording
+
+
+class EpiphanChannelInlineAdmin(admin.TabularInline):
+    model = models.EpiphanChannel
 
 
 @admin.register(models.Server)
@@ -55,7 +59,8 @@ class EpiphanAdmin(admin.ModelAdmin):
         'private_key',
     )
     inlines = (
-        RecordingInlineAdmin,
+        EpiphanChannelInlineAdmin,
+        EpiphanRecordingInlineAdmin,
     )
 
     def fingerprint(self, obj):
