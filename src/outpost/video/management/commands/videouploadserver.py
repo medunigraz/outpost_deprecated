@@ -31,13 +31,10 @@ logger = logging.getLogger(__name__)
 def log(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        logger.debug('Call: {}'.format(func.__name__))
         try:
-            result = func(*args, **kwargs)
-            logger.debug('Return: {}: {}'.format(func.__name__, result))
-            return result
+            return func(*args, **kwargs)
         except Exception as e:
-            print('Exception', e)
+            logger.warn('Exception in {}: {}'.format(func.__name__, e))
     return wrapper
 
 
@@ -114,6 +111,7 @@ class SFTPServer(asyncssh.SFTPServer):
     def format_group(self, gid):
         return str(self._epiphan.pk)
 
+    @log
     def open(self, raw, pflags, attrs):
         path = Path(raw.decode('utf-8'))
         logger.info('Uploading video: {}'.format(path.name))
@@ -139,6 +137,7 @@ class SFTPServer(asyncssh.SFTPServer):
         rec.data.file.open('wb')
         return rec
 
+    @log
     def close(self, rec):
         logger.info('Finished file: {}'.format(rec.data.path))
         if not rec.data.file.closed:
@@ -146,6 +145,7 @@ class SFTPServer(asyncssh.SFTPServer):
         rec.save()
         ProcessRecordingTask.delay(rec.pk)
 
+    @log
     def write(self, rec, offset, data):
         logger.debug(
             'Writing {} bytes of data at offset {}'.format(
