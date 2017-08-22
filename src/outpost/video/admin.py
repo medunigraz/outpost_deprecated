@@ -43,11 +43,14 @@ class EpiphanAdmin(admin.ModelAdmin):
         'server',
         'fingerprint',
         'active',
+        'online',
         'recording',
     )
     list_filter = (
         'server',
         'active',
+        'online',
+        'recording',
     )
     search_fields = (
         'name',

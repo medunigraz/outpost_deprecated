@@ -76,6 +76,7 @@ class Recorder(PolymorphicModel):
     name = models.CharField(max_length=128, blank=False, null=False)
     hostname = models.CharField(max_length=128, blank=False, null=False)
     active = models.BooleanField(default=True)
+    online = models.BooleanField(default=False)
     room = models.ForeignKey(
         'geo.Room',
         null=True,
@@ -126,6 +127,8 @@ class Epiphan(Recorder):
 
     @property
     def recording(self):
+        if not self.online:
+            return False
         url = self.url.add_path_segment('get_params.cgi').query_param('rec_enabled', '')
         try:
             r = self.session.get(url.as_string(), timeout=2)

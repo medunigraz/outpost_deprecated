@@ -4,14 +4,17 @@ import subprocess
 import time
 from concurrent import futures
 from datetime import timedelta
+from concurrent.futures import ThreadPoolExecutor
 
 from celery import states
 from celery.exceptions import Ignore
 from celery.task import Task
+from celery.task import PeriodicTask
 
 from .models import (
     Export,
     Recording,
+    Recorder,
 )
 
 logger = logging.getLogger(__name__)
@@ -102,3 +105,28 @@ class ExportTask(Task):
                 'maximum': maximum,
             }
         )
+
+
+class RecorderOnlineTask(PeriodicTask):
+    run_every = timedelta(minutes=5)
+
+    def run(self, **kwargs):
+
+        def ping(recorder):
+            logger.debug('Pinging {}.'.format(recorder))
+            proc = subproccess.run(
+                [
+                    'ping',
+                    '-c1',
+                    '-w2',
+                    recorder.hostname
+                ]
+            )
+            recorder.online = (proc.returncode != 0)
+            recorder.save()
+
+        recorders = Recorder.objects.filter(active=True)
+        logger.info('Pinging {} recorders.'.format(recorders.count()))
+
+        with ThreadPoolExecutor() as executor:
+            executor.map(ping, recorders)
