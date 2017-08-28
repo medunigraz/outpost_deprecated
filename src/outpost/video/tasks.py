@@ -1,4 +1,5 @@
 import json
+import socket
 import logging
 import subprocess
 import time
@@ -15,6 +16,7 @@ from .models import (
     Export,
     Recording,
     Recorder,
+    Epiphan,
 )
 
 logger = logging.getLogger(__name__)
@@ -52,20 +54,63 @@ class ProcessRecordingTask(Task):
         logger.info('Finished recording: {}'.format(pk))
 
 
-class DebugTask(Task):
+class EpiphanProvisionTask(Task):
 
-    def run(self):
-        for i in range(100):
-            self.update_state(
-                state='PROGRESS',
-                meta={
-                    'current': i,
-                    'total': 100
-                }
-            )
-            time.sleep(2)
-        print('Debug task running')
-        return 1234
+    def run(self, pk):
+        epiphan = Epiphan.objects.get(pk=pk)
+        epiphan.session.post(
+            epiphan.url.add_path_segment('afucfg').as_string(),
+            data={
+                'pfd_form_id': 'fn_afu',
+                'afuEnable': 'on',
+                'afuProtocol': 'sftp',
+                'afuInterval': 0,
+                'afuRemotePath': None,
+                'remove-source-files': 'on',
+                'mark-downloaded': None,
+                'ftpServer': None,
+                'ftpPort': None,
+                'ftpuser': None,
+                'ftppasswd': None,
+                'ftptmpfile': None,
+                'cifsPort': None,
+                'cifsServer': None,
+                'cifsShare': None,
+                'cifsDomain': None,
+                'cifsUser': None,
+                'cifsPasswd': None,
+                'cifstmpfile': None,
+                'rsyncServer': None,
+                'rsyncModule': None,
+                'rsyncUser': None,
+                'rsyncPassword': None,
+                'rsyncChecksum': None,
+                'scpServer': None,
+                'scpPort': None,
+                'scpuser': None,
+                'scppasswd': None,
+                'sftpServer': epiphan.server.hostname or socket.getfqdn(),
+                'sftpPort': epiphan.server.port,
+                'sftpuser': epiphan.pk,
+                'sftppasswd': None,
+                'sftptmpfile': None,
+                's3Region': None,
+                's3Bucket': None,
+                's3Key': None,
+                's3Secret': None,
+                's3Token': None,
+                'preserve-channel-name': None,
+            }
+        )
+        epiphan.session.post(
+            epiphan.url.add_path_segment('sshkeys.cgi').as_string(),
+            files={
+                'identity': (
+                    'key',
+                    epiphan.private_key
+                )
+            }
+        )
 
 
 class ExportTask(Task):
@@ -112,9 +157,9 @@ class RecorderOnlineTask(PeriodicTask):
 
     def run(self, **kwargs):
 
-        def ping(recorder):
+        def check(recorder):
             logger.debug('Pinging {}.'.format(recorder))
-            proc = subproccess.run(
+            proc = subprocess.run(
                 [
                     'ping',
                     '-c1',
@@ -122,11 +167,14 @@ class RecorderOnlineTask(PeriodicTask):
                     recorder.hostname
                 ]
             )
-            recorder.online = (proc.returncode != 0)
-            recorder.save()
+            online = (proc.returncode == 0)
+            if recorder.online != online:
+                recorder.online = online
+                logger.debug('Recorder {} online: {}'.format(recorder, online))
+                recorder.save()
 
-        recorders = Recorder.objects.filter(active=True)
+        recorders = Recorder.objects.filter(enabled=True)
         logger.info('Pinging {} recorders.'.format(recorders.count()))
 
         with ThreadPoolExecutor() as executor:
-            executor.map(ping, recorders)
+            executor.map(check, recorders)

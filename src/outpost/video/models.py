@@ -1,4 +1,5 @@
 import base64
+import socket
 import json
 import logging
 import re
@@ -18,6 +19,7 @@ from uuid import uuid4
 import asyncssh
 import requests
 from django.contrib.postgres.fields import JSONField
+from django.core.cache import cache
 from django.core.files import File
 from django.db import models
 from django_extensions.db.models import TimeStampedModel
@@ -44,7 +46,7 @@ class Server(models.Model):
     hostname = models.CharField(max_length=128, blank=True)
     port = models.PositiveIntegerField(default=2022)
     key = models.BinaryField(null=False)
-    active = models.BooleanField(default=True)
+    enabled = models.BooleanField(default=True)
 
     class Meta:
         unique_together = (
@@ -66,6 +68,20 @@ class Server(models.Model):
         pk = asyncssh.generate_private_key('ssh-rsa')
         self.key = pk.export_private_key()
 
+    def ping(self):
+        cache.set(
+            'outpost-video-server-{}'.format(str(self)),
+            True,
+            timeout=10
+        )
+
+    @property
+    def active(self):
+        return cache.get(
+            'outpost-video-server-{}'.format(str(self)),
+            False
+        )
+
     def __str__(self):
         if self.hostname:
             return '{s.hostname}:{s.port}'.format(s=self)
@@ -75,7 +91,7 @@ class Server(models.Model):
 class Recorder(PolymorphicModel):
     name = models.CharField(max_length=128, blank=False, null=False)
     hostname = models.CharField(max_length=128, blank=False, null=False)
-    active = models.BooleanField(default=True)
+    enabled = models.BooleanField(default=True)
     online = models.BooleanField(default=False)
     room = models.ForeignKey(
         'geo.Room',
@@ -93,7 +109,7 @@ class Epiphan(Recorder):
     password = models.CharField(max_length=128, blank=False, null=False)
     server = models.ForeignKey('Server', related_name='+')
     key = models.BinaryField(null=False)
-
+    provision = models.BooleanField(default=False)
 
     @property
     def fingerprint(self):
@@ -114,7 +130,7 @@ class Epiphan(Recorder):
         self.url = URL(
             scheme='http',
             host=self.hostname,
-            path='/admin/channelm1/'
+            path='/admin/'
         )
 
     def pre_save(self, *args, **kwargs):
@@ -125,22 +141,29 @@ class Epiphan(Recorder):
         self.key = pk.export_private_key('pkcs1-pem')
         self.save()
 
-    @property
-    def recording(self):
+    def post_save(self, *args, **kwargs):
         if not self.online:
-            return False
-        url = self.url.add_path_segment('get_params.cgi').query_param('rec_enabled', '')
-        try:
-            r = self.session.get(url.as_string(), timeout=2)
-        except requests.exceptions.ConnectionError:
-            return False
-        return re.match('^rec_enabled = on$', r.text) is not None
+            return
+        if self.provision:
+            from .tasks import EpiphanProvisionTask
+            EpiphanProvisionTask().run(self.pk)
 
 
 class EpiphanChannel(models.Model):
     epiphan = models.ForeignKey('Epiphan')
     name = models.CharField(max_length=128)
     path = models.CharField(max_length=10)
+
+    @property
+    def recording(self):
+        if not self.epiphan.online:
+            return False
+        url = self.epiphan.url.add_path_segment('channelm1/get_params.cgi').query_param('rec_enabled', '')
+        try:
+            r = self.epiphan.session.get(url.as_string(), timeout=2)
+        except requests.exceptions.ConnectionError:
+            return False
+        return re.match('^rec_enabled = on$', r.text) is not None
 
     def __str__(self):
         return '{s.epiphan}, {s.name}'.format(s=self)
@@ -211,6 +234,7 @@ class SideBySideExport(Export):
 
     def pre_delete(self, *args, **kwargs):
         self.data.delete(False)
+
 
 #class Publisher(PolymorphicModel):
 #    name = models.CharField(max_length=128)

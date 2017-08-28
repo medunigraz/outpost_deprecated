@@ -225,6 +225,9 @@ class Command(BaseCommand):
                 agent_forwarding=False,
                 login_timeout=10
             )
+            while True:
+                server.ping()
+                await asyncio.sleep(5)
 
         cond = {
             'active': True
@@ -238,5 +241,3 @@ class Command(BaseCommand):
             loop.run_until_complete(asyncio.gather(*tasks))
         except (OSError, asyncssh.Error) as exc:
             sys.exit('Error starting server: ' + str(exc))
-
-        loop.run_forever()

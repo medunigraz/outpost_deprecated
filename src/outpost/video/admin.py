@@ -20,7 +20,6 @@ class ServerAdmin(admin.ModelAdmin):
         'active',
     )
     list_filter = (
-        'active',
     )
     search_fields = (
         'hostname',
@@ -42,15 +41,13 @@ class EpiphanAdmin(admin.ModelAdmin):
         '__str__',
         'server',
         'fingerprint',
-        'active',
         'online',
-        'recording',
+        'provision',
     )
     list_filter = (
         'server',
-        'active',
         'online',
-        'recording',
+        'provision',
     )
     search_fields = (
         'name',
