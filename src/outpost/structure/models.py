@@ -24,7 +24,8 @@ class Organization(models.Model):
     office = models.ForeignKey(
         'geo.Room',
         null=True,
-        blank=True
+        blank=True,
+        related_name='+'
     )
     hidden = models.BooleanField(
         default=False

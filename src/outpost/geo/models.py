@@ -212,6 +212,11 @@ class Room(OriginMixin, Node):
         blank=True,
         related_name='+'
     )
+    organization = models.ForeignKey(
+        'structure.Organization',
+        null=True,
+        blank=True
+    )
 
     def __str__(self):
         return '{s.name} on {s.level} [CO: {s.campusonline}]'.format(s=self)
