@@ -66,10 +66,13 @@ class Room(models.Model):
         blank=True,
         null=True
     )
-    organization = models.CharField(
-        max_length=256,
+    organization = models.ForeignKey(
+        'Organization',
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
         blank=True,
-        null=True
+        related_name='+'
     )
     category = models.ForeignKey(
         'RoomCategory',
