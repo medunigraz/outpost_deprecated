@@ -1,22 +1,24 @@
 import json
-import socket
 import logging
+import socket
 import subprocess
 import time
 from concurrent import futures
-from datetime import timedelta
 from concurrent.futures import ThreadPoolExecutor
+from datetime import timedelta
 
 from celery import states
 from celery.exceptions import Ignore
-from celery.task import Task
-from celery.task import PeriodicTask
+from celery.task import (
+    PeriodicTask,
+    Task,
+)
 
 from .models import (
-    Export,
-    Recording,
-    Recorder,
     Epiphan,
+    Export,
+    Recorder,
+    Recording,
 )
 
 logger = logging.getLogger(__name__)

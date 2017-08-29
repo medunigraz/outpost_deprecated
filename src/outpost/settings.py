@@ -4,9 +4,9 @@ Django settings for Outpost project.
 
 import json
 import os
-import raven
 
 import ldap
+import raven
 from django_auth_ldap.config import (
     GroupOfNamesType,
     LDAPSearch,
