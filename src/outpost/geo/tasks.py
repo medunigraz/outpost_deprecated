@@ -1,11 +1,10 @@
 import logging
-
 from datetime import timedelta
+
 from celery.task import PeriodicTask
 
-from .models import (
-    Room,
-)
+from ..structure.models import Organization
+from .models import Room
 
 logger = logging.getLogger(__name__)
 
