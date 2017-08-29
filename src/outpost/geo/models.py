@@ -268,16 +268,18 @@ class PointOfInterest(OrderedModel):
     name = models.CharField(
         max_length=128
     )
-    icon = models.ForeignKey(
-        'base.Icon',
-        null=True
-    )
     color = LowerCaseCharField(
         max_length=6,
         default='007b3c'
     )
     selected = models.BooleanField(
         default=False
+    )
+    font_key = models.CharField(
+        max_length=1
+    )
+    css_class = models.CharField(
+        max_length=128
     )
 
     class Meta(OrderedModel.Meta):
@@ -296,7 +298,10 @@ class PointOfInterest(OrderedModel):
 @signal_connect
 class PointOfInterestInstance(Node):
     name = models.ForeignKey('PointOfInterest')
-    description = models.TextField(null=True)
+    description = models.TextField(
+        null=True,
+        blank=True
+    )
 
     def __str__(self):
         return str(self.name)

@@ -157,10 +157,14 @@ class EdgeSerializer(GeoFeatureModelSerializer):
         many=False,
         read_only=True
     )
+    length = SerializerMethodField()
 
     class Meta:
         model = models.Edge
         geo_field = 'path'
+
+    def get_length(self, obj):
+        return obj.path.length
 
 
 class RoutingEdgeSerializer(EdgeSerializer):
@@ -168,16 +172,9 @@ class RoutingEdgeSerializer(EdgeSerializer):
 
 
 class PointOfInterestSerializer(ModelSerializer):
-    icon = SerializerMethodField()
 
     class Meta:
         model = models.PointOfInterest
-        exclude = (
-            'color',
-        )
-
-    def get_icon(self, obj):
-        return reverse('base:icon', kwargs={'pk': obj.icon.pk, 'color': obj.color})
 
 
 class PointOfInterestInstanceSerializer(GeoFeatureModelSerializer):
