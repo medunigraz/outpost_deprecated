@@ -52,7 +52,7 @@ class SSHServer(asyncssh.SSHServer):
         cond = {
             'pk': username,
             'server': self._server,
-            'active': True,
+            'enabled': True,
         }
         device = Epiphan.objects.get(**cond)
         logger.debug('Device: {}'.format(device))
@@ -230,7 +230,7 @@ class Command(BaseCommand):
                 await asyncio.sleep(5)
 
         cond = {
-            'active': True
+            'enabled': True
         }
         if options['server']:
             cond['pk__in'] = options['server']
