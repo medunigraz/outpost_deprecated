@@ -1,8 +1,9 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, SerializerMethodField
 
 from . import models
 from ..campusonline import serializers as campusonline
 from ..geo import serializers as geo
+from ..base.utils import colorscale
 
 
 class OrganizationSerializer(ModelSerializer):
@@ -14,12 +15,20 @@ class OrganizationSerializer(ModelSerializer):
         many=False,
         read_only=True
     )
+    color = SerializerMethodField()
 
     class Meta:
         model = models.Organization
         exclude = (
             'hidden',
         )
+
+    def get_color(self, obj):
+        return {
+            'base': obj.color,
+            'lighter': colorscale(obj.color, 1.2),
+            'darker': colorscale(obj.color, 0.8),
+        }
 
 
 class PersonSerializer(ModelSerializer):
