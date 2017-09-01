@@ -1,6 +1,7 @@
 import json
 import re
 
+from django.core.cache import cache
 from django.contrib.gis.geos import GEOSGeometry
 from django.db import connection
 from django.db.models import Q
@@ -62,12 +63,24 @@ class LocateView(viewsets.ViewSet):
     query = """
         SELECT
             ST_ClosestPoint(e.path, b.position) AS position,
-            e.id AS edge
+            e.id AS edge,
+            e.path AS path,
+            CASE WHEN
+                ST_Distance(b.position, nd.center) < ST_Distance(b.position, ns.center)
+            THEN
+                nd.id
+            ELSE
+                ns.id
+            END AS node
         FROM
             geo_edge e,
+            geo_node ns,
+            geo_node nd,
             positioning_beacon b
         WHERE
             b.name = %s AND
+            e.source_id = ns.id AND
+            e.destination_id = nd.id AND
             (
                 b.level_id = (
                     SELECT level_id FROM geo_node WHERE id = e.source_id
@@ -79,8 +92,7 @@ class LocateView(viewsets.ViewSet):
             )
         ORDER BY
             ST_Distance(ST_ClosestPoint(e.path, b.position), b.position)
-        LIMIT 1
-    """
+        LIMIT 1"""
 
     def list(self, request, format=None):
         names = dict()
@@ -103,28 +115,43 @@ class LocateView(viewsets.ViewSet):
         if 'edge' in request.GET:
             try:
                 e = Edge.objects.get(pk=request.GET.get('edge'))
-                conditions.append(Q(level=e.source.level) | Q(level=e.destination.level))
+                conditions.append(
+                    Q(level=e.source.level) | Q(level=e.destination.level)
+                )
             except Edge.DoesNotExist:
                 pass
         beacons = models.Beacon.objects.filter(*conditions)
         if not beacons:
             raise NotFound(detail='No matching beacon found')
         beacon = max(beacons, key=lambda b: names.get(b.name))
+        key = 'positioning-locate-beacon-{}'.format(beacon.pk)
+        data = cache.get(key)
+        if data:
+            return Response(data)
         with connection.cursor() as cursor:
             cursor.execute(self.query, [str(beacon.name)])
             if cursor.rowcount != 1:
                 raise NotFound(detail='No matching edge found')
-            point, edge = cursor.fetchone()
-            geometry = GEOSGeometry(point)
+            point, edge, path, node = cursor.fetchone()
 
-            return Response({
+            data = {
                 'geometry': {
                     'type': 'Point',
-                    'coordinates': list(geometry)
+                    'coordinates': list(GEOSGeometry(point))
                 },
                 'properties': {
                     'edge': edge,
+                    'path': {
+                        'type': 'Feature',
+                        'geometry': {
+                            'coordinates': list(GEOSGeometry(path)),
+                            'type': 'LineString'
+                        }
+                    },
+                    'node': node,
                     'level': beacon.level.pk,
                 },
                 'type': 'Feature',
-            })
+            }
+            cache.set(key, data, timeout=600)
+            return Response(data)
