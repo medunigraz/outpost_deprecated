@@ -70,8 +70,8 @@ class RecordingDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailVie
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         classes = Export.__subclasses__()
-        exporters = {c._meta.verbose_name: c.__name__ for c in classes}
-        context['exporters'] = exporters
+        exporters = [(c._meta.verbose_name, c.__name__) for c in classes]
+        context['exporters'] = sorted(exporters, key=lambda x: x[1])
         return context
 
 

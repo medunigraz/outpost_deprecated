@@ -11,11 +11,11 @@
     <span class="message"></span>
   </div>
 <div class="row">
-{% for exporter, class in exporters.items %}
-<div class="col-xs-18 col-sm-6 col-md-3 exporter" data-url="{% url 'video:recording:export' pk=object.pk exporter=class %}">
+{% for exporter in exporters %}
+<div class="col-xs-18 col-sm-6 col-md-3 exporter" data-url="{% url 'video:recording:export' pk=object.pk exporter=exporter.1 %}">
 <div class="panel panel-default">
   <div class="panel-heading">
-    {{ exporter }}
+    {{ exporter.0 }}
   </div>
   <div class="panel-body">
     <button type="button" class="btn btn-default btn-block request">

@@ -1,6 +1,7 @@
 import base64
 import json
 import logging
+import os
 import re
 import socket
 import subprocess
@@ -13,8 +14,12 @@ from hashlib import (
     md5,
     sha256,
 )
-from tempfile import NamedTemporaryFile
+from tempfile import (
+    NamedTemporaryFile,
+    TemporaryDirectory,
+)
 from uuid import uuid4
+from zipfile import ZipFile
 
 import asyncssh
 import requests
@@ -231,6 +236,43 @@ class SideBySideExport(Export):
             ]
             FFMPEGProcess(args, notify)
             self.data.save(output.name, File(output.file))
+
+    def pre_delete(self, *args, **kwargs):
+        self.data.delete(False)
+
+
+@signal_connect
+class ZipStreamExport(Export):
+    data = models.FileField(
+        upload_to=Uuid4Upload
+    )
+
+    class Meta:
+        verbose_name = 'Zip-Stream'
+
+    def process(self, notify):
+        streams = []
+        args = [
+            '-i',
+            self.recording.data.path,
+        ]
+        with TemporaryDirectory(prefix='recording') as path:
+            for s in self.recording.info['streams']:
+                name = os.path.join(
+                    path,
+                    '{s[codec_type]}-{s[id]}.{s[codec_name]}'.format(s=s)
+                )
+                args.extend([
+                    '-map',
+                    'i:{s[id]}'.format(s=s),
+                    name,
+                ])
+                streams.append(name)
+            FFMPEGProcess(args, notify)
+            with NamedTemporaryFile(suffix='.zip') as output:
+                with ZipFile(output, 'w') as arc:
+                    [arc.write(f, os.path.basename(f)) for f in streams]
+                self.data.save(output.name, File(output.file))
 
     def pre_delete(self, *args, **kwargs):
         self.data.delete(False)
