@@ -9,13 +9,12 @@ from django.conf import settings
 class Migration(migrations.Migration):
 
     forward = [
-        """
-        CREATE SERVER sqlalchemy
-        FOREIGN DATA WRAPPER multicorn
-        OPTIONS (
-            wrapper 'outpost.fdw.OutpostFdw'
-        );
-        """,
+        '''
+        CREATE SCHEMA IF NOT EXISTS campusonline;
+        ''',
+        '''
+        CREATE SCHEMA IF NOT EXISTS typo3;
+        ''',
     ]
     reverse = [
         """

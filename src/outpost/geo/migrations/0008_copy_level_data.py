@@ -11,7 +11,7 @@ def forwards(apps, schema_editor):
     if Level.objects.all().exists():
         level = Level.objects.first()
     else:
-        level = Level(name='Default Migration')
+        level = Level(name='Migration', order=1)
         level.save()
     Beacon = apps.get_model('geo', 'Beacon')
     for beacon in Beacon.objects.all():
