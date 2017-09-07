@@ -1,9 +1,11 @@
-from datetime import timedelta
-
 from rest_framework import serializers
 
 from . import models
-from ..api import validators
+
+
+class TerminalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Terminal
 
 
 class HoldingSerializer(serializers.ModelSerializer):
@@ -20,11 +22,3 @@ class EntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Entry
         fields = ['id', 'student', 'direction']
-        validators = [
-            validators.EntryThrottleValidator(
-                models.Entry.objects.all(),
-                'student',
-                'time',
-                timedelta(seconds=60)
-            )
-        ]

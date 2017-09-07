@@ -98,12 +98,21 @@ v1.register(
     structure.PersonViewSet,
 )
 v1.register(
-    r'attendance/holdings',
+    r'attendance/terminal',
+    attendance.TerminalViewSet
+)
+v1.register(
+    r'attendance/holding',
     attendance.HoldingViewSet
 )
 v1.register(
-    r'attendance/entries',
+    r'attendance/entry',
     attendance.EntryViewSet
+)
+v1.register(
+    r'attendance/clock',
+    attendance.ClockViewSet,
+    base_name='attendance-clock'
 )
 v1.register(
     r'typo3/languages',

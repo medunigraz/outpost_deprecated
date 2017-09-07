@@ -7,6 +7,11 @@ class EntryInline(admin.TabularInline):
     model = models.Entry
 
 
+@admin.register(models.Terminal)
+class TerminalAdmin(admin.ModelAdmin):
+    pass
+
+
 @admin.register(models.Holding)
 class HoldingAdmin(admin.ModelAdmin):
     inlines = [
