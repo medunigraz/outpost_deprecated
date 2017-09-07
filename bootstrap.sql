@@ -15,3 +15,17 @@ CREATE OR REPLACE FUNCTION html_unescape (input text)
 
     return html.unescape(input)
     $$ LANGUAGE plpython3u;
+
+CREATE SERVER sqlalchemy
+    FOREIGN DATA WRAPPER multicorn
+    OPTIONS (
+        wrapper 'outpost.fdw.OutpostFdw'
+    );
+
+GRANT USAGE ON FOREIGN SERVER sqlalchemy TO "api.medunigraz.at";
+
+CREATE OR REPLACE FUNCTION multicorn_check_plpython3u() RETURNS VOID AS $$
+BEGIN
+    NULL;
+END;
+$$ LANGUAGE plpgsql;
