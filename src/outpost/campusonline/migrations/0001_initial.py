@@ -9,7 +9,10 @@ from django.conf import settings
 class Migration(migrations.Migration):
 
     forward = [
-        """
+        '''
+        CREATE SCHEMA IF NOT EXISTS campusonline;
+        ''',
+        '''
         CREATE FOREIGN TABLE "campusonline"."gebaeude" (
             GEBAEUDE_NR numeric,
             NAME varchar,
@@ -20,8 +23,8 @@ class Migration(migrations.Migration):
             tablename 'GEBAEUDE_V',
             db_url '{}'
         );
-        """.format(settings.MULTICORN.get('campusonline')),
-        """
+        '''.format(settings.MULTICORN.get('campusonline')),
+        '''
         CREATE FOREIGN TABLE "campusonline"."stockwerk" (
             NR numeric,
             KURZBEZEICHNUNG varchar,
@@ -31,8 +34,8 @@ class Migration(migrations.Migration):
             tablename 'STOCKWERK_V',
             db_url '{}'
         );
-        """.format(settings.MULTICORN.get('campusonline')),
-        """
+        '''.format(settings.MULTICORN.get('campusonline')),
+        '''
         CREATE FOREIGN TABLE "campusonline"."raum_kategorie" (
             NR numeric,
             NAME_DE varchar
@@ -41,8 +44,8 @@ class Migration(migrations.Migration):
             tablename 'RAUM_TYPEN_V',
             db_url '{}'
         );
-        """.format(settings.MULTICORN.get('campusonline')),
-        """
+        '''.format(settings.MULTICORN.get('campusonline')),
+        '''
         CREATE FOREIGN TABLE "campusonline"."raum" (
             RAUM_NR numeric,
             RAUM_BEZ varchar,
@@ -62,29 +65,29 @@ class Migration(migrations.Migration):
             tablename 'RAUM_V',
             db_url '{}'
         );
-        """.format(settings.MULTICORN.get('campusonline')),
-        """
+        '''.format(settings.MULTICORN.get('campusonline')),
+        '''
         CREATE VIEW "public"."campusonline_building" AS SELECT
             gebaeude_nr::integer AS id,
             name,
             kurzbezeichnung AS short,
             strasse_hausnummer AS address
         FROM "campusonline"."gebaeude";
-        """,
-        """
+        ''',
+        '''
         CREATE VIEW "public"."campusonline_floor" AS SELECT
             nr ::integer AS id,
             kurzbezeichnung AS short,
             name
         FROM "campusonline"."stockwerk";
-        """,
-        """
+        ''',
+        '''
         CREATE VIEW "public"."campusonline_room_category" AS SELECT
             nr ::integer AS id,
             name_de AS name
         FROM "campusonline"."raum_kategorie";
-        """,
-        """
+        ''',
+        '''
         CREATE VIEW "public"."campusonline_room" AS SELECT
             raum_nr ::integer AS id,
             raum_bez AS title,
@@ -97,33 +100,33 @@ class Migration(migrations.Migration):
             organisation AS organization,
             raumtyp ::integer AS category_id
         FROM "campusonline"."raum";
-        """,
+        ''',
     ]
     reverse = [
-        """
+        '''
         DROP VIEW IF EXISTS "public"."campusonline_room";
-        """,
-        """
+        ''',
+        '''
         DROP VIEW IF EXISTS "public"."campusonline_room_category";
-        """,
-        """
+        ''',
+        '''
         DROP VIEW IF EXISTS "public"."campusonline_floor";
-        """,
-        """
+        ''',
+        '''
         DROP VIEW IF EXISTS "public"."campusonline_building";
-        """,
-        """
+        ''',
+        '''
         DROP FOREIGN TABLE IF EXISTS "campusonline"."gebaeude";
-        """,
-        """
+        ''',
+        '''
         DROP FOREIGN TABLE IF EXISTS "campusonline"."stockwerk";
-        """,
-        """
+        ''',
+        '''
         DROP FOREIGN TABLE IF EXISTS "campusonline"."raum";
-        """,
-        """
+        ''',
+        '''
         DROP FOREIGN TABLE IF EXISTS "campusonline"."raum_kategorie";
-        """,
+        ''',
     ]
 
     dependencies = [
