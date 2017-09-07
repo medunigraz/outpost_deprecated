@@ -1,9 +1,12 @@
-from rest_framework.serializers import ModelSerializer, SerializerMethodField
+from rest_framework.serializers import (
+    ModelSerializer,
+    SerializerMethodField,
+)
 
 from . import models
+from ..base.utils import colorscale
 from ..campusonline import serializers as campusonline
 from ..geo import serializers as geo
-from ..base.utils import colorscale
 
 
 class OrganizationSerializer(ModelSerializer):
