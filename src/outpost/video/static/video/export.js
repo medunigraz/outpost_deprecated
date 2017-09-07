@@ -7,6 +7,7 @@ $(document).ready(function() {
         var status = $(exporter).find('.status');
         var bar = status.find('.progress-bar');
         var percent = status.find('.percent');
+        var action = status.find('.action');
         request.click(function(evt) {
             download.addClass('disabled');
             request.addClass('hidden');
@@ -22,7 +23,8 @@ $(document).ready(function() {
                 task.progress(function(data) {
                     var done = data.info.current / data.info.maximum * 100;
                     bar.css('width', done + '%').attr('aria-valuenow', done);
-                    percent.text(done)
+                    percent.text(Number((done).toFixed(1)))
+                    action.text(data.info.action)
                 });
                 task.done(function(data) {
                     download.attr('href', data.info);

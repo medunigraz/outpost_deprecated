@@ -28,6 +28,7 @@ from django.core.cache import cache
 from django.core.files import File
 from django.db import models
 from django_extensions.db.models import TimeStampedModel
+from functools import partial
 from imagekit.models import ProcessedImageField
 from polymorphic.models import PolymorphicModel
 from purl import URL
@@ -234,7 +235,7 @@ class SideBySideExport(Export):
                 '2',
                 output.name
             ]
-            FFMPEGProcess(args, notify)
+            FFMPEGProcess(args, partial(notify, 'Stitching'))
             self.data.save(output.name, File(output.file))
 
     def pre_delete(self, *args, **kwargs):
@@ -251,6 +252,10 @@ class ZipStreamExport(Export):
         verbose_name = 'Zip-Stream'
 
     def process(self, notify):
+        mapping = {
+            'h264': 'mp4',
+            'aac': 'aac',
+        }
         streams = []
         args = [
             '-i',
@@ -258,20 +263,25 @@ class ZipStreamExport(Export):
         ]
         with TemporaryDirectory(prefix='recording') as path:
             for s in self.recording.info['streams']:
+                f = mapping.get(s['codec_name'])
                 name = os.path.join(
                     path,
-                    '{s[codec_type]}-{s[id]}.{s[codec_name]}'.format(s=s)
+                    '{s[codec_type]}-{s[id]}.{f}'.format(s=s, f=f)
                 )
                 args.extend([
                     '-map',
                     'i:{s[id]}'.format(s=s),
+                    '-c',
+                    'copy',
                     name,
                 ])
                 streams.append(name)
-            FFMPEGProcess(args, notify)
+            FFMPEGProcess(args, partial(notify, 'Splitting'))
             with NamedTemporaryFile(suffix='.zip') as output:
                 with ZipFile(output, 'w') as arc:
-                    [arc.write(f, os.path.basename(f)) for f in streams]
+                    for i, f in enumerate(streams):
+                        notify('Zipping', i + 1, len(streams))
+                        arc.write(f, os.path.basename(f))
                 self.data.save(output.name, File(output.file))
 
     def pre_delete(self, *args, **kwargs):

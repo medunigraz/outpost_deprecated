@@ -143,11 +143,12 @@ class ExportTask(Task):
             logger.debug('Recording {} download URL: {}'.format(rec.pk, inst.data.url))
         return inst.data.url
 
-    def progress(self, current, maximum):
-        logger.debug('Progress: {}/{}'.format(current, maximum))
+    def progress(self, action, current, maximum):
+        logger.debug('Progress: {} {}/{}'.format(action, current, maximum))
         self.update_state(
             state='PROGRESS',
             meta={
+                'action': action,
                 'current': current,
                 'maximum': maximum,
             }
