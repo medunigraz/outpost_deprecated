@@ -19,6 +19,7 @@ from django.views.generic import (
 from .models import (
     Broadcast,
     Export,
+    Recorder,
     Recording,
     Stream,
     Token,
@@ -85,3 +86,13 @@ class RecordingExportView(LoginRequiredMixin, PermissionRequiredMixin, View):
                 'task': task.id,
             }
         )
+
+
+class RecorderListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    model = Recorder
+    permission_required = 'video.change_recorder'
+
+
+class RecorderDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+    model = Recorder
+    permission_required = 'video.change_recorder'

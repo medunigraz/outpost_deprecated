@@ -34,11 +34,27 @@ recording = [
         name='export'
     ),
 ]
+recorder = [
+    url(
+        r'^$',
+        views.RecorderListView.as_view(),
+        name='list'
+    ),
+    url(
+        r'^(?P<pk>\d+)$',
+        views.RecorderDetailView.as_view(),
+        name='detail'
+    ),
+]
 
 urlpatterns = [
     url(
         r'^recording/',
         include(recording, namespace='recording')
+    ),
+    url(
+        r'^recorder/',
+        include(recorder, namespace='recorder')
     ),
     url(
         r'^nginx/',
