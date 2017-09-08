@@ -51,7 +51,9 @@ class ProcessRecordingTask(Task):
             ],
             stdout=subprocess.PIPE
         )
-        rec.info = json.loads(probe.stdout.decode('utf-8'))
+        info = probe.stdout.decode('utf-8')
+        logger.debug('Extracted metadata: {}'.format(info))
+        rec.info = json.loads(info)
         rec.save()
         logger.info('Finished recording: {}'.format(pk))
 
