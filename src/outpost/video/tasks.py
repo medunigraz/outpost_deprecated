@@ -69,7 +69,7 @@ class EpiphanProvisionTask(Task):
                 'afuEnable': 'on',
                 'afuProtocol': 'sftp',
                 'afuInterval': 0,
-                'afuRemotePath': None,
+                'afuRemotePath': '',
                 'remove-source-files': 'on',
                 'mark-downloaded': None,
                 'ftpServer': None,
@@ -113,6 +113,9 @@ class EpiphanProvisionTask(Task):
                     'key',
                     epiphan.private_key
                 )
+            },
+            data={
+                'command': 'add',
             }
         )
 
