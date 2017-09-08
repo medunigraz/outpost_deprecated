@@ -155,7 +155,7 @@ class SFTPServer(asyncssh.SFTPServer):
         )
         rec.data.file.seek(offset)
         written = rec.data.file.write(data)
-        logger.info('Wrote {} bytes'.format(written))
+        logger.debug('Wrote {} bytes'.format(written))
         return written
 
     def fstat(self, rec):
