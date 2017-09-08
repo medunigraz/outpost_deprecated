@@ -58,6 +58,10 @@ class Server(models.Model):
         unique_together = (
             ('hostname', 'port'),
         )
+        ordering = (
+            'hostname',
+            'port',
+        )
 
     @property
     def fingerprint(self):
@@ -104,6 +108,12 @@ class Recorder(PolymorphicModel):
         null=True,
         blank=True
     )
+
+    class Meta:
+        ordering = (
+            'name',
+            'hostname',
+        )
 
     def __str__(self):
         return '{s.name} ({s.hostname})'.format(s=self)
@@ -160,6 +170,11 @@ class EpiphanChannel(models.Model):
     name = models.CharField(max_length=128)
     path = models.CharField(max_length=10)
 
+    class Meta:
+        ordering = (
+            'name',
+        )
+
     @property
     def recording(self):
         if not self.epiphan.online:
@@ -186,6 +201,11 @@ class EpiphanSource(models.Model):
         blank=True
     )
 
+    class Meta:
+        ordering = (
+            'number',
+        )
+
     def __str__(self):
         return '{s.epiphan}, {s.number}'.format(s=self)
 
@@ -197,6 +217,11 @@ class Recording(TimeStampedModel):
         upload_to=Uuid4Upload
     )
     info = JSONField(null=True)
+
+    class Meta:
+        ordering = (
+            'created',
+        )
 
     def pre_delete(self, *args, **kwargs):
         self.data.delete(False)
