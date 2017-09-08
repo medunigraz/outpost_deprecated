@@ -13,9 +13,11 @@ from celery.task import (
     PeriodicTask,
     Task,
 )
+from django.core.files.base import ContentFile
 
 from .models import (
     Epiphan,
+    EpiphanSource,
     Export,
     Recorder,
     Recording,
@@ -63,7 +65,7 @@ class EpiphanProvisionTask(Task):
     def run(self, pk):
         epiphan = Epiphan.objects.get(pk=pk)
         epiphan.session.post(
-            epiphan.url.add_path_segment('afucfg').as_string(),
+            epiphan.url.path('admin/afucfg').as_string(),
             data={
                 'pfd_form_id': 'fn_afu',
                 'afuEnable': 'on',
@@ -107,7 +109,7 @@ class EpiphanProvisionTask(Task):
             }
         )
         epiphan.session.post(
-            epiphan.url.add_path_segment('sshkeys.cgi').as_string(),
+            epiphan.url.path('admin/sshkeys.cgi').as_string(),
             files={
                 'identity': (
                     'key',
@@ -186,3 +188,33 @@ class RecorderOnlineTask(PeriodicTask):
 
         with ThreadPoolExecutor() as executor:
             executor.map(check, recorders)
+
+
+class EpiphanPreviewTask(PeriodicTask):
+    run_every = timedelta(minutes=10)
+
+    def run(self, **kwargs):
+
+        def update(source):
+            try:
+                print(source)
+                #logger.info('Taking preview image from {}.'.format(epiphan))
+                path = 'api/channels/{s.number}/preview'.format(s=source)
+                print(path)
+                url = source.epiphan.url.path(path).as_string()
+                print(url)
+                logger.info('Retrieving {}'.format(url))
+                r = source.epiphan.session.get(url)
+                print(r)
+                source.preview.save('preview.jpg', ContentFile(r.content))
+            except Exception as e:
+                logger.warn(e)
+
+        sources = EpiphanSource.objects.filter(
+            epiphan__enabled=True,
+            epiphan__online=True,
+        )
+        logger.info('Updating previews on {} sources.'.format(sources.count()))
+
+        with ThreadPoolExecutor() as executor:
+            executor.map(update, sources)

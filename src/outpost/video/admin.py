@@ -12,6 +12,10 @@ class EpiphanChannelInlineAdmin(admin.TabularInline):
     model = models.EpiphanChannel
 
 
+class EpiphanSourceInlineAdmin(admin.TabularInline):
+    model = models.EpiphanSource
+
+
 @admin.register(models.Server)
 class ServerAdmin(admin.ModelAdmin):
     list_display = (
@@ -61,6 +65,7 @@ class EpiphanAdmin(admin.ModelAdmin):
     inlines = (
         EpiphanChannelInlineAdmin,
         EpiphanRecordingInlineAdmin,
+        EpiphanSourceInlineAdmin,
     )
 
     def fingerprint(self, obj):

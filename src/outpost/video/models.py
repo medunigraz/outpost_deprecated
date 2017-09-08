@@ -136,7 +136,7 @@ class Epiphan(Recorder):
         self.url = URL(
             scheme='http',
             host=self.hostname,
-            path='/admin/'
+            path='/'
         )
 
     def pre_save(self, *args, **kwargs):
@@ -173,6 +173,21 @@ class EpiphanChannel(models.Model):
 
     def __str__(self):
         return '{s.epiphan}, {s.name}'.format(s=self)
+
+
+class EpiphanSource(models.Model):
+    epiphan = models.ForeignKey('Epiphan')
+    number = models.PositiveSmallIntegerField()
+    preview = ProcessedImageField(
+        upload_to=Uuid4Upload,
+        format='JPEG',
+        options={'quality': 60},
+        null=True,
+        blank=True
+    )
+
+    def __str__(self):
+        return '{s.epiphan}, {s.number}'.format(s=self)
 
 
 @signal_connect
