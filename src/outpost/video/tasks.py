@@ -201,15 +201,10 @@ class EpiphanPreviewTask(PeriodicTask):
 
         def update(source):
             try:
-                print(source)
-                #logger.info('Taking preview image from {}.'.format(epiphan))
                 path = 'api/channels/{s.number}/preview'.format(s=source)
-                print(path)
                 url = source.epiphan.url.path(path).as_string()
-                print(url)
-                logger.info('Retrieving {}'.format(url))
+                logger.info('Retrieving {} for {}'.format(url, source))
                 r = source.epiphan.session.get(url)
-                print(r)
                 source.preview.save('preview.jpg', ContentFile(r.content))
             except Exception as e:
                 logger.warn(e)
