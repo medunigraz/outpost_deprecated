@@ -283,6 +283,10 @@ RAVEN_CONFIG = {
     'release': raven.fetch_git_sha(BASE_DIR),
 }
 
+OUTPOST = {
+    'epiphan_provisioning': False,
+}
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

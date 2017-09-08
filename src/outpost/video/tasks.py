@@ -14,6 +14,7 @@ from celery.task import (
     Task,
 )
 from django.core.files.base import ContentFile
+from django.conf import settings
 
 from .models import (
     Epiphan,
@@ -63,6 +64,9 @@ class ProcessRecordingTask(Task):
 class EpiphanProvisionTask(Task):
 
     def run(self, pk):
+        if not settings.OUTPOST.get('epiphan_provisioning'):
+            logger.warn('Epiphan provisioning disabled!')
+            return
         epiphan = Epiphan.objects.get(pk=pk)
         epiphan.session.post(
             epiphan.url.path('admin/afucfg').as_string(),
