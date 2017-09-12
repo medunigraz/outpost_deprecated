@@ -36,6 +36,35 @@
   No preview images available because of missing sources.
 </div>
 {% endif %}
+{% if object.recording_set.exists %}
+<table class="table table-striped">
+<thead>
+  <tr>
+    <th>#</th>
+    <th>Date</th>
+    <th>Size</th>
+  </tr>
+</thead>
+<tbody>
+  {% for r in object.recording_set.all %}
+  <tr>
+    <th scope="row">
+      <a href="{% url 'video:recording:detail' pk=r.pk%}" class="btn btn-primary btn-xs">
+        <span >
+        {{ r.pk }}
+      </a>
+    </th>
+    <td>{{ r.created }}</td>
+    <td>{{ r.data.size|filesizeformat }}</td>
+  </tr>
+  {% endfor %}
+</tbody>
+</table>
+{% else %}
+<div class="alert alert-info" role="alert">
+  No recordings yet!
+</div>
+{% endif %}
 <div class="modal fade" id="previewModal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
