@@ -357,7 +357,7 @@ class Migration(migrations.Migration):
     ]
 
     dependencies = [
-        ('base', '0001_initial'),
+        ('base', '0005_html_unescape'),
     ]
 
     operations = [

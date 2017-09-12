@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
         DROP VIEW IF EXISTS "public"."typo3_news";
         ''',
         '''
-        CREATE VIEW "public"."typo3_event" AS SELECT
+        CREATE MATERIALIZED VIEW "public"."typo3_event" AS SELECT
             uid AS id,
             to_date(start_date, 'YYYYMMDD') + CASE
                 allday
@@ -89,10 +89,11 @@ class Migration(migrations.Migration):
                 end_time * interval '1 seconds'
             END > NOW() AND
             deleted = 0 AND
-            hidden = 0;
+            hidden = 0
+        WITH DATA;
         ''',
         '''
-        CREATE VIEW "public"."typo3_news" AS SELECT
+        CREATE MATERIALIZED VIEW "public"."typo3_news" AS SELECT
             uid AS id,
             pid AS page,
             CASE WHEN
@@ -124,16 +125,17 @@ class Migration(migrations.Migration):
             (starttime = 0 OR to_timestamp(starttime) < NOW()) AND
             (endtime = 0 OR to_timestamp(endtime) > NOW()) AND
             deleted = 0 AND
-            hidden = 0;
+            hidden = 0
+        WITH DATA;
         ''',
     ]
 
     reverse = [
         '''
-        DROP VIEW IF EXISTS "public"."typo3_event";
+        DROP MATERIALIZED VIEW IF EXISTS "public"."typo3_event";
         ''',
         '''
-        DROP VIEW IF EXISTS "public"."typo3_news";
+        DROP MATERIALIZED VIEW IF EXISTS "public"."typo3_news";
         ''',
         '''
         CREATE VIEW "public"."typo3_event" AS SELECT
