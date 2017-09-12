@@ -219,7 +219,11 @@ class Room(OriginMixin, Node):
     )
 
     def __str__(self):
-        return '{s.name} [CO: {s.campusonline}]'.format(s=self)
+        if self.name:
+            return self.name
+        if self.campusonline:
+            return str(self.campusonline)
+        return '-'
 
     def pre_save(self, *args, **kwargs):
         if self.layout:

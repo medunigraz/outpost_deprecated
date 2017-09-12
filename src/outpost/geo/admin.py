@@ -36,6 +36,10 @@ class DestinationEdgeInline(admin.TabularInline):
 
 class NodeChildAdmin(PolymorphicChildModelAdmin):
     base_model = models.Node
+    inlines = [
+        DestinationEdgeInline,
+        SourceEdgeInline,
+    ]
 
 
 @admin.register(models.Node)
@@ -51,6 +55,7 @@ class NodeParentAdmin(PolymorphicParentModelAdmin):
 @admin.register(models.Door)
 class DoorAdmin(NodeChildAdmin):
     base_model = models.Door
+    show_in_index = True
     list_display = ('__str__', 'level', 'origin')
     list_filter = (
         'level',
@@ -60,14 +65,29 @@ class DoorAdmin(NodeChildAdmin):
 @admin.register(models.Room)
 class RoomAdmin(NodeChildAdmin):
     base_model = models.Room
-    list_display = ('__str__', 'level', 'campusonline', 'origin')
-    inlines = [
-        DestinationEdgeInline,
-        SourceEdgeInline,
-    ]
+    show_in_index = True
+    list_display = (
+        '__str__',
+        'level',
+        'campusonline',
+        'organization',
+        'category',
+        'origin',
+    )
     list_filter = (
         'level',
+        'organization',
+        'category',
     )
+    search_fields = (
+        'name',
+        'campusonline__title',
+    )
+
+
+@admin.register(models.RoomCategory)
+class RoomCategoryAdmin(admin.ModelAdmin):
+    pass
 
 
 @admin.register(models.Background)
