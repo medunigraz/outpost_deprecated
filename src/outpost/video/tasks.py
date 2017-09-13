@@ -174,7 +174,7 @@ class RecorderOnlineTask(PeriodicTask):
         logger.info('Pinging {} recorders.'.format(recorders.count()))
 
         with ThreadPoolExecutor() as executor:
-            executor.map(lambda r: r.check(), recorders)
+            executor.map(lambda r: r.update(), recorders)
 
 
 class EpiphanPreviewTask(PeriodicTask):

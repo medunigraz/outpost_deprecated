@@ -110,7 +110,7 @@ class Recorder(PolymorphicModel):
         blank=True
     )
 
-    def check(self):
+    def update(self):
         logger.debug('Pinging {}.'.format(self))
         proc = subprocess.run(
             [
