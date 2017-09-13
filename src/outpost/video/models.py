@@ -65,7 +65,6 @@ class Server(models.Model):
             'port',
         )
 
-    @property
     def fingerprint(self):
         if not self.key:
             return None
@@ -148,7 +147,6 @@ class Epiphan(Recorder):
     key = models.BinaryField(null=False)
     provision = models.BooleanField(default=False)
 
-    @property
     def fingerprint(self):
         if not self.key:
             return None
@@ -156,7 +154,6 @@ class Epiphan(Recorder):
         d = md5(k.get_ssh_public_key()).hexdigest()
         return ':'.join(a + b for a, b in zip(d[::2], d[1::2]))
 
-    @property
     def private_key(self):
         return self.key.tobytes().decode('ascii')
 
@@ -191,42 +188,42 @@ class EpiphanChannel(models.Model):
     name = models.CharField(max_length=128)
     path = models.CharField(max_length=10)
 
-    def request(self, key, value=None):
-        path = 'admin/{s.path}/set_params.cgi'.format(s=self)
-        url = self.epiphan.url.path(path).query_param(key,value).as_string()
-        try:
-            r = self.epiphan.session.get(url)
-        except Exception as e:
-            logger.warn(e)
-        else:
-            delete_memoized(self.recording)
-
-    def start(self):
-        if self.recording:
-            return
-        logger.info('Starting recording for {s}'.format(s=self))
-        self.request('rec_enabled', 'on')
-
-    def stop(self):
-        if not self.recording:
-            return
-        logger.info('Stopping recording for {s}'.format(s=self))
-        self.request('rec_enabled', 'off')
-
     class Meta:
         ordering = (
             'name',
         )
 
-    @property
+    def request(self, key, value=None):
+        m = value and 'set' or 'get'
+        path = 'admin/{s.path}/{m}_params.cgi'.format(s=self, m=m)
+        url = self.epiphan.url.path(path).query_param(key,value).as_string()
+        try:
+            r = self.epiphan.session.get(url)
+        except Exception as e:
+            logger.warn(e)
+            return None
+        else:
+            delete_memoized(self.recording)
+            return r
+
+    def start(self):
+        if self.recording():
+            return
+        logger.info('Starting recording for {s}'.format(s=self))
+        self.request('rec_enabled', 'on')
+
+    def stop(self):
+        if not self.recording():
+            return
+        logger.info('Stopping recording for {s}'.format(s=self))
+        self.request('rec_enabled', 'off')
+
     @memoize(timeout=10)
     def recording(self):
         if not self.epiphan.online:
             return False
-        url = self.epiphan.url.add_path_segment('channelm1/get_params.cgi').query_param('rec_enabled', '')
-        try:
-            r = self.epiphan.session.get(url.as_string(), timeout=1)
-        except requests.exceptions.ConnectionError:
+        r = self.request('rec_enabled', '')
+        if not r:
             return False
         return re.match('^rec_enabled = on$', r.text) is not None
 

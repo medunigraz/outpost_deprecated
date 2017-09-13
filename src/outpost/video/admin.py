@@ -34,7 +34,7 @@ class ServerAdmin(admin.ModelAdmin):
     )
 
     def fingerprint(self, obj):
-        return '<code>{}</code>'.format(obj.fingerprint)
+        return '<code>{}</code>'.format(obj.fingerprint())
     fingerprint.short_description = u'SSH host key fingerprint'
     fingerprint.allow_tags = True
 
@@ -69,12 +69,12 @@ class EpiphanAdmin(admin.ModelAdmin):
     )
 
     def fingerprint(self, obj):
-        return '<code>{}</code>'.format(obj.fingerprint)
+        return '<code>{}</code>'.format(obj.fingerprint())
     fingerprint.short_description = u'SSH public key fingerprint'
     fingerprint.allow_tags = True
 
     def private_key(self, obj):
-        return '<pre>{}</pre>'.format(obj.private_key)
+        return '<pre>{}</pre>'.format(obj.private_key())
     private_key.short_description = u'SSH private key'
     private_key.allow_tags = True
 
