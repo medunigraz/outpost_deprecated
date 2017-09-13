@@ -218,12 +218,13 @@ class EpiphanChannel(models.Model):
         )
 
     @property
+    @memoize(timeout=10)
     def recording(self):
         if not self.epiphan.online:
             return False
         url = self.epiphan.url.add_path_segment('channelm1/get_params.cgi').query_param('rec_enabled', '')
         try:
-            r = self.epiphan.session.get(url.as_string(), timeout=2)
+            r = self.epiphan.session.get(url.as_string(), timeout=1)
         except requests.exceptions.ConnectionError:
             return False
         return re.match('^rec_enabled = on$', r.text) is not None
