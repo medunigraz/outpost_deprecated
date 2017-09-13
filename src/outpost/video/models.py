@@ -190,6 +190,28 @@ class EpiphanChannel(models.Model):
     name = models.CharField(max_length=128)
     path = models.CharField(max_length=10)
 
+    def request(self, key, value=None):
+        path = 'admin/{s.path}/set_params.cgi'.format(s=self)
+        url = self.epiphan.url.path(path).query_param(key,value).as_string()
+        try:
+            r = self.epiphan.session.get(url)
+        except Exception as e:
+            logger.warn(e)
+        else:
+            delete_memoized(self.recording)
+
+    def start(self):
+        if self.recording:
+            return
+        logger.info('Starting recording for {s}'.format(s=self))
+        self.request('rec_enabled', 'on')
+
+    def stop(self):
+        if not self.recording:
+            return
+        logger.info('Stopping recording for {s}'.format(s=self))
+        self.request('rec_enabled', 'off')
+
     class Meta:
         ordering = (
             'name',
