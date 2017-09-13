@@ -24,11 +24,13 @@
 <h2>Preview of sources</h2>
 <div class="row">
   {% for s in object.epiphansource_set.all %}
+  {% if s.preview %}
   <div class="col-xs-6 col-md-3">
     <a class="thumbnail" href="{{ s.preview.url }}" data-toggle="modal" data-target="#previewModal" data-remote="false">
       {% generateimage 'video:source_thumbnail' source=s.preview %}
     </a>
   </div>
+  {% endif %}
   {% endfor %}
 </div>
 {% else %}
