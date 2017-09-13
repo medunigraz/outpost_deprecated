@@ -177,23 +177,10 @@ class RecorderOnlineTask(PeriodicTask):
             executor.map(lambda r: r.update(), recorders)
 
 
-class EpiphanPreviewTask(PeriodicTask):
-    run_every = timedelta(minutes=10)
+class EpiphanSourcePreviewTask(PeriodicTask):
+    run_every = timedelta(minutes=1)
 
     def run(self, **kwargs):
-
-        def update(source):
-            try:
-                path = 'api/channels/{s.number}/preview'.format(s=source)
-                url = source.epiphan.url.path(path).as_string()
-                logger.info('Retrieving {} for {}'.format(url, source))
-                r = source.epiphan.session.get(url)
-                if source.preview:
-                    source.preview.delete(False)
-                source.preview.save('preview.jpg', ContentFile(r.content))
-            except Exception as e:
-                logger.warn(e)
-
         sources = EpiphanSource.objects.filter(
             epiphan__enabled=True,
             epiphan__online=True,
@@ -201,4 +188,4 @@ class EpiphanPreviewTask(PeriodicTask):
         logger.info('Updating previews on {} sources.'.format(sources.count()))
 
         with ThreadPoolExecutor() as executor:
-            executor.map(update, sources)
+            executor.map(lambda s: s.update(), sources)

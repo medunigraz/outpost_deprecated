@@ -249,6 +249,18 @@ class EpiphanSource(models.Model):
             'number',
         )
 
+    def update(self):
+        try:
+            path = 'api/channels/{s.number}/preview'.format(s=self)
+            url = self.epiphan.url.path(path).as_string()
+            logger.debug('Fetching preview for {s}'.format(s=self))
+            r = self.epiphan.session.get(url)
+            if self.preview:
+                self.preview.delete(False)
+            self.preview.save('preview.jpg', ContentFile(r.content))
+        except Exception as e:
+            logger.warn(e)
+
     def __str__(self):
         return '{s.epiphan}, {s.number}'.format(s=self)
 
