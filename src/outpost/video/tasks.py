@@ -170,28 +170,11 @@ class RecorderOnlineTask(PeriodicTask):
     run_every = timedelta(minutes=5)
 
     def run(self, **kwargs):
-
-        def check(recorder):
-            logger.debug('Pinging {}.'.format(recorder))
-            proc = subprocess.run(
-                [
-                    'ping',
-                    '-c1',
-                    '-w2',
-                    recorder.hostname
-                ]
-            )
-            online = (proc.returncode == 0)
-            if recorder.online != online:
-                recorder.online = online
-                logger.debug('Recorder {} online: {}'.format(recorder, online))
-                recorder.save()
-
         recorders = Recorder.objects.filter(enabled=True)
         logger.info('Pinging {} recorders.'.format(recorders.count()))
 
         with ThreadPoolExecutor() as executor:
-            executor.map(check, recorders)
+            executor.map(lambda r: r.check(), recorders)
 
 
 class EpiphanPreviewTask(PeriodicTask):

@@ -30,6 +30,7 @@ from django.db import models
 from django_extensions.db.models import TimeStampedModel
 from functools import partial
 from imagekit.models import ProcessedImageField
+from memoize import memoize, delete_memoized
 from polymorphic.models import PolymorphicModel
 from purl import URL
 from requests import (
@@ -108,6 +109,25 @@ class Recorder(PolymorphicModel):
         null=True,
         blank=True
     )
+
+    def check(self):
+        logger.debug('Pinging {}.'.format(self))
+        proc = subprocess.run(
+            [
+                'ping',
+                '-c1',
+                '-w2',
+                self.hostname
+            ],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+
+        )
+        online = (proc.returncode == 0)
+        if self.online != online:
+            self.online = online
+            logger.debug('Recorder {} online: {}'.format(self, online))
+            self.save()
 
     class Meta:
         ordering = (
