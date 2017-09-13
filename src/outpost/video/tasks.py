@@ -13,7 +13,6 @@ from celery.task import (
     PeriodicTask,
     Task,
 )
-from django.core.files.base import ContentFile
 from django.conf import settings
 
 from .models import (

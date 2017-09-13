@@ -25,6 +25,7 @@ import asyncssh
 import requests
 from django.contrib.postgres.fields import JSONField
 from django.core.cache import cache
+from django.core.files.base import ContentFile
 from django.core.files import File
 from django.db import models
 from django_extensions.db.models import TimeStampedModel
