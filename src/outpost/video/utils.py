@@ -1,9 +1,11 @@
+import logging
 import math
 import re
 import subprocess
 
-
 from functools import partial
+
+logger = logging.getLogger(__name__)
 
 
 class FFMPEGProcess():
@@ -17,7 +19,6 @@ class FFMPEGProcess():
             stderr=subprocess.STDOUT,
             universal_newlines=True
         )
-
 
     def handler(self, h):
         if callable(h):
@@ -37,6 +38,7 @@ class FFMPEGProcess():
                 break
 
             for h in self.handlers:
+                logger.debug('Handling line: {}'.format(line))
                 h(line)
 
 
