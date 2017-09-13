@@ -63,7 +63,7 @@ class ProcessRecordingTask(Task):
 
 class EpiphanProvisionTask(Task):
 
-    def run(self, pk):
+    def run(self, pk, **kwargs):
         if not settings.OUTPOST.get('epiphan_provisioning'):
             logger.warn('Epiphan provisioning disabled!')
             return
@@ -128,7 +128,7 @@ class EpiphanProvisionTask(Task):
 
 class ExportTask(Task):
 
-    def run(self, pk, exporter):
+    def run(self, pk, exporter, **kwargs):
         classes = Export.__subclasses__()
         exporters = {c.__name__: c for c in classes}
         if exporter not in exporters:
