@@ -303,16 +303,27 @@ class SideBySideExport(Export):
         verbose_name = 'Side-by-Side'
 
     def process(self, notify):
-        def list_ids(codec):
-            for stream in self.recording.info['streams']:
-                if stream['codec_type'] == codec:
-                    yield '[i:{}]'.format(stream['id'])
-        video = list(list_ids('video'))
-        audio = list(list_ids('audio'))
-        fc = '{v}hstack=inputs={vl}[v];{a}amerge[a]'.format(
-            v=''.join(video),
-            vl=len(video),
-            a=''.join(audio)
+        streams = self.recording.info['streams']
+        vis = [s for s in streams if s['codec_type'] == 'video']
+        height = max([v['coded_height'] for v in vis])
+        videos = []
+        for i, v in enumerate(vis):
+            if v['coded_height'] < height:
+                filt = 'pad=height={}'.format(height)
+            else:
+                filt = 'null'
+            videos.append(
+                (
+                    '[i:{}]{}[v{}]'.format(v['id'], filt, i),
+                    '[v{}]'.format(i),
+                )
+            )
+        aus = [s for s in streams if s['codec_type'] == 'audio']
+        fc = '{vf};{v}hstack=inputs={vl}[v];{a}amerge[a]'.format(
+            vf=';'.join([v[0] for v in videos]),
+            v=''.join([v[1] for v in videos]),
+            vl=len(videos),
+            a=''.join(['[i:{}]'.format(a['id']) for a in aus])
         )
         with NamedTemporaryFile(suffix='.mp4') as output:
             args = [

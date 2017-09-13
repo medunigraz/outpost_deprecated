@@ -40,6 +40,7 @@ class FFMPEGProcess():
             for h in self.handlers:
                 logger.debug('Handling line: {}'.format(line))
                 h(line)
+        return pipe.returncode
 
 
 class FFMPEGDurationHandler():

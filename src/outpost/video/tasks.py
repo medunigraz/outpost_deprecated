@@ -137,7 +137,7 @@ class ExportTask(Task):
             raise Ignore()
         try:
             rec = Recording.objects.get(pk=pk)
-        except Recodring.DoesNotExists:
+        except Recording.DoesNotExists:
             self.update_state(
                 state=states.FAILURE,
                 meta='Unknown recording: {}'.format(pk)
@@ -154,14 +154,15 @@ class ExportTask(Task):
 
     def progress(self, action, current, maximum):
         logger.debug('Progress: {} {}/{}'.format(action, current, maximum))
-        self.update_state(
-            state='PROGRESS',
-            meta={
-                'action': action,
-                'current': current,
-                'maximum': maximum,
-            }
-        )
+        if self.request.id:
+            self.update_state(
+                state='PROGRESS',
+                meta={
+                    'action': action,
+                    'current': current,
+                    'maximum': maximum,
+                }
+            )
 
 
 class RecorderOnlineTask(PeriodicTask):
