@@ -4,7 +4,6 @@ import socket
 import subprocess
 import time
 from concurrent import futures
-from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta
 
 from celery import states
@@ -172,8 +171,8 @@ class RecorderOnlineTask(PeriodicTask):
         recorders = Recorder.objects.filter(enabled=True)
         logger.info('Pinging {} recorders.'.format(recorders.count()))
 
-        with ThreadPoolExecutor() as executor:
-            executor.map(lambda r: r.update(), recorders)
+        for r in recorders:
+            r.update()
 
 
 class EpiphanSourcePreviewTask(PeriodicTask):
@@ -186,5 +185,5 @@ class EpiphanSourcePreviewTask(PeriodicTask):
         )
         logger.info('Updating previews on {} sources.'.format(sources.count()))
 
-        with ThreadPoolExecutor() as executor:
-            executor.map(lambda s: s.update(), sources)
+        for s in sources:
+            s.update()

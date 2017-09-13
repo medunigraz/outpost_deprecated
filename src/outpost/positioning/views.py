@@ -3,7 +3,6 @@ import re
 
 from django.contrib.gis.geos import GEOSGeometry
 from django.core.cache import cache
-from django.db import connection
 from django.db.models import Q
 from oauth2_provider.ext.rest_framework import IsAuthenticatedOrTokenHasScope
 from rest_framework import viewsets
@@ -95,6 +94,7 @@ class LocateView(viewsets.ViewSet):
         LIMIT 1"""
 
     def list(self, request, format=None):
+        from django.db import connection
         names = dict()
         for k, v in request.GET.items():
             if not k.startswith('name'):
@@ -126,32 +126,32 @@ class LocateView(viewsets.ViewSet):
         beacon = max(beacons, key=lambda b: names.get(b.name))
         key = 'positioning-locate-beacon-{}'.format(beacon.pk)
         data = cache.get(key)
-        if data:
-            return Response(data)
-        with connection.cursor() as cursor:
-            cursor.execute(self.query, [str(beacon.name)])
-            if cursor.rowcount != 1:
-                raise NotFound(detail='No matching edge found')
-            point, edge, path, node = cursor.fetchone()
+        if not data:
+            with connection.cursor() as cursor:
+                cursor.execute(self.query, [str(beacon.name)])
+                if cursor.rowcount != 1:
+                    raise NotFound(detail='No matching edge found')
+                point, edge, path, node = cursor.fetchone()
 
-            data = {
-                'geometry': {
-                    'type': 'Point',
-                    'coordinates': list(GEOSGeometry(point))
-                },
-                'properties': {
-                    'edge': edge,
-                    'path': {
-                        'type': 'Feature',
-                        'geometry': {
-                            'coordinates': list(GEOSGeometry(path)),
-                            'type': 'LineString'
-                        }
+                data = {
+                    'geometry': {
+                        'type': 'Point',
+                        'coordinates': list(GEOSGeometry(point))
                     },
-                    'node': node,
-                    'level': beacon.level.pk,
-                },
-                'type': 'Feature',
-            }
-            cache.set(key, data, timeout=600)
-            return Response(data)
+                    'properties': {
+                        'edge': edge,
+                        'path': {
+                            'type': 'Feature',
+                            'geometry': {
+                                'coordinates': list(GEOSGeometry(path)),
+                                'type': 'LineString'
+                            }
+                        },
+                        'node': node,
+                        'level': beacon.level.pk,
+                    },
+                    'type': 'Feature',
+                }
+                cache.set(key, data, timeout=600)
+        connection.close()
+        return Response(data)
