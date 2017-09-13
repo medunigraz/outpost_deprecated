@@ -44,7 +44,7 @@ from taggit.managers import TaggableManager
 
 from ..base.decorators import signal_connect
 from ..base.utils import Uuid4Upload
-from .utils import FFMPEGProcess
+from .utils import FFMPEGProcess, FFMPEGDurationHandler
 
 logger = logging.getLogger(__name__)
 
@@ -328,7 +328,9 @@ class SideBySideExport(Export):
                 '2',
                 output.name
             ]
-            FFMPEGProcess(args, partial(notify, 'Stitching'))
+            ffmpeg = FFMPEGProcess(args)
+            ffmpeg.handler(FFMPEGDurationHandler(partial(notify, 'Stitching')))
+            ffmpeg.run()
             self.data.save(output.name, File(output.file))
 
     def pre_delete(self, *args, **kwargs):
@@ -369,7 +371,9 @@ class ZipStreamExport(Export):
                     name,
                 ])
                 streams.append(name)
-            FFMPEGProcess(args, partial(notify, 'Splitting'))
+            ffmpeg = FFMPEGProcess(args)
+            ffmpeg.handler(FFMPEGDurationHandler(partial(notify, 'Splitting')))
+            ffmpeg.run()
             with NamedTemporaryFile(suffix='.zip') as output:
                 with ZipFile(output, 'w') as arc:
                     for i, f in enumerate(streams):
