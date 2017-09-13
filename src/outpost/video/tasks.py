@@ -205,6 +205,8 @@ class EpiphanPreviewTask(PeriodicTask):
                 url = source.epiphan.url.path(path).as_string()
                 logger.info('Retrieving {} for {}'.format(url, source))
                 r = source.epiphan.session.get(url)
+                if source.preview:
+                    source.preview.delete(False)
                 source.preview.save('preview.jpg', ContentFile(r.content))
             except Exception as e:
                 logger.warn(e)
