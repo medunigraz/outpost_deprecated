@@ -3,6 +3,7 @@ from datetime import timedelta
 
 from celery.task import PeriodicTask
 from django.db import connection
+from celery_haystack.tasks import CeleryHaystackUpdateIndex
 
 logger = logging.getLogger(__name__)
 
@@ -21,3 +22,10 @@ class RefreshViewsTask(PeriodicTask):
                 logger.debug('Refresh materialized view: %s', rel)
                 with connection.cursor() as refresh:
                     refresh.execute('REFRESH MATERIALIZED VIEW {}'.format(rel[0]))
+
+
+class UpdateHaystackTask(PeriodicTask):
+    run_every = timedelta(hours=2)
+
+    def run(self):
+        CeleryHaystackUpdateIndex().run(remove=True)
