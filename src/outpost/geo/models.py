@@ -1,3 +1,5 @@
+import reversion
+
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.gis.db import models
@@ -30,6 +32,7 @@ class Background(models.Model):
         return self.name
 
 
+@reversion.register()
 class Level(OrderedModel):
     name = models.CharField(max_length=16)
 
@@ -41,6 +44,7 @@ class Level(OrderedModel):
 
 
 @signal_connect
+@reversion.register()
 class Building(OriginMixin, models.Model):
     name = models.TextField()
     outline = models.MultiPolygonField(
@@ -70,6 +74,7 @@ class Building(OriginMixin, models.Model):
 
 
 @signal_connect
+@reversion.register()
 class Floor(OriginMixin, models.Model):
     name = models.TextField()
     building = models.ForeignKey('Building')
@@ -99,6 +104,7 @@ class Floor(OriginMixin, models.Model):
 
 
 @signal_connect
+@reversion.register()
 class Node(TimeStampedModel, PolymorphicModel):
     level = models.ForeignKey('Level')
     center = models.PointField(srid=settings.DEFAULT_SRID)
@@ -117,6 +123,7 @@ class Node(TimeStampedModel, PolymorphicModel):
         UpdatedAtKeyBit.update(self)
 
 
+@reversion.register()
 class EdgeCategory(models.Model):
     name = models.CharField(
         max_length=64
@@ -140,6 +147,7 @@ class EdgeCategory(models.Model):
 
 
 @signal_connect
+@reversion.register()
 class Edge(models.Model):
     source = models.ForeignKey(
         'node',
@@ -166,6 +174,7 @@ class Edge(models.Model):
         UpdatedAtKeyBit.update(self)
 
 
+@reversion.register()
 class RoomCategory(models.Model):
     name = models.TextField()
     searchable = models.BooleanField(default=True)
@@ -183,6 +192,7 @@ class RoomCategory(models.Model):
 
 
 @signal_connect
+@reversion.register(follow=['node_ptr'])
 class Room(OriginMixin, Node):
     layout = models.PolygonField(
         srid=settings.DEFAULT_SRID
@@ -248,6 +258,7 @@ class Room(OriginMixin, Node):
 
 
 @signal_connect
+@reversion.register(follow=['node_ptr'])
 class Door(OriginMixin, Node):
     rooms = models.ManyToManyField(
         'Room'
@@ -268,6 +279,7 @@ class Door(OriginMixin, Node):
 
 
 @signal_connect
+@reversion.register()
 class PointOfInterest(OrderedModel):
     name = models.CharField(
         max_length=128
@@ -300,6 +312,7 @@ class PointOfInterest(OrderedModel):
 
 
 @signal_connect
+@reversion.register(follow=['node_ptr'])
 class PointOfInterestInstance(Node):
     name = models.ForeignKey('PointOfInterest')
     description = models.TextField(
