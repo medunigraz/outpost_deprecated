@@ -115,7 +115,7 @@ class EpiphanProvisionTask(Task):
             files={
                 'identity': (
                     'key',
-                    epiphan.private_key
+                    epiphan.private_key()
                 )
             },
             data={
