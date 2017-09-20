@@ -1,5 +1,8 @@
 from drf_haystack.serializers import HaystackSerializerMixin
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import (
+    ModelSerializer,
+    URLField,
+)
 
 from . import (
     models,
@@ -23,6 +26,8 @@ class CalendarSerializer(ModelSerializer):
 
 
 class EventSerializer(ModelSerializer):
+    url = URLField(read_only=True, allow_null=True)
+
     class Meta:
         model = models.Event
         fields = (
@@ -32,6 +37,8 @@ class EventSerializer(ModelSerializer):
 
 
 class EventSearchSerializer(HaystackSerializerMixin, EventSerializer):
+    url = URLField(read_only=True, allow_null=True)
+
     class Meta(EventSerializer.Meta):
         field_aliases = None
         search_fields = (
@@ -40,6 +47,8 @@ class EventSearchSerializer(HaystackSerializerMixin, EventSerializer):
 
 
 class NewsSerializer(ModelSerializer):
+    url = URLField(read_only=True, allow_null=True)
+
     class Meta:
         model = models.News
         fields = (
@@ -49,6 +58,8 @@ class NewsSerializer(ModelSerializer):
 
 
 class NewsSearchSerializer(HaystackSerializerMixin, NewsSerializer):
+    url = URLField(read_only=True, allow_null=True)
+
     class Meta(NewsSerializer.Meta):
         field_aliases = None
         search_fields = (

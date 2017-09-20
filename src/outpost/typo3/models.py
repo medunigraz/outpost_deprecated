@@ -1,4 +1,8 @@
+import requests
+from django.conf import settings
 from django.contrib.gis.db import models
+from memoize import memoize
+from purl import URL
 
 
 class Language(models.Model):
@@ -101,6 +105,17 @@ class Event(models.Model):
             'end',
         )
 
+    @memoize(timeout=3600)
+    def url(self):
+        url = URL(settings.OUTPOST['typo3_api'])
+        url = url.query_param('tx_mugapi_endpoint[recordType]', 'Event')
+        url = url.query_param('tx_mugapi_endpoint[recordUid]', self.pk)
+        url = url.query_param('tx_mugapi_endpoint[redirect]', 1)
+        r = requests.get(url.as_string(), allow_redirects=False)
+        if r.status_code != 302:
+            return None
+        return r.headers['location']
+
 
 class News(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -129,3 +144,14 @@ class News(models.Model):
         ordering = (
             '-datetime',
         )
+
+    @memoize(timeout=3600)
+    def url(self):
+        url = URL(settings.OUTPOST['typo3_api'])
+        url = url.query_param('tx_mugapi_endpoint[recordType]', 'News')
+        url = url.query_param('tx_mugapi_endpoint[recordUid]', self.pk)
+        url = url.query_param('tx_mugapi_endpoint[redirect]', 1)
+        r = requests.get(url.as_string(), allow_redirects=False)
+        if r.status_code != 302:
+            return None
+        return r.headers['location']

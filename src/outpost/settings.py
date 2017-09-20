@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     'imagekit',
     'taggit',
     'django_uwsgi',
+    'memoize',
 ]
 
 MIDDLEWARE = [
@@ -286,6 +287,7 @@ RAVEN_CONFIG = {
 
 OUTPOST = {
     'epiphan_provisioning': False,
+    'typo3_api': 'https://localhost/api/',
 }
 
 LOGGING = {
