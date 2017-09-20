@@ -116,6 +116,9 @@ class Event(models.Model):
             return None
         return r.headers['location']
 
+    def __repr__(self):
+        return '{s.__class__.__name__}({s.pk})'.format(s=self)
+
 
 class News(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -155,3 +158,6 @@ class News(models.Model):
         if r.status_code != 302:
             return None
         return r.headers['location']
+
+    def __repr__(self):
+        return '{s.__class__.__name__}({s.pk})'.format(s=self)
