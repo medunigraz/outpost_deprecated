@@ -1,38 +1,45 @@
 {% extends 'outpost/base.html' %}
 
 {% block content %}
-<table class="table table-striped">
-<thead>
-  <tr>
-    <th scope="row">Name</th>
-    <th>Hostname</th>
-    <th>Enabled</th>
-    <th>Online</th>
-    <th>Room</th>
-  </tr>
-</thead>
-<tbody>
-  {% for r in object_list %}
-  <tr>
-    <td>
-      <a href="{% url 'video:recorder:detail' pk=r.pk%}">
-        <strong>{{ r.name }}</strong>
-      </a>
-    </td>
-    <td>
-      <code>{{ r.hostname }}</code>
-    </td>
-    <td>
-      <span class="glyphicon glyphicon-eye-{% if r.enabled %}open{% else %}close{% endif %}"></span>
-    </td>
-    <td>
-      <span class="glyphicon glyphicon-transfer text-{% if r.online %}success{% else %}warning{% endif %}"></span>
-    </td>
-    <td>
-      {{ r.room|default:"-" }}
-    </td>
-  </tr>
-  {% endfor %}
-</tbody>
-</table>
+<h1 class="page-header">
+  <span>Recorder</span>
+</h1>
+<div class="row">
+  <div class="col-md-12">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="row">Name</th>
+          <th>Hostname</th>
+          <th>Enabled</th>
+          <th>Online</th>
+          <th>Room</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in object_list %}
+        <tr>
+          <td>
+            <a href="{% url 'video:recorder:detail' pk=r.pk%}">
+              <strong>{{ r.name }}</strong>
+            </a>
+          </td>
+          <td>
+            <code>{{ r.hostname }}</code>
+          </td>
+          <td>
+            <span class="glyphicon glyphicon-eye-{% if r.enabled %}open{% else %}close{% endif %}"></span>
+          </td>
+          <td>
+            <span class="glyphicon glyphicon-transfer text-{% if r.online %}success{% else %}warning{% endif %}"></span>
+          </td>
+          <td>
+            {{ r.room|default:"-" }}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
 {% endblock %}
