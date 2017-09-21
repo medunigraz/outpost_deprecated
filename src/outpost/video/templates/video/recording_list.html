@@ -1,31 +1,43 @@
 {% extends 'outpost/base.html' %}
 
 {% block content %}
-<table class="table table-striped">
-<thead>
-  <tr>
-    <th>#</th>
-    <th>Recorder</th>
-    <th>Room</th>
-    <th>Date</th>
-    <th>Size</th>
-  </tr>
-</thead>
-<tbody>
-  {% for r in object_list %}
-  <tr>
-    <th scope="row">
-      <a href="{% url 'video:recording:detail' pk=r.pk%}" class="btn btn-primary btn-xs">
-        <span >
-        {{ r.pk }}
-      </a>
-    </th>
-    <td>{{ r.recorder }}</td>
-    <td>{{ r.recorder.room|default:"-" }}</td>
-    <td>{{ r.created }}</td>
-    <td>{{ r.data.size|filesizeformat }}</td>
-  </tr>
-  {% endfor %}
-</tbody>
-</table>
+<h1 class="page-header">
+  <span>Recordings</span>
+</h1>
+<div class="row">
+  <div class="col-md-12">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Recorder</th>
+          <th>Room</th>
+          <th>Date</th>
+          <th>Size</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in object_list %}
+        <tr>
+          <th scope="row">
+            <a href="{% url 'video:recording:detail' pk=r.pk%}" class="btn btn-primary btn-xs">
+              <span >
+                {{ r.pk }}
+            </a>
+          </th>
+          <td>{{ r.recorder }}</td>
+          <td>{{ r.recorder.room|default:"-" }}</td>
+          <td>{{ r.created }}</td>
+          <td>
+            <a href="{{ r.data.url }}" class="btn btn-default btn-sm">
+              <span class="glyphicon glyphicon-download"></span>
+              {{ r.data.size|filesizeformat }}
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
 {% endblock %}
