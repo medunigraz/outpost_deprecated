@@ -111,6 +111,7 @@ class Event(models.Model):
         url = url.query_param('tx_mugapi_endpoint[recordType]', 'Event')
         url = url.query_param('tx_mugapi_endpoint[recordUid]', self.pk)
         url = url.query_param('tx_mugapi_endpoint[redirect]', 1)
+        url = url.fragment('sl-content')
         r = requests.get(url.as_string(), allow_redirects=False)
         if r.status_code != 302:
             return None
@@ -154,6 +155,7 @@ class News(models.Model):
         url = url.query_param('tx_mugapi_endpoint[recordType]', 'News')
         url = url.query_param('tx_mugapi_endpoint[recordUid]', self.pk)
         url = url.query_param('tx_mugapi_endpoint[redirect]', 1)
+        url = url.fragment('sl-content')
         r = requests.get(url.as_string(), allow_redirects=False)
         if r.status_code != 302:
             return None
