@@ -111,11 +111,12 @@ class Event(models.Model):
         url = url.query_param('tx_mugapi_endpoint[recordType]', 'Event')
         url = url.query_param('tx_mugapi_endpoint[recordUid]', self.pk)
         url = url.query_param('tx_mugapi_endpoint[redirect]', 1)
-        url = url.fragment('sl-content')
         r = requests.get(url.as_string(), allow_redirects=False)
         if r.status_code != 302:
             return None
-        return r.headers['location']
+        realurl = URL(r.headers['location'])
+        realurl = realurl.fragment('sl-content')
+        return realurl.as_string()
 
     def __repr__(self):
         return '{s.__class__.__name__}({s.pk})'.format(s=self)
@@ -159,7 +160,9 @@ class News(models.Model):
         r = requests.get(url.as_string(), allow_redirects=False)
         if r.status_code != 302:
             return None
-        return r.headers['location']
+        realurl = URL(r.headers['location'])
+        realurl = realurl.fragment('sl-content')
+        return realurl.as_string()
 
     def __repr__(self):
         return '{s.__class__.__name__}({s.pk})'.format(s=self)
