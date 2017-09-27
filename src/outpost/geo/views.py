@@ -93,7 +93,7 @@ class RoomViewSet(ListETAGMixin, ListCacheResponseMixin, GeoModelViewSet):
 
         ?level=<id>&category=<id>
     """
-    queryset = models.Room.objects.filter(deprecated=False)
+    queryset = models.Room.objects.filter(deprecated=False, virtual=False)
     serializer_class = serializers.RoomSerializer
     permission_classes = (
         DjangoModelPermissionsOrAnonReadOnly,

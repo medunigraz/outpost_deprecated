@@ -50,4 +50,4 @@ class RoomIndex(CelerySearchIndex, indexes.Indexable):
         return Room
 
     def index_queryset(self, using=None):
-        return self.get_model().objects.filter(virtual=False)
+        return self.get_model().objects.filter(deprecated=False, virtual=False)
