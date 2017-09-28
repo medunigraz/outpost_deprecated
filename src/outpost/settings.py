@@ -149,6 +149,10 @@ STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
+FILE_UPLOAD_HANDLERS = [
+    'django.core.files.uploadhandler.TemporaryFileUploadHandler',
+]
+
 COMPRESS_PRECOMPILERS = [
     ('text/less', 'outpost.compressor.DjangoLessFilter'),
     ('text/x-scss', 'django_pyscss.compressor.DjangoScssFilter'),
