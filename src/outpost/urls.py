@@ -9,6 +9,7 @@ from django.conf.urls import (
 )
 from django.conf.urls.static import static
 from django.contrib import admin
+from rest_framework.authtoken import views as authtoken
 
 urlpatterns = []
 
@@ -36,11 +37,7 @@ urlpatterns.extend([
     ),
     url(
         r'^auth/token/',
-        include('djoser.urls')
-    ),
-    url(
-        r'^auth/',
-        include('djoser.urls.authtoken', namespace='djoser')
+        authtoken.obtain_auth_token
     ),
     url(
         r'^oauth2/',
