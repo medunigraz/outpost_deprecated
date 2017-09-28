@@ -8,19 +8,19 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     forward = [
-        """
+        '''
         DROP VIEW IF EXISTS "public"."campusonline_room";
-        """,
-        """
+        ''',
+        '''
         DROP VIEW IF EXISTS "public"."campusonline_room_category";
-        """,
-        """
+        ''',
+        '''
         DROP VIEW IF EXISTS "public"."campusonline_floor";
-        """,
-        """
+        ''',
+        '''
         DROP VIEW IF EXISTS "public"."campusonline_building";
-        """,
-        """
+        ''',
+        '''
         CREATE MATERIALIZED VIEW "public"."campusonline_building" AS SELECT
             gebaeude_nr::integer AS id,
             name,
@@ -28,23 +28,23 @@ class Migration(migrations.Migration):
             strasse_hausnummer AS address
         FROM "campusonline"."gebaeude"
         WITH DATA;
-        """,
-        """
+        ''',
+        '''
         CREATE MATERIALIZED VIEW "public"."campusonline_floor" AS SELECT
             nr ::integer AS id,
             kurzbezeichnung AS short,
             name
         FROM "campusonline"."stockwerk"
         WITH DATA;
-        """,
-        """
+        ''',
+        '''
         CREATE MATERIALIZED VIEW "public"."campusonline_room_category" AS SELECT
             nr ::integer AS id,
             name_de AS name
         FROM "campusonline"."raum_kategorie"
         WITH DATA;
-        """,
-        """
+        ''',
+        '''
         CREATE MATERIALIZED VIEW "public"."campusonline_room" AS SELECT
             raum_nr ::integer AS id,
             raum_bez AS title,
@@ -58,43 +58,43 @@ class Migration(migrations.Migration):
             raumtyp ::integer AS category_id
         FROM "campusonline"."raum"
         WITH DATA;
-        """,
+        ''',
     ]
     reverse = [
-        """
+        '''
         DROP MATERIALIZED VIEW IF EXISTS "public"."campusonline_room";
-        """,
-        """
+        ''',
+        '''
         DROP MATERIALIZED VIEW IF EXISTS "public"."campusonline_room_category";
-        """,
-        """
+        ''',
+        '''
         DROP MATERIALIZED VIEW IF EXISTS "public"."campusonline_floor";
-        """,
-        """
+        ''',
+        '''
         DROP MATERIALIZED VIEW IF EXISTS "public"."campusonline_building";
-        """,
-        """
+        ''',
+        '''
         CREATE VIEW "public"."campusonline_building" AS SELECT
             gebaeude_nr::integer AS id,
             name,
             kurzbezeichnung AS short,
             strasse_hausnummer AS address
         FROM "campusonline"."gebaeude";
-        """,
-        """
+        ''',
+        '''
         CREATE VIEW "public"."campusonline_floor" AS SELECT
             nr ::integer AS id,
             kurzbezeichnung AS short,
             name
         FROM "campusonline"."stockwerk";
-        """,
-        """
+        ''',
+        '''
         CREATE VIEW "public"."campusonline_room_category" AS SELECT
             nr ::integer AS id,
             name_de AS name
         FROM "campusonline"."raum_kategorie";
-        """,
-        """
+        ''',
+        '''
         CREATE VIEW "public"."campusonline_room" AS SELECT
             raum_nr ::integer AS id,
             raum_bez AS title,
@@ -107,7 +107,7 @@ class Migration(migrations.Migration):
             organisation AS organization,
             raumtyp ::integer AS category_id
         FROM "campusonline"."raum";
-        """,
+        ''',
     ]
 
     dependencies = [

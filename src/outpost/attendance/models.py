@@ -9,8 +9,10 @@ from django_fsm import (
 
 
 class Terminal(models.Model):
-    campusonline = models.ForeignKey(
-        'geo.Room',
+    room = models.ForeignKey(
+        'campusonline.Room',
+        models.SET_NULL,
+        db_constraint=False,
         null=True,
         blank=True,
         related_name='+'
@@ -24,40 +26,41 @@ class Terminal(models.Model):
     hostname = models.CharField(
         max_length=128
     )
-    config = JSONField()
-
-
-class Lecturer(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
-    campusonline = models.IntegerField()
+    config = JSONField(
+        null=True
+    )
 
     def __str__(self):
-        return '{s.user}'.format(s=self)
-
-
-class Student(models.Model):
-    matriculation = models.PositiveIntegerField()
-    campusonline = models.IntegerField()
-
-    def __str__(self):
-        return '{s.matriculation}'.format(s=self)
-
-
-class Card(models.Model):
-    serial = models.CharField(max_length=32)
-    student = models.ForeignKey('Student')
-    enabled = models.BooleanField(default=True)
+        return '{s.room} [{s.hostname}]'.format(s=self)
 
 
 class Holding(models.Model):
     state = FSMField(default='pending')
     campusonline = models.IntegerField()
     room = models.ForeignKey(
-        'geo.Room'
+        'campusonline.Room',
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        related_name='+'
     )
-    lecturer = models.ForeignKey('Lecturer')
-    initiated = models.DateTimeField(null=True, blank=True)
-    finished = models.DateTimeField(null=True, blank=True)
+    lecturer = models.ForeignKey(
+        'campusonline.Person',
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        related_name='+'
+    )
+    initiated = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+    finished = models.DateTimeField(
+        null=True,
+        blank=True
+    )
 
     @transition(field=state, source='pending', target='running')
     def start(self):
@@ -79,20 +82,59 @@ class Holding(models.Model):
             e.pullout()
             e.save()
 
+    def __str__(self):
+        return '{s.campusonline} [{s.lecturer}, {s.room}: {s.state}]'.format(s=self)
+
 
 class Entry(models.Model):
-    student = models.ForeignKey('Student')
-    room = models.ForeignKey('geo.Room', null=True, blank=True)
-    holding = models.ForeignKey('Holding', null=True, blank=True)
-    registered = models.DateTimeField(auto_now_add=True)
-    assigned = models.DateTimeField(null=True, blank=True)
-    quit = models.DateTimeField(null=True, blank=True)
-    completed = models.DateTimeField(null=True, blank=True)
-    state = FSMField(default='registered')
+    student = models.ForeignKey(
+        'campusonline.Student',
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        related_name='+'
+    )
+    room = models.ForeignKey(
+        'campusonline.Room',
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        related_name='+'
+    )
+    holding = models.ForeignKey(
+        'Holding',
+        null=True,
+        blank=True
+    )
+    registered = models.DateTimeField(
+        auto_now_add=True
+    )
+    assigned = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+    quit = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+    completed = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+    state = FSMField(
+        default='registered'
+    )
+
+    class Meta:
+        ordering = (
+            'registered',
+        )
 
     @transition(field=state, source='registered', target='canceled')
     def cancel(self):
-        return
+        self.quit = timezone.now()
 
     @transition(field=state, source='registered', target='assigned')
     def assign(self, holding):
@@ -116,3 +158,6 @@ class Entry(models.Model):
                 student=self.student,
                 room=self.room
             )
+
+    def __str__(self):
+        return '{s.student} [{s.room}: {s.state}]'.format(s=self)

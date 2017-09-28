@@ -14,6 +14,9 @@ class RoomCategory(models.Model):
     class Meta:
         managed = False
         db_table = 'campusonline_room_category'
+        ordering = (
+            'name',
+        )
 
     def __str__(self):
         return self.name
@@ -86,9 +89,13 @@ class Room(models.Model):
     class Meta:
         managed = False
         db_table = 'campusonline_room'
+        ordering = (
+            'name_full',
+            'title',
+        )
 
     def __str__(self):
-        return '{s.title} ({s.name_full})'.format(s=self)
+        return '{s.name_full}: {s.title}'.format(s=self)
 
 
 class Floor(models.Model):
@@ -109,6 +116,9 @@ class Floor(models.Model):
     class Meta:
         managed = False
         db_table = 'campusonline_floor'
+        ordering = (
+            'name',
+        )
 
     def __str__(self):
         return '{s.name} ({s.short})'.format(s=self)
@@ -137,6 +147,9 @@ class Building(models.Model):
     class Meta:
         managed = False
         db_table = 'campusonline_building'
+        ordering = (
+            'name',
+        )
 
     def __str__(self):
         return '{s.name} ({s.short})'.format(s=self)
@@ -174,6 +187,9 @@ class Organization(models.Model):
     class Meta:
         managed = False
         db_table = 'campusonline_organization'
+        ordering = (
+            'name',
+        )
 
     def __str__(self):
         return self.name
@@ -210,6 +226,140 @@ class Person(models.Model):
     class Meta:
         managed = False
         db_table = 'campusonline_person'
+        ordering = (
+            'last_name',
+            'first_name',
+        )
 
     def __str__(self):
         return '{s.last_name}, {s.first_name}'.format(s=self)
+
+
+class Student(models.Model):
+    id = models.IntegerField(
+        primary_key=True
+    )
+    matriculation = models.CharField(
+        max_length=16,
+        blank=True,
+        null=True
+    )
+    first_name = models.CharField(
+        max_length=256
+    )
+    last_name = models.CharField(
+        max_length=256
+    )
+    title = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True
+    )
+    cardid = models.CharField(
+        max_length=16,
+        blank=True,
+        null=True
+    )
+
+    class Meta:
+        managed = False
+        db_table = 'campusonline_student'
+        ordering = (
+            'last_name',
+            'first_name',
+        )
+
+    def __str__(self):
+        return '{s.last_name}, {s.first_name}'.format(s=self)
+
+
+class Course(models.Model):
+    id = models.IntegerField(
+        primary_key=True
+    )
+    name = models.CharField(
+        max_length=256
+    )
+    category = models.CharField(
+        max_length=256
+    )
+    year = models.CharField(
+        max_length=256
+    )
+    semester = models.CharField(
+        max_length=256
+    )
+
+    class Meta:
+        managed = False
+        db_table = 'campusonline_course'
+
+    def __str__(self):
+        return '{s.name} ({s.semester}:{s.year})'.format(s=self)
+
+
+class CourseGroup(models.Model):
+    id = models.IntegerField(
+        primary_key=True
+    )
+    course = models.ForeignKey(
+        'Course',
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        related_name='+'
+    )
+    name = models.CharField(
+        max_length=256
+    )
+    students = models.ManyToManyField(
+        'Student'
+    )
+
+    class Meta:
+        managed = False
+        db_table = 'campusonline_coursegroup'
+
+    def __str__(self):
+        return '{s.name} ({s.course})'.format(s=self)
+
+
+class CourseGroupTerm(models.Model):
+    id = models.CharField(
+        primary_key=True,
+        max_length=128
+    )
+    coursegroup = models.ForeignKey(
+        'CourseGroup',
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        related_name='+'
+    )
+    person = models.ForeignKey(
+        'Person',
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        related_name='+'
+    )
+    start = models.DateTimeField()
+    end = models.DateTimeField()
+    room = models.ForeignKey(
+        'Room',
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        related_name='+'
+    )
+
+    class Meta:
+        managed = False
+        db_table = 'campusonline_coursegroupterm'
+
+    def __str__(self):
+        return '{s.coursegroup} ({s.person}): {s.room} {s.start}-{s.end}'.format(s=self)

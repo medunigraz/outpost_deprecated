@@ -6,5 +6,5 @@ from django.conf.urls import (
 from . import views
 
 urlpatterns = [
-    url(r'^(:?P<room>\d+)/$', views.HoldingView.as_view()),
+    url(r'^(?P<room>[\w\d\.]+)/$', views.HoldingView.as_view()),
 ]

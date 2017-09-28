@@ -1,9 +1,8 @@
 import logging
-import subprocess
-from concurrent import futures
-from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta
 
+from django.db.models import Q
+from celery.task.schedules import crontab
 from celery.task import (
     PeriodicTask,
     Task,
@@ -12,9 +11,23 @@ from celery.task import (
 from .models import (
     Holding,
     Terminal,
+    Entry,
 )
 
 logger = logging.getLogger(__name__)
+
+
+class EntryCleanUpTask(PeriodicTask):
+    run_every = crontab(hour=0, minute=0)
+
+    def run(self, **kwargs):
+        cond = Q(state='registered') | Q(state='assigned')
+        for e in Entry.objects.filter(cond):
+            if e.state == 'registered':
+                e.cancel()
+            if e.state == 'assigned':
+                e.leave()
+            e.save()
 
 
 class HoldingCleanUpTask(PeriodicTask):
@@ -22,7 +35,7 @@ class HoldingCleanUpTask(PeriodicTask):
 
     def run(self, **kwargs):
         # TODO: Fix filter to find holding that have recently ended
-        for h in Holding.objects.filter(state='running', campusonline__blafoobar=True):
+        for h in Holding.objects.filter(state='running'):
             h.end()
             h.save()
 
@@ -31,25 +44,9 @@ class TerminalOnlineTask(PeriodicTask):
     run_every = timedelta(minutes=5)
 
     def run(self, **kwargs):
-
-        def check(terminal):
-            logger.debug('Pinging {}.'.format(recorder))
-            proc = subprocess.run(
-                [
-                    'ping',
-                    '-c1',
-                    '-w2',
-                    terminal.hostname
-                ]
-            )
-            online = (proc.returncode == 0)
-            if terminal.online != online:
-                terminal.online = online
-                logger.debug('Terminal {} online: {}'.format(terminal, online))
-                terminal.save()
-
         terminals = Terminal.objects.filter(enabled=True)
         logger.info('Pinging {} terminals.'.format(terminals.count()))
 
-        with ThreadPoolExecutor() as executor:
-            executor.map(check, terminals)
+        for t in terminals:
+            t.update()
+

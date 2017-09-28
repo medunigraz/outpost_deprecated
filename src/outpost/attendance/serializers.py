@@ -13,12 +13,6 @@ class HoldingSerializer(serializers.ModelSerializer):
         model = models.Holding
 
 
-class StudentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Student
-
-
 class EntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Entry
-        fields = ['id', 'student', 'direction']
