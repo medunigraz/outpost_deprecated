@@ -126,6 +126,9 @@ class Entry(models.Model):
     state = FSMField(
         default='registered'
     )
+    autoend = models.BooleanField(
+        default=False
+    )
 
     class Meta:
         ordering = (
@@ -133,7 +136,8 @@ class Entry(models.Model):
         )
 
     @transition(field=state, source='registered', target='canceled')
-    def cancel(self):
+    def cancel(self, autoend=False):
+        self.autoend = autoend
         self.quit = timezone.now()
 
     @transition(field=state, source='registered', target='assigned')
@@ -146,7 +150,8 @@ class Entry(models.Model):
         self.quit = timezone.now()
 
     @transition(field=state, source='assigned', target='left')
-    def leave(self):
+    def leave(self, autoend=False):
+        self.autoend = autoend
         self.quit = timezone.now()
 
     @transition(field=state, source=('assigned', 'left'), target='complete')

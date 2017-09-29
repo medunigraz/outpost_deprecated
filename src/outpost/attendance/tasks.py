@@ -1,6 +1,7 @@
 import logging
 from datetime import timedelta
 
+from django.utils import timezone
 from django.db.models import Q
 from celery.task.schedules import crontab
 from celery.task import (
@@ -18,15 +19,16 @@ logger = logging.getLogger(__name__)
 
 
 class EntryCleanUpTask(PeriodicTask):
-    run_every = crontab(hour=0, minute=0)
+    run_every = timedelta(minutes=5)
 
     def run(self, **kwargs):
-        cond = Q(state='registered') | Q(state='assigned')
+        past = timezone.now() - timedelta(hours=12)
+        cond = (Q(state='registered') & Q(registered__lt=past)) | (Q(state='assigned') & Q(assigned__lt=past))
         for e in Entry.objects.filter(cond):
             if e.state == 'registered':
-                e.cancel()
+                e.cancel(True)
             if e.state == 'assigned':
-                e.leave()
+                e.leave(True)
             e.save()
 
 
@@ -49,4 +51,3 @@ class TerminalOnlineTask(PeriodicTask):
 
         for t in terminals:
             t.update()
-
