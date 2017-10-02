@@ -67,3 +67,14 @@ class Icon(models.Model):
 class License(models.Model):
     name = models.CharField(max_length=128)
     text = models.TextField()
+
+    def __str__(self):
+        return self.name
+
+
+class ReplaceableEntity(models.Model):
+    name = models.CharField(max_length=16, primary_key=True)
+    character = models.CharField(max_length=1)
+
+    def __str__(self):
+        return self.name
