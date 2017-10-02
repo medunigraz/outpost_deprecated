@@ -28,7 +28,21 @@ class EntryAdmin(admin.ModelAdmin):
 
 @admin.register(models.Terminal)
 class TerminalAdmin(admin.ModelAdmin):
-    pass
+    list_display = (
+        'hostname',
+        'room',
+        'enabled',
+        'online',
+    )
+    list_filter = (
+        'enabled',
+        'online',
+    )
+    search_fields = (
+        'room__name',
+        'room__campusonline__title',
+        'hostname',
+    )
 
 
 @admin.register(models.Holding)
