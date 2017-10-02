@@ -165,17 +165,6 @@ class ExportTask(Task):
             )
 
 
-class RecorderOnlineTask(PeriodicTask):
-    run_every = timedelta(minutes=5)
-
-    def run(self, **kwargs):
-        recorders = Recorder.objects.filter(enabled=True)
-        logger.info('Pinging {} recorders.'.format(recorders.count()))
-
-        for r in recorders:
-            r.update()
-
-
 class EpiphanSourcePreviewTask(PeriodicTask):
     run_every = timedelta(minutes=1)
 

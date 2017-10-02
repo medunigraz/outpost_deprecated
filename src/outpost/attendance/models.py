@@ -7,8 +7,10 @@ from django_fsm import (
     transition,
 )
 
+from ..base.models import NetworkedDeviceMixin
 
-class Terminal(models.Model):
+
+class Terminal(NetworkedDeviceMixin, models.Model):
     room = models.ForeignKey(
         'campusonline.Room',
         models.SET_NULL,
@@ -16,15 +18,6 @@ class Terminal(models.Model):
         null=True,
         blank=True,
         related_name='+'
-    )
-    enabled = models.BooleanField(
-        default=False
-    )
-    online = models.BooleanField(
-        default=False
-    )
-    hostname = models.CharField(
-        max_length=128
     )
     config = JSONField(
         null=True

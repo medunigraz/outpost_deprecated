@@ -45,6 +45,7 @@ from taggit.managers import TaggableManager
 from ..base.decorators import signal_connect
 from ..base.utils import Uuid4Upload
 from .utils import FFMPEGProcess, FFMPEGDurationHandler
+from ..base.models import NetworkedDeviceMixin
 
 logger = logging.getLogger(__name__)
 
@@ -99,35 +100,13 @@ class Server(models.Model):
         return '*:{s.port}'.format(s=self)
 
 
-class Recorder(PolymorphicModel):
+class Recorder(NetworkedDeviceMixin, PolymorphicModel):
     name = models.CharField(max_length=128, blank=False, null=False)
-    hostname = models.CharField(max_length=128, blank=False, null=False)
-    enabled = models.BooleanField(default=True)
-    online = models.BooleanField(default=False)
     room = models.ForeignKey(
         'geo.Room',
         null=True,
         blank=True
     )
-
-    def update(self):
-        logger.debug('Pinging {}.'.format(self))
-        proc = subprocess.run(
-            [
-                'ping',
-                '-c1',
-                '-w2',
-                self.hostname
-            ],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL
-
-        )
-        online = (proc.returncode == 0)
-        if self.online != online:
-            self.online = online
-            logger.debug('Recorder {} online: {}'.format(self, online))
-            self.save()
 
     class Meta:
         ordering = (

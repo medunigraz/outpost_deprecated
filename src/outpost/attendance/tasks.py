@@ -40,14 +40,3 @@ class HoldingCleanUpTask(PeriodicTask):
         for h in Holding.objects.filter(state='running'):
             h.end()
             h.save()
-
-
-class TerminalOnlineTask(PeriodicTask):
-    run_every = timedelta(minutes=5)
-
-    def run(self, **kwargs):
-        terminals = Terminal.objects.filter(enabled=True)
-        logger.info('Pinging {} terminals.'.format(terminals.count()))
-
-        for t in terminals:
-            t.update()
