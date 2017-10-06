@@ -4,8 +4,9 @@ from datetime import timedelta
 from celery.task import PeriodicTask
 
 from ..campusonline.models import Person as COPerson
+from ..campusonline.models import Organization as COOrganization
 from ..geo.models import Room
-from .models import Person
+from .models import Person, Organization
 
 logger = logging.getLogger(__name__)
 
@@ -27,5 +28,27 @@ class StructureSyncTask(PeriodicTask):
             except Person.DoesNotExist:
                 p = Person(campusonline=cop)
                 logger.debug('Create {}'.format(p))
-            p.room = r
-            p.save()
+            if not p.pk or p.room.pk != r.pk:
+                p.room = r
+                p.save()
+        for p in Person.objects.all():
+            try:
+                COPerson.objects.get(pk=p.campusonline_id)
+            except COPerson.DoesNotExist:
+                logger.debug('Remove {}'.format(p.pk))
+                p.delete()
+        for coo in COOrganization.objects.all():
+            logger.debug('Sync campusonline.Organization {}'.format(coo))
+            try:
+                o = Organization.objects.get(campusonline_id=coo.pk)
+                logger.debug('Found {}'.format(o))
+            except Organization.DoesNotExist:
+                o = Organization(campusonline=coo)
+                logger.debug('Create {}'.format(o))
+                o.save()
+        for o in Organization.objects.all():
+            try:
+                COOrganization.objects.get(pk=o.campusonline_id)
+            except COOrganization.DoesNotExist:
+                logger.debug('Remove {}'.format(o.pk))
+                o.delete()
