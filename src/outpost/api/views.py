@@ -2,10 +2,24 @@ from drf_haystack.filters import HaystackAutocompleteFilter
 from drf_haystack.viewsets import HaystackViewSet
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny
+from xapian_backend import NGRAM_MAX_LENGTH
 
 from . import serializers
 from ..geo import models as geo
 from ..structure import models as structure
+
+
+class LimitingHaystackAutocompleteFilter(HaystackAutocompleteFilter):
+    '''
+    Filter class that truncates all search query tokens to NGRAM_MAX_LENGTH
+    chars.
+    '''
+
+    @staticmethod
+    def get_request_filters(request):
+        data = request.query_params.copy()
+        data['q'] = ' '.join([t[:NGRAM_MAX_LENGTH] for t in data['q'].split()])
+        return data
 
 
 class AutocompleteViewSet(HaystackViewSet):
@@ -37,7 +51,7 @@ class AutocompleteViewSet(HaystackViewSet):
         AllowAny,
     )
     filter_backends = (
-        HaystackAutocompleteFilter,
+        LimitingHaystackAutocompleteFilter,
     )
     pagination_class = LimitOffsetPagination
 
