@@ -34,6 +34,11 @@ class OrganizationIndex(CelerySearchIndex, indexes.Indexable):
     def index_queryset(self, using=None):
         return self.get_model().objects.filter(hidden=False)
 
+    def prepare(self, obj):
+        data = super().prepare(obj)
+        data['boost'] = 3.0
+        return data
+
 
 class PersonIndex(CelerySearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
@@ -61,3 +66,8 @@ class PersonIndex(CelerySearchIndex, indexes.Indexable):
 
     def index_queryset(self, using=None):
         return self.get_model().objects.filter(hidden=False)
+
+    def prepare(self, obj):
+        data = super().prepare(obj)
+        data['boost'] = 2.0
+        return data
