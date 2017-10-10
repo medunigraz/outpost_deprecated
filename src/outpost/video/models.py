@@ -161,6 +161,13 @@ class Epiphan(Recorder):
             from .tasks import EpiphanProvisionTask
             EpiphanProvisionTask().run(self.pk)
 
+    def reboot(self):
+        url = self.url.path('admin/reboot.cgi').as_string()
+        logger.info('Requesting reboot: {}'.format(url))
+        self.session.get(url)
+        self.online = False
+        self.save()
+
 
 class EpiphanChannel(models.Model):
     epiphan = models.ForeignKey('Epiphan')

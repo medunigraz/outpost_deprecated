@@ -12,6 +12,7 @@ from celery.task import (
     PeriodicTask,
     Task,
 )
+from celery.schedules import crontab
 from django.conf import settings
 
 from .models import (
@@ -177,3 +178,17 @@ class EpiphanSourcePreviewTask(PeriodicTask):
 
         for s in sources:
             s.update()
+
+
+class EpiphanRebootTask(PeriodicTask):
+    run_every = crontab(hour=5, minute=0)
+
+    def run(self, **kwargs):
+        epiphans = Epiphan.objects.filter(
+            enabled=True,
+            online=True,
+        )
+        logger.info('Rebooting Epiphans: {}'.format(epiphans.count()))
+
+        for e in epiphans:
+            e.reboot()
