@@ -10,6 +10,23 @@
     factory(jQuery);
   }
 }(function($) {
+
+  $.views.delimiters('[[', ']]');
+
+  $.fn.confirm = function(title, content, proceed) {
+    var popover = {
+      title: title,
+      content: content,
+      html: true,
+      trigger: 'focus'
+    };
+    this.each(function() {
+      $(this).popover(popover).on('inserted.bs.popover', function() {
+        $($(this).data('bs.popover').$tip).find('.proceed').on('click', proceed);
+      });
+    });
+  };
+
   var $originalAjax = $.ajax.bind($);
 
   $.ajax = function (url, options) {
