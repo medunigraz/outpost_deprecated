@@ -1,7 +1,7 @@
 from celery_haystack.indexes import CelerySearchIndex
 from haystack import indexes
 
-from .models import Room
+from .models import Room, PointOfInterestInstance
 
 
 class RoomIndex(CelerySearchIndex, indexes.Indexable):
@@ -51,3 +51,28 @@ class RoomIndex(CelerySearchIndex, indexes.Indexable):
 
     def index_queryset(self, using=None):
         return self.get_model().objects.filter(deprecated=False, virtual=False)
+
+
+class PointOfInterestInstanceIndex(CelerySearchIndex, indexes.Indexable):
+    text = indexes.CharField(document=True, use_template=True)
+    name = indexes.CharField(
+        model_attr='name__name',
+        null=True
+    )
+    description = indexes.CharField(
+        model_attr='description',
+        null=True
+    )
+    level_id = indexes.IntegerField(
+        model_attr='level__pk',
+        null=True
+    )
+
+    presentation = indexes.CharField(use_template=True)
+    autocomplete = indexes.EdgeNgramField(use_template=True)
+
+    def get_model(self):
+        return PointOfInterestInstance
+
+    def index_queryset(self, using=None):
+        return self.get_model().objects.filter(deprecated=False)
