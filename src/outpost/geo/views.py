@@ -1,7 +1,6 @@
 import re
 
 from braces.views import CsrfExemptMixin
-from django.db import connection
 from drf_haystack.viewsets import HaystackViewSet
 from oauth2_provider.ext.rest_framework import IsAuthenticatedOrTokenHasScope
 from rest_framework import viewsets
@@ -302,7 +301,7 @@ class RoutingEdgeViewSet(ListETAGMixin, ListCacheResponseMixin, MediatypeNegotia
     list_cache_key_func = keys.RoutingEdgeListKeyConstructor()
     list_etag_func = keys.RoutingEdgeListKeyConstructor()
 
-    statement = ("""
+    statement = '''
         SELECT
             r.seq AS sequence,
             e.*
@@ -355,7 +354,8 @@ class RoutingEdgeViewSet(ListETAGMixin, ListCacheResponseMixin, MediatypeNegotia
         WHERE
             r.edge = e.id AND
             r.edge >= 0
-        ORDER BY r.seq ASC""")
+        ORDER BY r.seq ASC
+    '''
 
     def get_queryset(self):
         source = self.request.GET.get('from', None)
