@@ -1,4 +1,5 @@
 {% extends 'outpost/base.html' %}
+{% load i18n %}
 {% load static %}
 {% load imagekit %}
 
@@ -21,12 +22,12 @@
   </h1>
 </div>
 {% if object.epiphansource_set.exists %}
-<h2>Preview of sources</h2>
+<h2>Sources</h2>
 <div class="row">
   {% for s in object.epiphansource_set.all %}
   {% if s.preview %}
   <div class="col-xs-6 col-md-3">
-    <a class="thumbnail" href="{{ s.preview.url }}" data-toggle="modal" data-target="#previewModal" data-remote="false">
+    <a class="thumbnail" href="{{ s.preview.url }}" data-toggle="modal" data-target="#lightbox" data-remote="false">
       {% generateimage 'video:source_thumbnail' source=s.preview %}
     </a>
   </div>
@@ -38,6 +39,30 @@
   No preview images available because of missing sources.
 </div>
 {% endif %}
+<h2>Channels</h2>
+<table class="table table-striped" id="channels">
+<thead>
+  <tr>
+    <th>Name</th>
+    <th>Path</th>
+    <th></th>
+  </tr>
+</thead>
+<tbody>
+  {% for c in object.epiphanchannel_set.all %}
+  <tr class="channel" data-url="{% url "video:recorder:epiphan-channel" pk=object.pk channel=c.pk %}">
+    <th scope="row">
+      {{ c.name }}
+    </th>
+    <td>
+      {{ c.path }}
+    </td>
+    <td class="status">
+    </td>
+  </tr>
+  {% endfor %}
+</tbody>
+</table>
 <h2>Recordings</h2>
 {% if object.recording_set.exists %}
 <table class="table table-striped">
@@ -53,12 +78,16 @@
   <tr>
     <th scope="row">
       <a href="{% url 'video:recording:detail' pk=r.pk%}" class="btn btn-primary btn-xs">
-        <span >
         {{ r.pk }}
       </a>
     </th>
     <td>{{ r.created }}</td>
-    <td>{{ r.data.size|filesizeformat }}</td>
+    <td>
+      <a href="{{ r.data.url }}" class="btn btn-default btn-sm">
+        <span class="glyphicon glyphicon-download"></span>
+        {{ r.data.size|filesizeformat }}
+      </a>
+    </td>
   </tr>
   {% endfor %}
 </tbody>
@@ -68,23 +97,28 @@
   No recordings yet!
 </div>
 {% endif %}
-<div class="modal fade" id="previewModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-body">
-        <img>
-      </div>
-    </div>
-  </div>
-</div>
+<script id="tmpl-channel-start" type="text/x-jsrender">
+<button class="btn btn-danger btn-xs start" type="button" data-toggle="tooltip" data-placement="right" title="Stop recording">
+  <span class="glyphicon glyphicon-play"></span>
+  {% trans "Start" %}
+</button>
+</script>
+<script id="tmpl-channel-stop" type="text/x-jsrender">
+<button class="btn btn-primary btn-xs" type="button" data-toggle="tooltip" data-placement="right" title="Start recording">
+  <span class="glyphicon glyphicon-stop"></span>
+  {% trans "Stop" %}
+</button>
+</script>
+{% include 'base/includes/lightbox.html' %}
 {% endblock %}
 
 {% block style %}
   {{ block.super }}
-  <link rel="stylesheet" href="{% static 'video/preview.scss' %}" type="text/x-scss" charset="utf-8">
+  <link rel="stylesheet" href="{% static 'base/lightbox.scss' %}" type="text/x-scss" charset="utf-8">
 {% endblock %}
 
 {% block script %}
   {{ block.super }}
-  <script src="{% static 'video/preview.js' %}"></script>
+  <script src="{% static 'base/lightbox.js' %}"></script>
+  <script src="{% static 'video/epiphan.js' %}"></script>
 {% endblock %}

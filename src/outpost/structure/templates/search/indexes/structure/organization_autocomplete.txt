@@ -1,1 +1,1 @@
-{{ object.campusonline.name }}, {{ object.campusonline.address }}
+{{ object.campusonline.name }} {{ object.campusonline.address }}

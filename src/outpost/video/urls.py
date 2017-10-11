@@ -45,6 +45,11 @@ recorder = [
         views.RecorderDetailView.as_view(),
         name='detail'
     ),
+    url(
+        r'^(?P<pk>\d+)/epiphan/channel/(?P<channel>\d+)/$',
+        views.EpiphanChannelView.as_view(),
+        name='epiphan-channel'
+    ),
 ]
 
 urlpatterns = [

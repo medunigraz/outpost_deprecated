@@ -21,6 +21,8 @@ from .models import (
     Export,
     Recorder,
     Recording,
+    Epiphan,
+    EpiphanChannel,
     Stream,
     Token,
 )
@@ -96,3 +98,29 @@ class RecorderListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
 class RecorderDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Recorder
     permission_required = 'video.change_recorder'
+
+
+class EpiphanChannelView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    permission_required = 'video.change_recorder'
+    http_method_names = [
+        'get',
+        'start',
+        'stop',
+    ]
+
+    def get(self, request, pk, channel):
+        epiphan = get_object_or_404(Epiphan, pk=pk)
+        obj = get_object_or_404(EpiphanChannel, pk=channel, epiphan=epiphan)
+        return JsonResponse(obj.response())
+
+    def start(self, request, pk, channel):
+        epiphan = get_object_or_404(Epiphan, pk=pk)
+        obj = get_object_or_404(EpiphanChannel, pk=channel, epiphan=epiphan)
+        obj.start()
+        return JsonResponse(obj.response())
+
+    def stop(self, request, pk, channel):
+        epiphan = get_object_or_404(Epiphan, pk=pk)
+        obj = get_object_or_404(EpiphanChannel, pk=channel, epiphan=epiphan)
+        obj.stop()
+        return JsonResponse(obj.response())

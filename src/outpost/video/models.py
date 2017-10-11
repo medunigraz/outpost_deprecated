@@ -213,6 +213,11 @@ class EpiphanChannel(models.Model):
             return False
         return re.match('^rec_enabled = on$', r.text) is not None
 
+    def response(self):
+        data = dict()
+        data['recording'] = self.recording()
+        return data
+
     def __str__(self):
         return '{s.epiphan}, {s.name}'.format(s=self)
 
