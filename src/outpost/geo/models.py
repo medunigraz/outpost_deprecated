@@ -1,9 +1,12 @@
 import reversion
-
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.gis.db import models
-from django.contrib.gis.geos import Point
+from django.contrib.gis.geos import (
+    LineString,
+    Point,
+)
+from django.db.models import Q
 from django_extensions.db.models import TimeStampedModel
 from ordered_model.models import OrderedModel
 from polymorphic.models import PolymorphicModel
@@ -117,6 +120,8 @@ class Node(TimeStampedModel, PolymorphicModel):
         )
 
     def post_save(self, *args, **kwargs):
+        for e in Edge.objects.filter(Q(source=self) | Q(destination=self)):
+            e.save()
         UpdatedAtKeyBit.update(self)
 
     def post_delete(self, *args, **kwargs):
@@ -166,6 +171,9 @@ class Edge(models.Model):
 
     def __str__(self):
         return 'Edge between {s.source} and {s.destination}'.format(s=self)
+
+    def pre_save(self, *args, **kwargs):
+        self.path = LineString(self.source.center, self.destination.center)
 
     def post_save(self, *args, **kwargs):
         UpdatedAtKeyBit.update(self)
