@@ -251,10 +251,10 @@ class Room(OriginMixin, Node):
             self.marker = Point(min(filter(lambda k: y(k) == max_y, c[0]), key=lambda k: x(k)), srid=settings.DEFAULT_SRID)
 
     def post_save(self, *args, **kwargs):
-        UpdatedAtKeyBit.update(self)
+        super().post_save(*args, **kwargs)
 
     def post_delete(self, *args, **kwargs):
-        UpdatedAtKeyBit.update(self)
+        super().post_delete(*args, **kwargs)
 
 
 @signal_connect
@@ -272,10 +272,10 @@ class Door(OriginMixin, Node):
             self.center = self.layout.centroid
 
     def post_save(self, *args, **kwargs):
-        UpdatedAtKeyBit.update(self)
+        super().post_save(*args, **kwargs)
 
     def post_delete(self, *args, **kwargs):
-        UpdatedAtKeyBit.update(self)
+        super().post_delete(*args, **kwargs)
 
 
 @signal_connect
@@ -324,7 +324,7 @@ class PointOfInterestInstance(Node):
         return str(self.name)
 
     def post_save(self, *args, **kwargs):
-        UpdatedAtKeyBit.update(self)
+        super().post_save(*args, **kwargs)
 
     def post_delete(self, *args, **kwargs):
-        UpdatedAtKeyBit.update(self)
+        super().post_delete(*args, **kwargs)
