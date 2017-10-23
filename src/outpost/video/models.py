@@ -278,6 +278,30 @@ class EpiphanRecording(Recording):
     channel = models.ForeignKey('EpiphanChannel', null=True)
 
 
+@signal_connect
+class RecordingAsset(models.Model):
+    recording = models.ForeignKey(
+        'Recording'
+    )
+    name = models.CharField(
+        max_length=128
+    )
+    description = models.TextField(
+        null=True,
+        blank=True
+    )
+    data = models.FileField(
+        upload_to=Uuid4Upload
+    )
+    mimetype = models.TextField()
+
+    def __str__(self):
+        return self.name
+
+    def pre_delete(self, *args, **kwargs):
+        self.data.delete(False)
+
+
 class Export(PolymorphicModel):
     recording = models.ForeignKey(
         'Recording',

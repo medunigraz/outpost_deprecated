@@ -8,6 +8,10 @@ class EpiphanRecordingInlineAdmin(admin.TabularInline):
     model = models.EpiphanRecording
 
 
+class RecordingAssetInlineAdmin(admin.TabularInline):
+    model = models.RecordingAsset
+
+
 class EpiphanChannelInlineAdmin(admin.TabularInline):
     model = models.EpiphanChannel
 
@@ -93,3 +97,19 @@ class EpiphanAdmin(admin.ModelAdmin):
 #@admin.register(models.Event)
 #class EventAdmin(admin.ModelAdmin):
 #    pass
+
+
+@admin.register(models.Recording)
+class RecordingAdmin(admin.ModelAdmin):
+    list_display = (
+        'pk',
+        'recorder',
+        'created',
+    )
+    date_hierarchy = 'created'
+    list_filter = (
+        'recorder',
+    )
+    inlines = (
+        RecordingAssetInlineAdmin,
+    )
