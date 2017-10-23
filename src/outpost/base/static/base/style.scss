@@ -17,6 +17,9 @@ body {
 label {
   font-weight: bold;
 }
+table.table-vcenter tbody tr td {
+  vertical-align: middle;
+}
 .navbar {
   .logo {
     padding: 10px;
