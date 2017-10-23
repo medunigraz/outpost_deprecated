@@ -11,6 +11,7 @@ from ..geo import views as geo
 from ..positioning import views as positioning
 from ..structure import views as structure
 from ..typo3 import views as typo3
+from ..video import views as video
 
 v1 = DefaultRouter()
 v1.register(
@@ -143,6 +144,18 @@ v1.register(
     r'typo3/search/news',
     typo3.NewsSearchViewSet,
     base_name='news-search'
+)
+v1.register(
+    r'video/recorder',
+    video.RecorderViewSet
+)
+v1.register(
+    r'video/recording',
+    video.RecordingViewSet
+)
+v1.register(
+    r'video/recordingasset',
+    video.RecordingAssetViewSet
 )
 
 urlpatterns = [

@@ -15,16 +15,33 @@ from django.views.generic import (
     TemplateView,
     View,
 )
+from rest_framework.viewsets import (
+    ModelViewSet,
+)
+from rest_framework.filters import DjangoFilterBackend
+from rest_framework.permissions import (
+    AllowAny,
+    DjangoModelPermissions,
+    DjangoModelPermissionsOrAnonReadOnly,
+    IsAuthenticatedOrReadOnly,
+)
+from guardian.shortcuts import get_objects_for_user
 
 from .models import (
     Broadcast,
     Export,
     Recorder,
     Recording,
+    RecordingAsset,
     Epiphan,
     EpiphanChannel,
     Stream,
     Token,
+)
+from .serializers import (
+    RecorderSerializer,
+    RecordingSerializer,
+    RecordingAssetSerializer,
 )
 from .tasks import ExportTask
 
@@ -124,3 +141,60 @@ class EpiphanChannelView(LoginRequiredMixin, PermissionRequiredMixin, View):
         obj = get_object_or_404(EpiphanChannel, pk=channel, epiphan=epiphan)
         obj.stop()
         return JsonResponse(obj.response())
+
+
+class RecorderViewSet(ModelViewSet):
+    queryset = Recorder.objects.all()
+    serializer_class = RecorderSerializer
+    permission_classes = (
+        DjangoModelPermissions,
+    )
+    filter_backends = (
+        DjangoFilterBackend,
+    )
+    filter_fields = ()
+
+    def get_queryset(self):
+        return get_objects_for_user(
+            self.request.user,
+            'video.view_recorder',
+            klass=self.queryset
+        )
+
+
+class RecordingViewSet(ModelViewSet):
+    queryset = Recording.objects.all()
+    serializer_class = RecordingSerializer
+    permission_classes = (
+        DjangoModelPermissions,
+    )
+    filter_backends = (
+        DjangoFilterBackend,
+    )
+    filter_fields = ()
+
+    def get_queryset(self):
+        return get_objects_for_user(
+            self.request.user,
+            'video.view_recording',
+            klass=self.queryset
+        )
+
+
+class RecordingAssetViewSet(ModelViewSet):
+    queryset = RecordingAsset.objects.all()
+    serializer_class = RecordingAssetSerializer
+    permission_classes = (
+        DjangoModelPermissions,
+    )
+    filter_backends = (
+        DjangoFilterBackend,
+    )
+    filter_fields = ()
+
+    def get_queryset(self):
+        return get_objects_for_user(
+            self.request.user,
+            'video.view_recordingasset',
+            klass=self.queryset
+        )
