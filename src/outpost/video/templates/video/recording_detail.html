@@ -1,49 +1,65 @@
 {% extends 'outpost/base.html' %}
 {% load static %}
+{% load i18n %}
 
 {% block content %}
-<h1>{{object }}</h1>
-  <div id="alert" class="alert alert-danger hidden" role="alert">
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-      <span aria-hidden="true">&times;</span>
-    </button>
-    <span class="glyphicon glyphicon-warning-sign"></span>
-    <span class="message"></span>
-  </div>
+<h1>
+  {% blocktrans with pk=object.pk %}Recording {{ pk }}{% endblocktrans %}
+  <small>
+    {{ object.recorder }}, {{ object.created|date:'SHORT_DATETIME_FORMAT' }}
+  </small>
+</h1>
+<div id="alert" class="alert alert-danger hidden" role="alert">
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+  <span class="glyphicon glyphicon-warning-sign"></span>
+  <span class="message"></span>
+</div>
 <div class="row">
-{% for exporter in exporters %}
-<div class="col-xs-18 col-sm-6 col-md-3 exporter" data-url="{% url 'video:recording:export' pk=object.pk exporter=exporter.1 %}">
-<div class="panel panel-default">
-  <div class="panel-heading">
-    {{ exporter.0 }}
+  <div class="col-xs-12">
+    <p>
+      <a href="{{ object.data.url }}" class="btn btn-primary btn-block">
+        <span class="glyphicon glyphicon-download-alt"></span>
+        {{ object.info.format.format_long_name }} ({{ object.data.size|filesizeformat }})
+      </a>
+    </p>
   </div>
-  <div class="panel-body">
-    <button type="button" class="btn btn-default btn-block request">
-      <span class="glyphicon glyphicon-open"></span>
-      Request
-    </button>
-    <a href="" class="btn btn-success btn-block hidden download">
-      <span class="glyphicon glyphicon-download-alt"></span>
-      Download
-    </a>
-  </div>
-  <div class="panel-footer hidden status">
-    <div class="progress">
-      <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-        <span>
-          <span class="action"></span>
-          (<span class="percent">0</span>%)
-        </span>
+</div>
+<div class="row">
+  {% for exporter in exporters %}
+  <div class="col-xs-12 col-sm-6 col-md-3 exporter" data-url="{% url 'video:recording:export' pk=object.pk exporter=exporter.1 %}">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        {{ exporter.0 }}
+      </div>
+      <div class="panel-body">
+        <button type="button" class="btn btn-default btn-block request">
+          <span class="glyphicon glyphicon-repeat"></span>
+          {% trans 'Request' %}
+        </button>
+        <a href="" class="btn btn-success btn-block hidden download">
+          <span class="glyphicon glyphicon-download-alt"></span>
+          {% trans 'Download' %}
+        </a>
+      </div>
+      <div class="panel-footer hidden status">
+        <div class="progress">
+          <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+            <span>
+              <span class="action"></span>
+              (<span class="percent">0</span>%)
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-</div>
-</div>
-{% endfor %}
+  {% endfor %}
 </div>
 {% endblock %}
 
 {% block script %}
-  {{ block.super }}
-  <script src="{% static 'video/export.js' %}"></script>
+{{ block.super }}
+<script src="{% static 'video/export.js' %}"></script>
 {% endblock %}
