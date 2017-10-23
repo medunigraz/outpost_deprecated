@@ -68,8 +68,8 @@ class EpiphanAdmin(admin.ModelAdmin):
     )
     inlines = (
         EpiphanChannelInlineAdmin,
-        EpiphanRecordingInlineAdmin,
         EpiphanSourceInlineAdmin,
+        EpiphanRecordingInlineAdmin,
     )
 
     def fingerprint(self, obj):
