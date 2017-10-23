@@ -3,6 +3,7 @@ from datetime import timedelta
 
 from celery.task import PeriodicTask
 from celery_haystack.tasks import CeleryHaystackUpdateIndex
+from guardian.utils import clean_orphan_obj_perms
 
 from .models import NetworkedDeviceMixin
 
@@ -41,3 +42,10 @@ class UpdateHaystackTask(PeriodicTask):
 
     def run(self):
         CeleryHaystackUpdateIndex().run(remove=True)
+
+
+class CleanUpPermsTask(PeriodicTask):
+    run_every = timedelta(hours=1)
+
+    def run(self):
+        clean_orphan_obj_perms()
