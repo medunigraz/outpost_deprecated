@@ -264,7 +264,7 @@ class Recording(TimeStampedModel):
 
     class Meta:
         ordering = (
-            'created',
+            '-created',
         )
 
     def pre_delete(self, *args, **kwargs):
