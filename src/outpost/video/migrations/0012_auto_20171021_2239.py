@@ -10,7 +10,7 @@ import outpost.base.utils
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('video', '0012_auto_20170927_0929'),
+        ('video', '0011_auto_20170908_1747'),
     ]
 
     operations = [
