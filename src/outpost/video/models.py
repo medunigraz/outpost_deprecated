@@ -375,7 +375,7 @@ class ZipStreamExport(Export):
     def process(self, notify):
         mapping = {
             'h264': 'mp4',
-            'aac': 'aac',
+            'aac': 'mp4',
         }
         streams = []
         args = [
