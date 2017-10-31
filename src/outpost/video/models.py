@@ -405,6 +405,7 @@ class ZipStreamExport(Export):
                     for i, f in enumerate(streams):
                         notify('Zipping', i + 1, len(streams))
                         arc.write(f, os.path.basename(f))
+                        os.remove(f)
                 self.data.save(output.name, File(output.file))
 
     def pre_delete(self, *args, **kwargs):
