@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
-fromd jango.conf import settings
+from django.conf import settings
 
 
 default_app_config = 'outpost.base.apps.BaseConfig'
