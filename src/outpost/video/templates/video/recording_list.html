@@ -4,7 +4,12 @@
 
 {% block content %}
 <h1 class="page-header">
-  <span>{% trans 'Recordings' %}</span>
+  {% trans 'Recordings' %}
+  {% if is_paginated %}
+  <small>
+    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+  </small>
+  {% endif %}
 </h1>
 <div class="row">
   <div class="col-md-12">
@@ -24,8 +29,7 @@
         <tr class="align-middle">
           <th scope="row">
             <a href="{% url 'video:recording:detail' pk=r.pk%}" class="btn btn-primary btn-sm btn-block">
-              <span >
-                {{ r.pk }}
+              <span class="glyphicon glyphicon-file"></span>
             </a>
           </th>
           <td>{{ r.recorder }}</td>
