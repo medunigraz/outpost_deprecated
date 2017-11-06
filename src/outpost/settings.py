@@ -234,6 +234,7 @@ REST_FRAMEWORK = {
         'rest_framework.filters.DjangoFilterBackend',
     ),
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.NamespaceVersioning',
+    'DEFAULT_METADATA_CLASS': 'outpost.api.metadata.ExtendedMetadata',
 }
 
 REST_FRAMEWORK_EXTENSIONS = {
