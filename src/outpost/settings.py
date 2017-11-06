@@ -330,6 +330,12 @@ LOGGING = {
             'level': 'ERROR',
             'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
         },
+        'graypy': {
+            'level': 'WARNING',
+            'class': 'graypy.GELFHandler',
+            'host': 'graylog.medunigraz.at',
+            'port': 12201,
+        },
     },
     'loggers': {
         'root': {
@@ -338,7 +344,12 @@ LOGGING = {
         },
         'django': {
             'handlers': ['console'],
-            'level': 'DEBUG',
+            'level': 'INFO',
+        },
+        'django.request': {
+            'handlers': ['graypy'],
+            'level': 'ERROR',
+            'propagate': True,
         },
         'rules': {
             'handlers': ['console'],
