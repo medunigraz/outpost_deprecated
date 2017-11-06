@@ -17,8 +17,10 @@ body {
 label {
   font-weight: bold;
 }
-table.table-vcenter tbody tr td {
-  vertical-align: middle;
+table.table-vcenter tbody tr {
+  td, th {
+    vertical-align: middle;
+  }
 }
 .navbar {
   .logo {
