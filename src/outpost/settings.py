@@ -17,6 +17,8 @@ BASE_DIR = os.path.abspath(os.path.join(__file__, '../../..'))
 
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', None)
 
+SITE_ID = os.environ.get('DJANGO_SITE_ID', None)
+
 DEBUG = False
 
 ADMINS = tuple()
@@ -35,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
+    'django.contrib.sites',
     'outpost.base',
     'outpost.api',
     'outpost.campusonline',
