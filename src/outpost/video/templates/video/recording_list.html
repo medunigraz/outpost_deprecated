@@ -58,6 +58,11 @@
       <ul class="pager">
         {% if page_obj.has_previous %}
         <li>
+          <a href="?page=1">
+            {% trans "First" %}
+          </a>
+        </li>
+        <li>
           <a href="?page={{ page_obj.previous_page_number }}">
             {% trans "Previous" %}
           </a>
@@ -67,6 +72,11 @@
         <li>
           <a href="?page={{ page_obj.next_page_number }}">
             {% trans "Next" %}
+          </a>
+        </li>
+        <li>
+          <a href="?page={{ page_obj.paginator.num_pages }}">
+            {% trans "Last" %}
           </a>
         </li>
         {% endif %}
