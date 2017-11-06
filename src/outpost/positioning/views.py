@@ -4,7 +4,7 @@ import re
 from django.contrib.gis.geos import GEOSGeometry
 from django.core.cache import cache
 from django.db.models import Q
-from oauth2_provider.ext.rest_framework import IsAuthenticatedOrTokenHasScope
+from oauth2_provider.contrib.rest_framework import IsAuthenticatedOrTokenHasScope
 from rest_framework import viewsets
 from rest_framework.exceptions import NotFound
 from rest_framework.filters import DjangoFilterBackend
