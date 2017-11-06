@@ -4,7 +4,7 @@
 
 {% block content %}
 <h1 class="page-header">
-  <span>Recordings</span>
+  <span>{% trans 'Recordings' %}</span>
 </h1>
 <div class="row">
   <div class="col-md-12">
@@ -12,10 +12,10 @@
       <thead>
         <tr>
           <th></th>
-          <th>Recorder</th>
-          <th>Room</th>
-          <th>Date</th>
-          <th>Size</th>
+          <th>{% trans 'Recorder' %}</th>
+          <th>{% trans 'Room' %}</th>
+          <th>{% trans 'Date' %}</th>
+          <th>{% trans 'Size' %}</th>
           <th></th>
         </tr>
       </thead>
@@ -37,10 +37,44 @@
               {{ r.data.size|filesizeformat }}
             </a>
           </td>
+          <td class="text-right">
+            <button type="button" class="btn btn-danger btn-sm delete">
+              <span class="glyphicon glyphicon-trash"></span>
+            </button>
+            <button type="button" class="btn btn-warning btn-sm archive">
+              <span class="glyphicon glyphicon-compressed"></span>
+            </button>
+          </td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
+    {% if is_paginated %}
+    <nav>
+      <ul class="pager">
+        {% if page_obj.has_previous %}
+        <li>
+          <a href="?page={{ page_obj.previous_page_number }}">
+            {% trans "Previous" %}
+          </a>
+        </li>
+        {% endif %}
+        {% if page_obj.has_next %}
+        <li>
+          <a href="?page={{ page_obj.next_page_number }}">
+            {% trans "Next" %}
+          </a>
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+    {% endif %}
   </div>
 </div>
+{% include 'base/includes/confirm.html' %}
+{% endblock %}
+
+{% block script %}
+{{ block.super }}
+<script src="{% static 'video/recording.js' %}"></script>
 {% endblock %}

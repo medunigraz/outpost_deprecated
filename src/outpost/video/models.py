@@ -1,19 +1,18 @@
-import base64
-import json
 import logging
 import os
 import re
-import socket
-import subprocess
+import shutil
 import uuid
 from base64 import (
     b64encode,
     urlsafe_b64encode,
 )
+from functools import partial
 from hashlib import (
     md5,
     sha256,
 )
+from pathlib import Path
 from tempfile import (
     NamedTemporaryFile,
     TemporaryDirectory,
@@ -23,15 +22,29 @@ from zipfile import ZipFile
 
 import asyncssh
 import requests
-from django.contrib.postgres.fields import JSONField
+from django.conf import settings
+from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.postgres.fields import (
+    ArrayField,
+    JSONField,
+)
 from django.core.cache import cache
-from django.core.files.base import ContentFile
 from django.core.files import File
+from django.core.files.base import ContentFile
 from django.db import models
+from django.utils import timezone
+from django.utils.translation import ugettext_lazy as _
 from django_extensions.db.models import TimeStampedModel
-from functools import partial
+from django_fsm import (
+    FSMField,
+    transition,
+)
 from imagekit.models import ProcessedImageField
-from memoize import memoize, delete_memoized
+from lxml import etree
+from memoize import (
+    delete_memoized,
+    memoize,
+)
 from polymorphic.models import PolymorphicModel
 from purl import URL
 from requests import (
@@ -43,9 +56,15 @@ from requests_toolbelt import MultipartEncoder
 from taggit.managers import TaggableManager
 
 from ..base.decorators import signal_connect
-from ..base.utils import Uuid4Upload
-from .utils import FFMPEGProcess, FFMPEGDurationHandler
 from ..base.models import NetworkedDeviceMixin
+from ..base.utils import (
+    Process,
+    Uuid4Upload,
+)
+from .utils import (
+    FFMPEGProgressHandler,
+    FFProbeProcess,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -107,15 +126,21 @@ class Recorder(NetworkedDeviceMixin, PolymorphicModel):
         null=True,
         blank=True
     )
+    notifications = GenericRelation(
+        'base.Notification'
+    )
 
     class Meta:
         ordering = (
             'name',
             'hostname',
         )
+        permissions = (
+            ('view_recorder', _('View Recorder')),
+        )
 
     def __str__(self):
-        return '{s.name} ({s.hostname})'.format(s=self)
+        return self.name
 
 
 @signal_connect
@@ -182,7 +207,7 @@ class EpiphanChannel(models.Model):
     def request(self, key, value=None):
         m = value and 'set' or 'get'
         path = 'admin/{s.path}/{m}_params.cgi'.format(s=self, m=m)
-        url = self.epiphan.url.path(path).query_param(key,value).as_string()
+        url = self.epiphan.url.path(path).query_param(key, value).as_string()
         try:
             r = self.epiphan.session.get(url)
         except Exception as e:
@@ -220,6 +245,9 @@ class EpiphanChannel(models.Model):
 
     def __str__(self):
         return '{s.epiphan}, {s.name}'.format(s=self)
+
+    def __repr__(self):
+        return '{s.__class__.__name__}({s.pk})'.format(s=self)
 
 
 class EpiphanSource(models.Model):
@@ -342,6 +370,8 @@ class SideBySideExport(Export):
         )
         with NamedTemporaryFile(suffix='.mp4') as output:
             args = [
+                'ffmpeg',
+                '-y',
                 '-i',
                 self.recording.data.path,
                 '-filter_complex',
@@ -354,8 +384,8 @@ class SideBySideExport(Export):
                 '2',
                 output.name
             ]
-            ffmpeg = FFMPEGProcess(args)
-            ffmpeg.handler(FFMPEGDurationHandler(partial(notify, 'Stitching')))
+            ffmpeg = Process(args)
+            ffmpeg.handler(FFMPEGProgressHandler(partial(notify, 'Stitching')))
             ffmpeg.run()
             self.data.save(output.name, File(output.file))
 
@@ -374,11 +404,13 @@ class ZipStreamExport(Export):
 
     def process(self, notify):
         mapping = {
-            'h264': 'mp4',
-            'aac': 'mp4',
+            'h264': 'm4v',
+            'aac': 'm4a',
         }
         streams = []
         args = [
+            'ffmpeg',
+            '-y',
             '-i',
             self.recording.data.path,
         ]
@@ -397,8 +429,8 @@ class ZipStreamExport(Export):
                     name,
                 ])
                 streams.append(name)
-            ffmpeg = FFMPEGProcess(args)
-            ffmpeg.handler(FFMPEGDurationHandler(partial(notify, 'Splitting')))
+            ffmpeg = Process(args)
+            ffmpeg.handler(FFMPEGProgressHandler(partial(notify, 'Splitting')))
             ffmpeg.run()
             with NamedTemporaryFile(suffix='.zip') as output:
                 with ZipFile(output, 'w') as arc:
@@ -412,111 +444,6 @@ class ZipStreamExport(Export):
         self.data.delete(False)
 
 
-#class Publisher(PolymorphicModel):
-#    name = models.CharField(max_length=128)
-#    enabled = models.BooleanField(default=True)
-#
-#
-#class YoutubePublisher(Publisher):
-#    pass
-#
-#
-#class OpencastPublisher(Publisher):
-#    api = models.URLField()
-#    username = models.CharField(max_length=128)
-#    password = models.CharField(max_length=128)
-#
-#    def publish(self, rec):
-#        u = URL(self.api).add_path_segment('events')
-#        s = Session()
-#        s.auth = (self.username, self.password)
-#        fields = {
-#            'acl': json.dumps(
-#                [
-#                    {
-#                        'action': 'write',
-#                        'role': 'ROLE_ADMIN',
-#                    },
-#                    {
-#                        'action': 'read',
-#                        'role': 'ROLE_USER',
-#                    },
-#                ]
-#            ),
-#            'metadata': json.dumps(
-#                [
-#                    {
-#                        'flavor': 'dublincore/episode',
-#                        'fields': [
-#                            {
-#                                'id': 'title',
-#                                'value': 'Captivating title',
-#                            },
-#                            {
-#                                'id': 'subjects',
-#                                'value': ['John Clark', 'Thiago Melo Costa'],
-#                            },
-#                            {
-#                                'id': 'description',
-#                                'value': 'A great description',
-#                            },
-#                            {
-#                                'id': 'startDate',
-#                                'value': '2016-06-22',
-#                            },
-#                            {
-#                                'id': 'startTime',
-#                                'value': '13:30:00Z',
-#                            },
-#                        ]
-#                    }
-#                ]
-#            ),
-#            'processing': json.dumps(
-#                {
-#                    'workflow': 'ng-schedule-and-upload',
-#                    'configuration': {
-#                        'flagForCutting': 'false',
-#                        'flagForReview': 'false',
-#                        'publishToEngage': 'true',
-#                        'publishToHarvesting': 'true',
-#                        'straightToPublishing': 'true',
-#                    },
-#                }
-#            ),
-#        }
-#        videos = {
-#            'presenter': ('0x100', '0x101'),
-#            'slides': ('0x102',),
-#        }
-#
-#        args = ['ffmpeg', '-y', '-i', rec.data.path]
-#        for video, streams in videos.items():
-#            for stream in streams:
-#                args.extend(['-map', 'i:{}'.format(stream)])
-#            # Create temporary file for demux
-#            tmp = NamedTemporaryFile(delete=False)
-#            args.extend(['-c', 'copy', '-f', 'mp4', tmp.name])
-#            fields[video] = (
-#                video,
-#                tmp,
-#                'video/mp4'
-#            )
-#        logger.debug('Running: {}'.format(' '.join(args)))
-#        proc = subprocess.run(args)
-#        m = MultipartEncoder(fields=fields)
-#        # Upload to server
-#        event = s.post(u.as_string(), data=m)
-#        if event.status_code == codes.ok:
-#            uid = event.json().get('identifier')
-#            logger.info('Published recording to {s} as {u}'.format(s=self, u=uid))
-#        else:
-#            logger.error('Publishing failed on {s}: {e}'.format(s=self, e=event.status_code))
-#        # Delete all temporary files
-#        for video in videos.keys():
-#            fields[video][1].close()
-#
-#
 class Stream(models.Model):
     name = models.CharField(max_length=128)
     enabled = models.BooleanField(default=True)
@@ -536,10 +463,10 @@ class Token(models.Model):
 
     def pre_save(self, *args, **kwargs):
         if not self.value:
-            v = urlsafe_b64encode(uuid4().bytes).decode('ascii').rstrip('=')
+            v = urlsafe_b64encode(uuid.uuid4().bytes).decode('ascii').rstrip('=')
             self.value = v
-#
-#
+
+
 #class Series(models.Model):
 #    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 #    title = models.CharField(max_length=256)
@@ -552,49 +479,259 @@ class Token(models.Model):
 #    publishers = models.TextField(blank=True)
 #
 #    tags = TaggableManager()
-#
-#
-#class Event(models.Model):
-#    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-#    serie = models.ForeignKey('Series', null=True)
-#    title = models.CharField(max_length=256)
-#    subject = models.CharField(max_length=256, blank=True)
-#    description = models.TextField(blank=True)
-#    license = models.ForeignKey('base.License')
-#    rights = models.TextField(blank=True)
-#    presenters = models.TextField(blank=True)
-#    contributors = models.TextField(blank=True)
-#
-#    tags = TaggableManager()
-#
-#
-#class Media(PolymorphicModel):
-#    event = models.ForeignKey('Event')
-#    data = models.FileField(
-#        upload_to=Uuid4Upload
-#    )
-#
-#
-#class VideoCategory(models.Model):
-#    name = models.CharField(max_length=128)
-#
-#
-#class Video(Media):
-#    preview = ProcessedImageField(
-#        upload_to=Uuid4Upload,
-#        format='JPEG',
-#        options={'quality': 60}
-#    )
-#    category = models.ForeignKey('VideoCategory')
-#
-#
-#class Audio(Media):
-#    pass
-#
-#
-#class Subtitles(Media):
-#    pass
-#
-#
-#class Slides(Media):
-#    pass
+
+
+class Event(models.Model):
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False
+    )
+    title = models.CharField(max_length=256)
+    subject = models.CharField(max_length=256, blank=True)
+    description = models.TextField(blank=True)
+    license = models.ForeignKey('base.License')
+    rights = models.TextField(blank=True)
+    presenters = models.TextField(blank=True)
+    contributors = models.TextField(blank=True)
+    room = models.ForeignKey('geo.Room', null=True, blank=True)
+
+    tags = TaggableManager()
+
+
+@signal_connect
+class EventMedia(TimeStampedModel, PolymorphicModel):
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False
+    )
+    event = models.ForeignKey('Event')
+    name = models.CharField(
+        max_length=256,
+    )
+    data = models.FileField(
+        upload_to=Uuid4Upload
+    )
+    info = JSONField(null=True)
+
+    def pre_save(self, *args, **kwargs):
+        self.info = FFProbeProcess(
+            '-show_format',
+            '-show_streams',
+            self.data.path
+        ).run()
+
+    def post_save(self, *args, **kwargs):
+        delete_memoized(self.response)
+
+    def pre_delete(self, *args, **kwargs):
+        self.data.delete(False)
+
+    @memoize(timeout=3600)
+    def response(self):
+
+        data = {
+            'pk': self.pk,
+            'name': self.name,
+            'url': self.data.url,
+            'created': self.created,
+            'modified': self.modified,
+        }
+        if self.info:
+            data['container'] = {
+                'format': self.info['format']['format_long_name'],
+                'duration': float(self.info['format']['duration']),
+                'size': self.data.size,
+            }
+            data['streams'] = []
+            for s in self.info['streams']:
+                data['streams'].append(
+                    {
+                        'codec': s['codec_long_name'],
+                        'type': s['codec_type'],
+                        'height': s.get('height', None),
+                        'width': s.get('width', None),
+                        'profile': s.get('profile', None),
+                        'pixel': s.get('pix_fmt', None),
+
+                    }
+                )
+        return data
+
+    def __repr__(self):
+        return '{s.__class__.__name__}({s.pk})'.format(s=self)
+
+
+class EventAudio(EventMedia):
+    pass
+
+
+@signal_connect
+class EventVideo(EventMedia):
+    preview = ProcessedImageField(
+        upload_to=Uuid4Upload,
+        format='JPEG',
+        options={'quality': 60}
+    )
+
+    def pre_save(self, *args, **kwargs):
+        super().pre_save(*args, **kwargs)
+        skip = float(self.info['format']['duration']) * 0.1
+        with NamedTemporaryFile(suffix='.jpg', delete=True) as output:
+            Process(
+                'ffmpeg',
+                '-y',
+                '-ss',
+                '{0:.2f}'.format(skip),
+                '-i',
+                self.data.path,
+                '-vf',
+                'thumbnail',
+                '-frames:v',
+                '1',
+                output.name
+            ).run()
+            logger.info('Thumbnail: {}'.format(output.name))
+            self.preview.save('preview.jpg', File(output.file), False)
+
+    def response(self):
+        data = super().response()
+        data['preview'] = self.preview.url
+        return data
+
+
+class Publish(PolymorphicModel):
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False
+    )
+    event = models.ForeignKey('Event')
+
+
+class PublishMedia(PolymorphicModel):
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False
+    )
+    eventmedia = models.ForeignKey('EventMedia')
+
+
+class PublishMediaScene(models.Model):
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False
+    )
+    media = models.ForeignKey('PublishMedia')
+    timestamp = models.PositiveIntegerField()
+    image = ProcessedImageField(
+        upload_to=Uuid4Upload,
+        format='JPEG',
+        options={'quality': 60}
+    )
+    words = ArrayField(
+        models.CharField(max_length=512, blank=True),
+        default=list
+    )
+
+    def pre_delete(self, *args, **kwargs):
+        self.image.delete(False)
+
+
+class DASHPublish(Publish):
+    presenter = models.ForeignKey(
+        'DASHVideo',
+        null=True,
+        blank=True,
+        related_name='+'
+    )
+    slides = models.ForeignKey(
+        'DASHVideo',
+        null=True,
+        blank=True,
+        related_name='+'
+    )
+    audio = models.ForeignKey(
+        'DASHAudio',
+        null=True,
+        blank=True,
+        related_name='+'
+    )
+
+
+class DASHIngest(models.Model):
+    path = models.TextField()
+
+    class Meta:
+        abstract = True
+
+    def ingest(self, path):
+        p = Path(path)
+        if not p.is_dir():
+            logger.warn('Ingest failed because of missing directory: {}'.format(path))
+            return
+        mpd = p.joinpath('dash.mpd')
+        with mpd.open() as f:
+            tree = etree.parse(f)
+        files = tree.xpath(
+            '//m:Initialization/@sourceURL|//m:SegmentURL/@media',
+            namespaces={
+                'm': 'urn:mpeg:dash:schema:mpd:2011'
+            }
+        )
+        if not files:
+            logger.warn('No files found while ingesting: {}'.format(mpd))
+            return
+        if self.path:
+            t = Path(self.path)
+            if t.is_dir():
+                for f in t.glob('*'):
+                    f.unlink()
+            else:
+                t.mkdir(parents=True)
+        else:
+            base = Path(settings.OUTPOST.get('private_store'))
+            c = Path(self.__module__, self._meta.object_name)
+            u = urlsafe_b64encode(uuid4().bytes).decode('ascii').rstrip('=')
+            t = base.joinpath(c).joinpath(u)
+            t.mkdir(parents=True)
+            self.path = str(t)
+        target = Path(self.path)
+        for f in map(lambda x: p.joinpath(x), files):
+            f.rename(target.joinpath(f.name))
+        mpd.rename(target.joinpath(mpd.name))
+
+    def pre_delete(self, *args, **kwargs):
+        shutil.rmtree(self.path)
+
+
+class DASHVideo(PublishMedia):
+    preview = ProcessedImageField(
+        upload_to=Uuid4Upload,
+        format='JPEG',
+        options={'quality': 60}
+    )
+
+
+@signal_connect
+class DASHVideoVariant(DASHIngest, models.Model):
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False
+    )
+    video = models.ForeignKey('DASHVideo')
+    height = models.PositiveIntegerField()
+
+    def pre_delete(self, *args, **kwargs):
+        super().pre_delete(*args, **kwargs)
+
+
+@signal_connect
+class DASHAudio(DASHIngest, PublishMedia):
+
+    def pre_delete(self, *args, **kwargs):
+        super().pre_delete(*args, **kwargs)

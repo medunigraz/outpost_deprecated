@@ -1,6 +1,4 @@
-from rest_framework.serializers import (
-    ModelSerializer,
-)
+from rest_framework.serializers import ModelSerializer
 
 from . import models
 
@@ -21,3 +19,9 @@ class RecordingAssetSerializer(ModelSerializer):
 
     class Meta:
         model = models.RecordingAsset
+
+
+class EventSerializer(ModelSerializer):
+
+    class Meta:
+        model = models.Event

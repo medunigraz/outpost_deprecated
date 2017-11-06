@@ -1,23 +1,29 @@
+import json
+from pathlib import Path
+
 from django.contrib.auth.mixins import (
     LoginRequiredMixin,
     PermissionRequiredMixin,
 )
 from django.http import (
     HttpResponse,
+    HttpResponseBadRequest,
     HttpResponseForbidden,
     HttpResponseNotFound,
     JsonResponse,
 )
 from django.shortcuts import get_object_or_404
+from django.urls import reverse_lazy as reverse
 from django.views.generic import (
+    CreateView,
     DetailView,
     ListView,
     TemplateView,
+    UpdateView,
     View,
 )
-from rest_framework.viewsets import (
-    ModelViewSet,
-)
+from django_downloadview import PathDownloadView
+from guardian.shortcuts import get_objects_for_user
 from rest_framework.filters import DjangoFilterBackend
 from rest_framework.permissions import (
     AllowAny,
@@ -25,23 +31,29 @@ from rest_framework.permissions import (
     DjangoModelPermissionsOrAnonReadOnly,
     IsAuthenticatedOrReadOnly,
 )
-from guardian.shortcuts import get_objects_for_user
+from rest_framework.viewsets import ModelViewSet
 
 from .models import (
     Broadcast,
+    Epiphan,
+    EpiphanChannel,
+    Event,
+    EventAudio,
+    EventMedia,
+    EventVideo,
     Export,
+    Publish,
     Recorder,
     Recording,
     RecordingAsset,
-    Epiphan,
-    EpiphanChannel,
     Stream,
     Token,
 )
 from .serializers import (
+    EventSerializer,
     RecorderSerializer,
-    RecordingSerializer,
     RecordingAssetSerializer,
+    RecordingSerializer,
 )
 from .tasks import ExportTask
 
@@ -81,6 +93,7 @@ class PublishDoneView(NginxRTMPBackend):
 class RecordingListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Recording
     permission_required = 'video.change_recording'
+    paginate_by = 10
 
 
 class RecordingDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
@@ -143,6 +156,102 @@ class EpiphanChannelView(LoginRequiredMixin, PermissionRequiredMixin, View):
         return JsonResponse(obj.response())
 
 
+class EventListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    model = Event
+    permission_required = 'video.add_event'
+
+
+class EventCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    model = Event
+    permission_required = 'video.add_event'
+    fields = (
+        'title',
+        'subject',
+        'description',
+        'license',
+        'rights',
+        'presenters',
+        'contributors',
+        'room',
+    )
+
+    def get_success_url(self):
+        return reverse('video:event:list')
+
+
+class EventUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    model = Event
+    permission_required = 'video.change_event'
+
+
+class EventDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+    model = Event
+    permission_required = 'video.change_event'
+
+    def delete(self, request, pk):
+        event = get_object_or_404(Event, pk=pk)
+        event.delete()
+        return HttpResponse()
+
+
+class EventMediaView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    permission_required = 'video.change_event'
+    mapping = {
+        'video/mp4': EventVideo,
+        'video/webm': EventVideo,
+        'video/ogg': EventVideo,
+        'audio/mp4': EventAudio,
+        'audio/x-m4a': EventAudio,
+        'audio/mpeg': EventAudio,
+        'audio/webm': EventAudio,
+        'audio/ogg': EventAudio,
+        'audio/wav': EventAudio,
+        'audio/wave': EventAudio,
+        'audio/flac': EventAudio,
+        'audio/aac': EventAudio,
+    }
+
+    def post(self, request, pk, media=None):
+        event = get_object_or_404(Event, pk=pk)
+        f = request.FILES.get('file')
+        if f.content_type not in self.mapping:
+            return HttpResponseBadRequest(
+                'Unsupported mimetype: {}'.format(f.content_type)
+            )
+        obj = self.mapping.get(f.content_type)(event=event, name=f.name)
+        obj.data.save(f.name, f)
+        return JsonResponse(obj.response())
+
+    def get(self, request, pk, media):
+        event = get_object_or_404(Event, pk=pk)
+        obj = get_object_or_404(EventMedia, pk=media)
+        return JsonResponse(obj.response())
+
+    def delete(self, request, pk, media):
+        event = get_object_or_404(Event, pk=pk)
+        obj = get_object_or_404(EventMedia, pk=media)
+        obj.delete()
+        return JsonResponse({})
+
+
+class PublishView(LoginRequiredMixin, DetailView):
+    model = Publish
+
+
+class DASHView(PathDownloadView):
+
+    model = None
+
+    def get_path(self):
+        media = get_object_or_404(self.model, pk=self.kwargs.get('pk'))
+        path = Path(media.path).joinpath(super().get_path())
+        if not path.is_absolute():
+            return HttpResponseNotFound()
+        if not path.is_file():
+            return HttpResponseNotFound()
+        return str(path)
+
+
 class RecorderViewSet(ModelViewSet):
     queryset = Recorder.objects.all()
     serializer_class = RecorderSerializer
@@ -177,7 +286,7 @@ class RecordingViewSet(ModelViewSet):
         return get_objects_for_user(
             self.request.user,
             'video.view_recording',
-            klass=self.queryset
+            klass=self.queryset.model
         )
 
 
@@ -196,5 +305,24 @@ class RecordingAssetViewSet(ModelViewSet):
         return get_objects_for_user(
             self.request.user,
             'video.view_recordingasset',
+            klass=self.queryset.model
+        )
+
+
+class EventViewSet(ModelViewSet):
+    queryset = Event.objects.all()
+    serializer_class = EventSerializer
+    permission_classes = (
+        DjangoModelPermissions,
+    )
+    filter_backends = (
+        DjangoFilterBackend,
+    )
+    filter_fields = ()
+
+    def get_queryset(self):
+        return get_objects_for_user(
+            self.request.user,
+            'video.view_event',
             klass=self.queryset
         )

@@ -1,6 +1,13 @@
 from base64 import urlsafe_b64encode
 from pathlib import PurePosixPath
 from uuid import uuid4
+import subprocess
+import logging
+
+from functools import partial
+
+
+logger = logging.getLogger(__name__)
 
 
 class Uuid4Upload(str):
@@ -44,3 +51,39 @@ def colorscale(hexstr, scalefactor):
     b = int(clamp(b * scalefactor))
 
     return "%02x%02x%02x" % (r, g, b)
+
+
+class Process():
+
+    def __init__(self, *args):
+        self.handlers = []
+        logger.debug('Preparing: {}'.format(' '.join(args)))
+        self.cmd = partial(
+            subprocess.Popen,
+            args,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            universal_newlines=True
+        )
+
+    def handler(self, h):
+        if callable(h):
+            self.handlers.append(h)
+
+    def run(self):
+        pipe = self.cmd()
+
+        duration = None
+        position = None
+        current = 0
+
+        while True:
+            line = pipe.stdout.readline().strip()
+
+            if line == '' and pipe.poll() is not None:
+                break
+
+            logger.debug('Process line: {}'.format(line))
+            for h in self.handlers:
+                h(line)
+        return pipe.returncode

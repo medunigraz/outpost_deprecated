@@ -1,49 +1,14 @@
+import json
 import logging
 import math
 import re
 import subprocess
-
 from functools import partial
 
 logger = logging.getLogger(__name__)
 
 
-class FFMPEGProcess():
-
-    def __init__(self, command):
-        self.handlers = []
-        self.cmd = partial(
-            subprocess.Popen,
-            ['ffmpeg', '-y'] + command,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            universal_newlines=True
-        )
-
-    def handler(self, h):
-        if callable(h):
-            self.handlers.append(h)
-
-    def run(self):
-        pipe = self.cmd()
-
-        duration = None
-        position = None
-        current = 0
-
-        while True:
-            line = pipe.stdout.readline().strip()
-
-            if line == '' and pipe.poll() is not None:
-                break
-
-            for h in self.handlers:
-                logger.debug('Handling line: {}'.format(line))
-                h(line)
-        return pipe.returncode
-
-
-class FFMPEGDurationHandler():
+class FFMPEGProgressHandler():
     duration = None
     current = 0
     re_duration = re.compile('Duration: (\d{2}):(\d{2}):(\d{2}).(\d{2})[^\d]*', re.U)
@@ -70,32 +35,57 @@ class FFMPEGDurationHandler():
                     self.current = new
 
 
-class FFMPEGSceneHandler():
+class FFMPEGCropHandler():
+
+    pattern = re.compile(r'^\[Parsed_cropdetect_\d+ @ 0x[0-9a-f]+\].* crop=(\d+)\:(\d+)\:(\d+)\:(\d+)$')
+
+    def __init__(self):
+        self.dims = list()
+
+    def __call__(self, line):
+        matches = self.pattern.match(line)
+        if not matches:
+            return
+        self.dims.append(map(int, matches.groups()))
+
+    def crop(self):
+        # TODO: Use minimum instead of average pixels to avoid cropping too
+        # much.
+        return tuple(map(lambda y: int(sum(y) / len(y)), zip(*self.dims)))
+
+
+class MP4BoxProgressHandler():
+    pattern = re.compile(r'^([\w ]+): \|\s+\| \((\d+)\/(\d+)\)$')
 
     def __init__(self, func):
         self.func = func
 
     def __call__(self, line):
-        return
+        matches = self.pattern.match(line)
+        if not matches:
+            return
+        if callable(self.func):
+            self.func(*m.groups())
 
 
 class FFProbeProcess():
 
-    def __init__(self, command):
+    def __init__(self, *commands):
 
+        args = [
+            'ffprobe',
+            '-v', 'quiet',
+            '-print_format', 'json',
+        ] + list(commands)
+        logger.debug('Preparing: {}'.format(' '.join(args)))
         self.cmd = partial(
             subprocess.run,
-            [
-                'ffprobe',
-                '-v',
-                'quiet',
-                '-print_format',
-                'json',
-            ] + command,
+            args,
             stdout=subprocess.PIPE
         )
 
     def run(self):
+        probe = self.cmd()
         info = probe.stdout.decode('utf-8')
         logger.debug('Extracted metadata: {}'.format(info))
         return json.loads(info)

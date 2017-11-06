@@ -157,6 +157,10 @@ v1.register(
     r'video/recordingasset',
     video.RecordingAssetViewSet
 )
+v1.register(
+    r'video/event',
+    video.EventViewSet
+)
 
 urlpatterns = [
     url(r'^v1/', include(v1.urls, namespace='v1')),

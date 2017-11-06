@@ -3,7 +3,10 @@ from django.conf.urls import (
     url,
 )
 
-from . import views
+from . import (
+    models,
+    views,
+)
 
 nginx = [
     url(
@@ -51,8 +54,55 @@ recorder = [
         name='epiphan-channel'
     ),
 ]
+event = [
+    url(
+        r'^$',
+        views.EventListView.as_view(),
+        name='list'
+    ),
+    url(
+        r'^create/$',
+        views.EventCreateView.as_view(),
+        name='create'
+    ),
+    url(
+        r'^(?P<pk>[0-9a-f]{8}\-[0-9a-f]{4}\-4[0-9a-f]{3}\-[89ab][0-9a-f]{3}\-[0-9a-f]{12})/$',
+        views.EventDetailView.as_view(),
+        name='detail'
+    ),
+    url(
+        r'^(?P<pk>[0-9a-f]{8}\-[0-9a-f]{4}\-4[0-9a-f]{3}\-[89ab][0-9a-f]{3}\-[0-9a-f]{12})/media/(?:(?P<media>[0-9a-f]{8}\-[0-9a-f]{4}\-4[0-9a-f]{3}\-[89ab][0-9a-f]{3}\-[0-9a-f]{12})/)?$',
+        views.EventMediaView.as_view(),
+        name='media'
+    ),
+]
+publish = [
+    url(
+        r'^(?P<pk>[0-9a-f]{8}\-[0-9a-f]{4}\-4[0-9a-f]{3}\-[89ab][0-9a-f]{3}\-[0-9a-f]{12})/$',
+        views.PublishView.as_view(),
+        name='publish'
+    ),
+    url(
+        r'^dash/video/(?P<pk>[0-9a-f]{8}\-[0-9a-f]{4}\-4[0-9a-f]{3}\-[89ab][0-9a-f]{3}\-[0-9a-f]{12})/(?P<path>.+)$',
+        views.DASHView.as_view(model=models.DASHVideoVariant),
+        name='dash-video'
+    ),
+    url(
+        r'^dash/audio/(?P<pk>[0-9a-f]{8}\-[0-9a-f]{4}\-4[0-9a-f]{3}\-[89ab][0-9a-f]{3}\-[0-9a-f]{12})/(?P<path>.+)$',
+        views.DASHView.as_view(model=models.DASHAudio),
+        name='dash-audio'
+    ),
+]
 
 urlpatterns = [
+    url(
+        r'^event/',
+        include(event, namespace='event')
+    ),
+    url(
+        r'^publish/',
+        include(publish, namespace='publish')
+    ),
     url(
         r'^recording/',
         include(recording, namespace='recording')

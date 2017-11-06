@@ -54,4 +54,26 @@ $(document).ready(function() {
     refresh();
     setInterval(refresh, 4000);
   });
+
+  var $notification = $('#notification')
+  $notification.on('click', function() {
+    if ($notification.data('enabled') === 'true') {
+      $notification.removeClass('btn-success').addClass('btn-default');
+      $notification.find('span.glyphicon').removeClass('glyphicon-check').addClass('glyphicon-unchecked');
+      $notification.data('enabled', 'false');
+    } else {
+      $notification.removeClass('btn-default').addClass('btn-success');
+      $notification.find('span.glyphicon').removeClass('glyphicon-unchecked').addClass('glyphicon-check');
+      $notification.data('enabled', 'true');
+    }
+  });
+  if ($notification.data('enabled') === 'true') {
+    $notification.addClass('btn-success');
+    $notification.find('span.glyphicon').addClass('glyphicon-check');
+  } else {
+    $notification.addClass('btn-default');
+    $notification.find('span.glyphicon').addClass('glyphicon-unchecked');
+  }
+  $notification.removeClass('hidden')
+
 });

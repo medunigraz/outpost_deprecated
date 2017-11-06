@@ -1,0 +1,104 @@
+{% extends 'outpost/base.html' %}
+
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+<h1 class="page-header">
+  <span>{{ object.title }}</span>
+  <small>{% trans "Event" %}</small>
+  <button type="button" class="btn btn-danger btn-sm pull-right" data-toggle="popover" title="{% trans "Really delete?" %}" id="delete" data-return="{% url 'video:event:list' %}">
+    <span class="glyphicon glyphicon-trash"></span>
+    {% trans "Delete" %}
+  </button>
+</h1>
+<div class="alert alert-info text-center" id="upload" data-url={% url 'video:event:media' pk=object.pk %}>
+  <div>
+    <span class="glyphicon glyphicon-upload"></span>
+    Drag &amp; drop files here
+  </div>
+</div>
+<h2>
+  Media
+</h2>
+<div id="status"></div>
+<div class="alert alert-info" id="empty">
+  No media files uploaded yet!
+</div>
+<div id="list">
+</div>
+<script id="tmpl-media" type="text/x-jsrender">
+<div class="panel panel-default panel-horizontal fade">
+  <div class="panel-heading text-center">
+    [[if preview]]
+    <a href="[[:preview]]" data-toggle="modal" data-target="#lightbox" data-remote="false">
+      <img src="[[:preview]]">
+    </a>
+    [[else]]
+    <span class="glyphicon glyphicon-file"></span>
+    [[/if]]
+  </div>
+  <div class="panel-body">
+    <div class="col-xs-12 col-md-12 section-box">
+      <h3>[[:name]][[if container]] <small>[[:container.format]], [[:size]]</small>[[/if]]</h3>
+      [[if container]]
+      <div>
+      </div>
+      [[/if]]
+      <dl>
+      [[for stream]]
+      <dt>
+      [[/for]]
+      </dl>
+    </div>
+  </div>
+  <div class="panel-footer text-center">
+    <button class="btn btn-danger delete" data-toggle="popover" title="{% trans "Really delete?" %}">
+      <span class="glyphicon glyphicon-trash"></span>
+    </button>
+    <a class="btn btn-default download" href="[[:url]]">
+      <span class="glyphicon glyphicon-download"></span>
+    </a>
+  </div>
+</div>
+</script>
+<script id="tmpl-upload" type="text/x-jsrender">
+<div class="row fade">
+  <div class="col-xs-10">
+    <div class="progress">
+      <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+        <span></span>
+      </div>
+    </div>
+  </div>
+  <div class="col-xs-2">
+    <button type="button" class="btn btn-warning btn-block btn-sm cancel">
+      <span class="glyphicon glyphicon-remove"></span>
+      {% trans "Abort" %}
+    </button>
+  </div>
+</div>
+</script>
+{% include 'base/includes/lightbox.html' %}
+{% include 'base/includes/confirm.html' %}
+{% endblock %}
+
+{% block script %}
+{{ block.super }}
+<script src="{% static 'base/lightbox.js' %}"></script>
+<script src="{% static 'video/event.js' %}"></script>
+<script>
+$(document).ready(function() {
+  var $list = $('#list');
+  {% for m in object.eventmedia_set.all %}
+  $list.addMedia('{{ m.pk }}');
+  {% endfor %}
+});
+</script>
+{% endblock %}
+
+{% block style %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'base/lightbox.scss' %}" type="text/x-scss" charset="utf-8">
+<link rel="stylesheet" href="{% static 'video/event.scss' %}" type="text/x-scss" charset="utf-8">
+{% endblock %}
