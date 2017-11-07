@@ -429,7 +429,7 @@ class ZipStreamExport(Export):
                     name,
                 ])
                 streams.append(name)
-            ffmpeg = Process(args)
+            ffmpeg = Process(*args)
             ffmpeg.handler(FFMPEGProgressHandler(partial(notify, 'Splitting')))
             ffmpeg.run()
             with NamedTemporaryFile(suffix='.zip') as output:
