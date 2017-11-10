@@ -32,6 +32,7 @@ class StructureSyncTask(PeriodicTask):
                 p.room = r
                 p.save()
         for p in Person.objects.all():
+            logger.debug('Sync structure.Person {}'.format(p))
             try:
                 COPerson.objects.get(pk=p.campusonline_id)
             except COPerson.DoesNotExist:
@@ -47,6 +48,7 @@ class StructureSyncTask(PeriodicTask):
                 logger.debug('Create {}'.format(o))
                 o.save()
         for o in Organization.objects.all():
+            logger.debug('Sync structure.Organization {}'.format(o))
             try:
                 COOrganization.objects.get(pk=o.campusonline_id)
             except COOrganization.DoesNotExist:
