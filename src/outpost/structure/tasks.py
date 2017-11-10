@@ -34,7 +34,8 @@ class StructureSyncTask(PeriodicTask):
         for p in Person.objects.all():
             logger.debug('Sync structure.Person {}'.format(p))
             try:
-                COPerson.objects.get(pk=p.campusonline_id)
+                cop = COPerson.objects.get(pk=p.campusonline_id)
+                logger.debug('Found {}'.format(cop))
             except COPerson.DoesNotExist:
                 logger.debug('Remove {}'.format(p.pk))
                 p.delete()
@@ -50,7 +51,8 @@ class StructureSyncTask(PeriodicTask):
         for o in Organization.objects.all():
             logger.debug('Sync structure.Organization {}'.format(o))
             try:
-                COOrganization.objects.get(pk=o.campusonline_id)
+                coo = COOrganization.objects.get(pk=o.campusonline_id)
+                logger.debug('Found {}'.format(coo))
             except COOrganization.DoesNotExist:
                 logger.debug('Remove {}'.format(o.pk))
                 o.delete()
