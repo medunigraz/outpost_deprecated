@@ -85,13 +85,19 @@ class MP4BoxProgressHandler():
 
 class FFProbeProcess():
 
-    def __init__(self, *commands):
+    def __init__(self, *commands, timeout=None):
 
-        args = [
+        args = []
+        if timeout:
+            args.extend([
+                'timeout', str(timeout),
+            ])
+
+        args.extend([
             'ffprobe',
-            '-v', 'quiet',
             '-print_format', 'json',
-        ] + list(commands)
+        ])
+        args.extend(list(commands))
         logger.debug('Preparing: {}'.format(' '.join(args)))
         self.cmd = partial(
             subprocess.run,

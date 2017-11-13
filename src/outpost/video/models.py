@@ -287,7 +287,8 @@ class EpiphanSource(models.Model):
                 '-f', 'lavfi',
                 '-i', 'amovie=\'{r}\',astats=metadata=1:reset=30'.format(r=rtsp),
                 '-read_intervals', '%+5',
-                '-show_entries', 'frame=pkt_pts_time:frame_tags'
+                '-show_entries', 'frame=pkt_pts_time:frame_tags',
+                timeout=10
             )
             self.audio = probe.run()
             self.save()
