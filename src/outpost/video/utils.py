@@ -54,6 +54,21 @@ class FFMPEGCropHandler():
         return tuple(map(lambda y: int(sum(y) / len(y)), zip(*self.dims)))
 
 
+class FFMPEGVolumeLevelHandler():
+
+    pattern = re.compile(r'^\[Parsed_volumedetect_\d+ @ 0x[0-9a-f]+\].* ([\w\d\_]+): (.*?)(?: dB)?$')
+
+    def __init__(self):
+        self.values = dict()
+
+    def __call__(self, line):
+        matches = self.pattern.match(line)
+        if not matches:
+            return
+        key, value = matches.groups()
+        self.values[key] = value
+
+
 class MP4BoxProgressHandler():
     pattern = re.compile(r'^([\w ]+): \|\s+\| \((\d+)\/(\d+)\)$')
 

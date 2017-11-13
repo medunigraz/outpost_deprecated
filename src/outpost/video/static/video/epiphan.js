@@ -74,6 +74,46 @@ $(document).ready(function() {
     $notification.addClass('btn-default');
     $notification.find('span.glyphicon').addClass('glyphicon-unchecked');
   }
-  $notification.removeClass('hidden')
+  $notification.removeClass('hidden');
+
+  $('#sources .source').each(function(idx, elem) {
+      var $elem = $(elem);
+      var $caption = $elem.find('.caption');
+      $.ajax({
+        method: 'GET',
+        url: '/v1/video/epiphansource/' + $elem.data('pk') + '/',
+        dataType: 'json'
+      }).done(function(msg) {
+        if (!msg.audio) {
+          return;
+        }
+        var extractLevel = function(frame) {
+          return Math.abs(parseFloat(frame.tags['lavfi.astats.Overall.RMS_level']));
+        };
+        var height = 100;
+        var width = Math.floor($caption.width());
+        var levels = msg.audio.frames.map(extractLevel);
+        var multiplier = height / levels.reduce(function(a, b) { return Math.max(a, b); });
+        var w = width / levels.length;
+        d3.selectAll($caption.toArray())
+          .append('svg')
+          .attr('width', width)
+          .attr('height', height)
+          .selectAll('circle')
+          .data(levels)
+          .enter()
+          .append('rect')
+          .attr('x', function(d, i) {
+            return i * w;
+          })
+          .attr('y', function(d, i) {
+            return height - (multiplier * d);
+          })
+          .attr('width', w)
+          .attr('height', function(d) {
+            return multiplier * d;
+          });
+      });
+  });
 
 });

@@ -150,6 +150,18 @@ v1.register(
     video.RecorderViewSet
 )
 v1.register(
+    r'video/epiphan',
+    video.EpiphanViewSet
+)
+v1.register(
+    r'video/epiphanchannel',
+    video.EpiphanChannelViewSet
+)
+v1.register(
+    r'video/epiphansource',
+    video.EpiphanSourceViewSet
+)
+v1.register(
     r'video/recording',
     video.RecordingViewSet
 )

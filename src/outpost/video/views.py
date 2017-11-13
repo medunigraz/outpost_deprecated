@@ -37,6 +37,7 @@ from .models import (
     Broadcast,
     Epiphan,
     EpiphanChannel,
+    EpiphanSource,
     Event,
     EventAudio,
     EventMedia,
@@ -52,6 +53,9 @@ from .models import (
 from .serializers import (
     EventSerializer,
     RecorderSerializer,
+    EpiphanSerializer,
+    EpiphanChannelSerializer,
+    EpiphanSourceSerializer,
     RecordingAssetSerializer,
     RecordingSerializer,
 )
@@ -326,3 +330,39 @@ class EventViewSet(ModelViewSet):
             'video.view_event',
             klass=self.queryset
         )
+
+
+class EpiphanViewSet(ModelViewSet):
+    queryset = Epiphan.objects.all()
+    serializer_class = EpiphanSerializer
+    permission_classes = (
+        DjangoModelPermissions,
+    )
+    filter_backends = (
+        DjangoFilterBackend,
+    )
+    filter_fields = ()
+
+
+class EpiphanChannelViewSet(ModelViewSet):
+    queryset = EpiphanChannel.objects.all()
+    serializer_class = EpiphanChannelSerializer
+    permission_classes = (
+        DjangoModelPermissions,
+    )
+    filter_backends = (
+        DjangoFilterBackend,
+    )
+    filter_fields = ()
+
+
+class EpiphanSourceViewSet(ModelViewSet):
+    queryset = EpiphanSource.objects.all()
+    serializer_class = EpiphanSourceSerializer
+    permission_classes = (
+        DjangoModelPermissions,
+    )
+    filter_backends = (
+        DjangoFilterBackend,
+    )
+    filter_fields = ()

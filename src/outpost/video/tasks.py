@@ -216,7 +216,7 @@ class ExportTask(Task):
             )
 
 
-class EpiphanSourcePreviewTask(PeriodicTask):
+class EpiphanSourceTask(PeriodicTask):
     run_every = timedelta(minutes=1)
 
     def run(self, **kwargs):
@@ -224,10 +224,18 @@ class EpiphanSourcePreviewTask(PeriodicTask):
             epiphan__enabled=True,
             epiphan__online=True,
         )
-        logger.info('Updating previews on {} sources.'.format(sources.count()))
+        logger.info('Updating {} sources.'.format(sources.count()))
 
         for s in sources:
-            s.update()
+            EpiphanSourceWorkerTask().delay(s.pk)
+
+
+class EpiphanSourceWorkerTask(Task):
+
+    def run(self, pk, **kwargs):
+        source = EpiphanSource.objects.get(pk=pk)
+        logger.info('Updating Epiphan source: {}'.format(source))
+        source.update()
 
 
 class EpiphanRebootTask(PeriodicTask):

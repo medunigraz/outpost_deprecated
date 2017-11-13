@@ -7,12 +7,14 @@ from base64 import (
     b64encode,
     urlsafe_b64encode,
 )
+from statistics import mean
 from functools import partial
 from hashlib import (
     md5,
     sha256,
 )
 from pathlib import Path
+from decimal import Decimal
 from tempfile import (
     NamedTemporaryFile,
     TemporaryDirectory,
@@ -260,6 +262,8 @@ class EpiphanSource(models.Model):
         null=True,
         blank=True
     )
+    port = models.PositiveIntegerField(default=554)
+    audio = JSONField(null=True, blank=True)
 
     class Meta:
         ordering = (
@@ -277,9 +281,28 @@ class EpiphanSource(models.Model):
             self.preview.save('preview.jpg', ContentFile(r.content))
         except Exception as e:
             logger.warn(e)
+        try:
+            rtsp = 'rtsp\\://{s.epiphan.hostname}\\:{s.port}/stream.sdp'.format(s=self)
+            probe = FFProbeProcess(
+                '-f', 'lavfi',
+                '-i', 'amovie=\'{r}\',astats=metadata=1:reset=30'.format(r=rtsp),
+                '-read_intervals', '%+5',
+                '-show_entries', 'frame=pkt_pts_time:frame_tags'
+            )
+            self.audio = probe.run()
+            self.save()
+        except Exception as e:
+            logger.warn(e)
 
     def __str__(self):
         return '{s.epiphan}, {s.number}'.format(s=self)
+
+    def volume(self):
+        if not self.audio:
+            return 0
+        frame = self.audio['frames']
+        values = [x['tags']['lavfi.astats.Overall.RMS_level'] for x in frame]
+        return mean(map(float, values))
 
 
 @signal_connect
@@ -661,6 +684,11 @@ class DASHPublish(Publish):
         related_name='+'
     )
 
+    class Meta:
+        permissions = (
+            ('view_dash', _('View DASH')),
+        )
+
 
 class DASHIngest(models.Model):
     path = models.TextField()
@@ -715,6 +743,11 @@ class DASHVideo(PublishMedia):
         options={'quality': 60}
     )
 
+    class Meta:
+        permissions = (
+            ('view_dash_video', _('View DASH Video')),
+        )
+
 
 @signal_connect
 class DASHVideoVariant(DASHIngest, models.Model):
@@ -732,6 +765,11 @@ class DASHVideoVariant(DASHIngest, models.Model):
 
 @signal_connect
 class DASHAudio(DASHIngest, PublishMedia):
+
+    class Meta:
+        permissions = (
+            ('view_dash_audio', _('View DASH Audio')),
+        )
 
     def pre_delete(self, *args, **kwargs):
         super().pre_delete(*args, **kwargs)
