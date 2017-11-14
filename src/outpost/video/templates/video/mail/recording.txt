@@ -1,13 +1,13 @@
 Dear {{ user }},
 
-a new recording has been uploaded from {{rec.recorder }} on {{ rec.created }}.
+a new recording has been uploaded from {{recording.recorder }} on {{ recording.created }}:
 
-Duration: {{ rec.info.format.duration }}s
-Size: {{ rec.info.format.size|filesizeformat }}
+Duration: {{ recording.info.format.duration }}s
+Size: {{ recording.info.format.size|filesizeformat }}
 
 The recording is available at this location:
 
-https://{{ site.domain }}{% url 'video:recording:detail' pk=rec.pk %}
+https://{{ site.domain }}{% url 'video:recording:detail' pk=recording.pk %}
 
 Yours,
 {{ site.name }}
