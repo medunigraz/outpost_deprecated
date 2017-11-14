@@ -89,7 +89,7 @@ class ProcessRecordingTask(Task):
         logger.debug('Extracted metadata: {}'.format(rec.info))
         rec.save()
         logger.info('Finished recording: {}'.format(pk))
-        for notification in rec.notifications.all():
+        for notification in rec.recorder.notifications.all():
             user = notification.user
             if not user.email:
                 continue
