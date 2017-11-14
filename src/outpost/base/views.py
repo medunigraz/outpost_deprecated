@@ -50,7 +50,7 @@ class NotificationViewSet(ModelViewSet):
     queryset = models.Notification.objects.all()
     serializer_class = serializers.NotificationSerializer
     permission_classes = (
-        DjangoModelPermissions,
+        IsAuthenticatedOrReadOnly,
     )
     filter_backends = (
         DjangoFilterBackend,
