@@ -56,64 +56,92 @@ $(document).ready(function() {
   });
 
   var $notification = $('#notification')
-  $notification.on('click', function() {
-    if ($notification.data('enabled') === 'true') {
-      $notification.removeClass('btn-success').addClass('btn-default');
-      $notification.find('span.glyphicon').removeClass('glyphicon-check').addClass('glyphicon-unchecked');
-      $notification.data('enabled', 'false');
+  var notification = undefined;
+  $.ajax({
+    method: 'GET',
+    url: $notification.data('url') + '?object_id=' + $notification.data('pk') + '&content_type=' + $notification.data('ct'),
+    dataType: 'json'
+  }).done(function(msg) {
+    console.log(msg);
+    if (msg.count > 0) {
+      notification  = msg.results.shift().id;
+      $notification.addClass('btn-success');
+      $notification.find('span.glyphicon').addClass('glyphicon-check');
     } else {
-      $notification.removeClass('btn-default').addClass('btn-success');
-      $notification.find('span.glyphicon').removeClass('glyphicon-unchecked').addClass('glyphicon-check');
-      $notification.data('enabled', 'true');
+      $notification.addClass('btn-default');
+      $notification.find('span.glyphicon').addClass('glyphicon-unchecked');
     }
+    $notification.on('click', function() {
+      $notification.attr('disabled', true);
+      if (notification) {
+        $.ajax({
+          method: 'DELETE',
+          url: $notification.data('url') + notification + '/',
+          dataType: 'json'
+        }).done(function(msg) {
+          $notification.removeClass('btn-success').addClass('btn-default');
+          $notification.find('span.glyphicon').removeClass('glyphicon-check').addClass('glyphicon-unchecked');
+          notification = undefined;
+          $notification.attr('disabled', false);
+        });
+      } else {
+        $.ajax({
+          method: 'POST',
+          url: $notification.data('url'),
+          dataType: 'json',
+          data: {
+            object_id: $notification.data('pk'),
+            content_type: $notification.data('ct')
+          }
+        }).done(function(msg) {
+          $notification.removeClass('btn-default').addClass('btn-success');
+          $notification.find('span.glyphicon').removeClass('glyphicon-unchecked').addClass('glyphicon-check');
+          notification = msg.id;
+          $notification.attr('disabled', false);
+        });
+      }
+    });
+    $notification.removeClass('hidden');
   });
-  if ($notification.data('enabled') === 'true') {
-    $notification.addClass('btn-success');
-    $notification.find('span.glyphicon').addClass('glyphicon-check');
-  } else {
-    $notification.addClass('btn-default');
-    $notification.find('span.glyphicon').addClass('glyphicon-unchecked');
-  }
-  $notification.removeClass('hidden');
 
   $('#sources .source').each(function(idx, elem) {
-      var $elem = $(elem);
-      var $caption = $elem.find('.caption');
-      $.ajax({
-        method: 'GET',
-        url: '/v1/video/epiphansource/' + $elem.data('pk') + '/',
-        dataType: 'json'
-      }).done(function(msg) {
-        if (!msg.audio) {
-          return;
-        }
-        var extractLevel = function(frame) {
-          return Math.abs(parseFloat(frame.tags['lavfi.astats.Overall.RMS_level']));
-        };
-        var height = 100;
-        var width = Math.floor($caption.width());
-        var levels = msg.audio.frames.map(extractLevel);
-        var multiplier = height / levels.reduce(function(a, b) { return Math.max(a, b); });
-        var w = width / levels.length;
-        d3.selectAll($caption.toArray())
-          .append('svg')
-          .attr('width', width)
-          .attr('height', height)
-          .selectAll('circle')
-          .data(levels)
-          .enter()
-          .append('rect')
-          .attr('x', function(d, i) {
-            return i * w;
-          })
-          .attr('y', function(d, i) {
-            return height - (multiplier * d);
-          })
-          .attr('width', w)
-          .attr('height', function(d) {
-            return multiplier * d;
-          });
-      });
+    var $elem = $(elem);
+    var $caption = $elem.find('.caption');
+    $.ajax({
+      method: 'GET',
+      url: '/v1/video/epiphansource/' + $elem.data('pk') + '/',
+      dataType: 'json'
+    }).done(function(msg) {
+      if (!msg.audio) {
+        return;
+      }
+      var extractLevel = function(frame) {
+        return Math.abs(parseFloat(frame.tags['lavfi.astats.Overall.RMS_level']));
+      };
+      var height = 100;
+      var width = Math.floor($caption.width());
+      var levels = msg.audio.frames.map(extractLevel);
+      var multiplier = height / levels.reduce(function(a, b) { return Math.max(a, b); });
+      var w = width / levels.length;
+      d3.selectAll($caption.toArray())
+        .append('svg')
+        .attr('width', width)
+        .attr('height', height)
+        .selectAll('circle')
+        .data(levels)
+        .enter()
+        .append('rect')
+        .attr('x', function(d, i) {
+          return i * w;
+        })
+        .attr('y', function(d, i) {
+          return height - (multiplier * d);
+        })
+        .attr('width', w)
+        .attr('height', function(d) {
+          return multiplier * d;
+        });
+    });
   });
 
 });

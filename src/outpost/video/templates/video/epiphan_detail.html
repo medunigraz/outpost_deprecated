@@ -1,8 +1,10 @@
 {% extends 'outpost/base.html' %}
+{% load base %}
 {% load i18n %}
 {% load static %}
 {% load imagekit %}
 {% load guardian_tags %}
+
 
 {% block content %}
 <h1 class="page-header row">
@@ -24,8 +26,8 @@
     </small>
   </div>
   <div class="col-sm-12 col-md-2">
-    {% get_obj_perms request.user for object as "object_perms" %}
-    <button type="button" class="btn btn-sm btn-block hidden" id="notification" data-enabled="{% if 'notify_recorder' in object_perms %}true{% else %}false{% endif %}">
+    {% content_type object as object_ct %}
+    <button type="button" class="btn btn-sm btn-block hidden" id="notification" data-url="{% url 'api:v1:notification-list' %}" data-pk="{{ object.pk }}" data-ct="{{ object_ct.pk }}">
       <span class="glyphicon"></span>
       {% trans 'Notification' %}
     </button>
