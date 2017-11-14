@@ -88,7 +88,7 @@ class Notification(models.Model):
         ContentType,
         on_delete=models.CASCADE
     )
-    object_id = models.PositiveIntegerField()
+    object_id = models.CharField(max_length=36)
     content_object = GenericForeignKey(
         'content_type',
         'object_id'
