@@ -1,9 +1,11 @@
 import logging
 import subprocess
+
 from django.conf import settings
-from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.db import models
+from django.utils.translation import ugettext_lazy as _
 from PIL import (
     Image,
     ImageColor,
@@ -51,6 +53,9 @@ class Icon(models.Model):
         upload_to=Uuid4Upload
     )
 
+    class Meta:
+        verbose_name = _('Icon')
+
     def __str__(self):
         return self.name
 
@@ -71,6 +76,9 @@ class License(models.Model):
     name = models.CharField(max_length=128)
     text = models.TextField()
 
+    class Meta:
+        verbose_name = _('License')
+
     def __str__(self):
         return self.name
 
@@ -78,6 +86,9 @@ class License(models.Model):
 class ReplaceableEntity(models.Model):
     name = models.CharField(max_length=16, primary_key=True)
     character = models.CharField(max_length=1)
+
+    class Meta:
+        verbose_name = _('Replaceable entity')
 
     def __str__(self):
         return self.name
@@ -96,3 +107,6 @@ class Notification(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL
     )
+
+    class Meta:
+        verbose_name = _('Notification')
