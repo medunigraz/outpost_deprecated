@@ -408,7 +408,7 @@ class SideBySideExport(Export):
                 '2',
                 output.name
             ]
-            ffmpeg = Process(args)
+            ffmpeg = Process(*args)
             ffmpeg.handler(FFMPEGProgressHandler(partial(notify, 'Stitching')))
             ffmpeg.run()
             self.data.save(output.name, File(output.file))
