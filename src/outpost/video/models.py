@@ -264,6 +264,11 @@ class EpiphanSource(models.Model):
     )
     port = models.PositiveIntegerField(default=554)
     audio = JSONField(null=True, blank=True)
+    input = models.ForeignKey(
+        'Input',
+        blank=True,
+        null=True,
+    )
 
     class Meta:
         ordering = (
@@ -304,6 +309,14 @@ class EpiphanSource(models.Model):
         frame = self.audio['frames']
         values = [x['tags']['lavfi.astats.Overall.RMS_level'] for x in frame]
         return mean(map(float, values))
+
+
+class Input(PolymorphicModel):
+    name = models.CharField(max_length=128, blank=False, null=False)
+
+
+class PanasonicCamera(NetworkedDeviceMixin, Input):
+    pass
 
 
 @signal_connect

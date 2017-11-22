@@ -113,3 +113,8 @@ class RecordingAdmin(admin.ModelAdmin):
     inlines = (
         RecordingAssetInlineAdmin,
     )
+
+
+@admin.register(models.PanasonicCamera)
+class RecordingAdmin(admin.ModelAdmin):
+    pass
