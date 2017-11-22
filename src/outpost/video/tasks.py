@@ -29,6 +29,7 @@ from django.contrib.sites.models import Site
 from django.contrib.staticfiles import finders
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from enchant import Dict
 from guardian.shortcuts import get_users_with_perms
@@ -214,6 +215,16 @@ class ExportTask(Task):
                     'maximum': maximum,
                 }
             )
+
+
+class ExportCleanupTask(PeriodicTask):
+    run_every = timedelta(hours=1)
+
+    def run(self, **kwargs):
+        expires = timezone.now() - timedelta(hours=24)
+        for e in Export.objects.filter(modified__lt=expires):
+            logger.debug('Remove expired export: {}'.format(e))
+            e.delete()
 
 
 class EpiphanSourceTask(PeriodicTask):

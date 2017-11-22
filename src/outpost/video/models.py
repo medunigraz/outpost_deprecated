@@ -367,7 +367,7 @@ class RecordingAsset(models.Model):
         self.data.delete(False)
 
 
-class Export(PolymorphicModel):
+class Export(TimeStampedModel, PolymorphicModel):
     recording = models.ForeignKey(
         'Recording',
     )
