@@ -331,6 +331,9 @@ class Recording(TimeStampedModel):
         ordering = (
             '-created',
         )
+        permissions = (
+            ('view_recording', _('View Recording')),
+        )
 
     def pre_delete(self, *args, **kwargs):
         self.data.delete(False)
