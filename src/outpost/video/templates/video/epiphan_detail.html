@@ -79,20 +79,21 @@
 </table>
 <h2>{% trans 'Recordings' %}</h2>
 {% if object.recording_set.exists %}
-<table class="table table-striped table-vcenter">
+<table class="table table-striped table-vcenter" id="recordings">
   <thead>
     <tr>
       <th></th>
       <th>{% trans 'Date' %}</th>
       <th>{% trans 'Size' %}</th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
     {% for r in object.recording_set.all %}
-    <tr>
+    <tr data-url="{% url 'api:v1:recording-detail' pk=r.pk %}">
       <th scope="row">
         <a href="{% url 'video:recording:detail' pk=r.pk%}" class="btn btn-primary btn-sm btn-block">
-          {{ r.pk }}
+          <span class="glyphicon glyphicon-file"></span>
         </a>
       </th>
       <td>{{ r.created }}</td>
@@ -101,6 +102,16 @@
           <span class="glyphicon glyphicon-download-alt"></span>
           {{ r.data.size|filesizeformat }}
         </a>
+      </td>
+      <td class="text-right">
+        <button type="button" class="btn btn-danger btn-sm delete">
+          <span class="glyphicon glyphicon-trash"></span>
+        </button>
+        <!--
+        <button type="button" class="btn btn-warning btn-sm archive">
+          <span class="glyphicon glyphicon-compressed"></span>
+        </button>
+        -->
       </td>
     </tr>
     {% endfor %}
@@ -123,6 +134,8 @@
     {% trans 'Stop' %}
   </button>
 </script>
+{% trans 'Delete?' as confirm_delete %}
+{% include 'base/includes/confirm.html' with caption=confirm_delete %}
 {% include 'base/includes/lightbox.html' %}
 {% endblock %}
 
