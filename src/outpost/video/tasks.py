@@ -227,6 +227,20 @@ class ExportCleanupTask(PeriodicTask):
             e.delete()
 
 
+class RecordingRetentionTask(PeriodicTask):
+    run_every = timedelta(hours=1)
+
+    def run(self, **kwargs):
+        recorders = Recorder.objects.filter(enabled=True).exclude(retention=None)
+        logger.info('Enforcing retention on {} sources.'.format(recorders.count()))
+        now = timezone.now()
+
+        for r in recorders:
+            for rec in Recording.objects.filter(recorder=r, created__lt=(now - r.retention)):
+                logger.warn('Removing recording {r.pk} from {r.created} after retention'.format(r=rec))
+                rec.delete()
+
+
 class EpiphanSourceTask(PeriodicTask):
     run_every = timedelta(minutes=1)
 

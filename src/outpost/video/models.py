@@ -131,6 +131,11 @@ class Recorder(NetworkedDeviceMixin, PolymorphicModel):
     notifications = GenericRelation(
         'base.Notification'
     )
+    retention = models.DurationField(
+        default=None,
+        null=True,
+        blank=True
+    )
 
     class Meta:
         ordering = (
