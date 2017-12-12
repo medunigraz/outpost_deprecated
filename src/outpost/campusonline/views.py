@@ -1,3 +1,4 @@
+from django.utils import timezone
 from drf_haystack.viewsets import HaystackViewSet
 from rest_framework.filters import DjangoFilterBackend
 from rest_framework.permissions import AllowAny
@@ -67,3 +68,14 @@ class PersonViewSet(ReadOnlyModelViewSet):
     permission_classes = (
         AllowAny,
     )
+
+
+class EventViewSet(ReadOnlyModelViewSet):
+    queryset = models.Event.objects.all()
+    serializer_class = serializers.EventSerializer
+    permission_classes = (
+        AllowAny,
+    )
+
+    def get_queryset(self):
+        return self.queryset.filter(show_end__gte=timezone.now())

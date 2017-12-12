@@ -1,4 +1,5 @@
 from django.contrib.gis.db import models
+from ordered_model.models import OrderedModel
 
 
 class RoomCategory(models.Model):
@@ -363,3 +364,51 @@ class CourseGroupTerm(models.Model):
 
     def __str__(self):
         return '{s.coursegroup} ({s.person}): {s.room} {s.start}-{s.end}'.format(s=self)
+
+
+class Event(OrderedModel):
+    id = models.CharField(
+        primary_key=True,
+        max_length=32
+    )
+    course = models.ForeignKey(
+        'Course',
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        related_name='+'
+    )
+    category = models.CharField(
+        max_length=256
+    )
+    title = models.CharField(
+        max_length=256
+    )
+    date = models.DateTimeField()
+    start = models.DateTimeField()
+    end = models.DateTimeField()
+    building = models.ForeignKey(
+        'Building',
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        related_name='+'
+    )
+    room = models.ForeignKey(
+        'Room',
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        related_name='+'
+    )
+    show_end = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'campusonline_event'
+
+    def __str__(self):
+        return '{s.category} {s.date}: {s.title} ({s.room})'.format(s=self)

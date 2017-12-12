@@ -53,3 +53,11 @@ class PersonNameSerializer(ModelSerializer):
         exclude = (
             'room',
         )
+
+
+class EventSerializer(ModelSerializer):
+    building = BuildingSerializer()
+    room = RoomSerializer()
+
+    class Meta:
+        model = models.Event

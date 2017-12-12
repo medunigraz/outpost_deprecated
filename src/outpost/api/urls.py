@@ -179,6 +179,10 @@ v1.register(
     r'video/event',
     video.EventViewSet
 )
+v1.register(
+    r'campusonline/event',
+    campusonline.EventViewSet
+)
 
 urlpatterns = [
     url(r'^v1/', include(v1.urls, namespace='v1')),
