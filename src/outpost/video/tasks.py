@@ -20,10 +20,7 @@ from tempfile import mkdtemp
 from celery import states
 from celery.exceptions import Ignore
 from celery.schedules import crontab
-from celery.task import (
-    PeriodicTask,
-    Task,
-)
+from celery.task import Task
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.contrib.staticfiles import finders
@@ -36,7 +33,9 @@ from guardian.shortcuts import get_users_with_perms
 from lxml import etree
 from lxml.builder import ElementMaker
 
-from ..base.utils import Process
+from outpost.base.utils import Process
+from outpost.base.tasks import PeriodicMaintainanceTask
+
 from .models import (
     DASHAudio,
     DASHPublish,
@@ -217,7 +216,7 @@ class ExportTask(Task):
             )
 
 
-class ExportCleanupTask(PeriodicTask):
+class ExportCleanupTask(PeriodicMaintainanceTask):
     run_every = timedelta(hours=1)
 
     def run(self, **kwargs):
@@ -227,7 +226,7 @@ class ExportCleanupTask(PeriodicTask):
             e.delete()
 
 
-class RecordingRetentionTask(PeriodicTask):
+class RecordingRetentionTask(PeriodicMaintainanceTask):
     run_every = timedelta(hours=1)
 
     def run(self, **kwargs):
@@ -241,7 +240,7 @@ class RecordingRetentionTask(PeriodicTask):
                 rec.delete()
 
 
-class EpiphanSourceTask(PeriodicTask):
+class EpiphanSourceTask(PeriodicMaintainanceTask):
     run_every = timedelta(minutes=1)
 
     def run(self, **kwargs):
@@ -263,7 +262,7 @@ class EpiphanSourceWorkerTask(Task):
         source.update()
 
 
-class EpiphanRebootTask(PeriodicTask):
+class EpiphanRebootTask(PeriodicMaintainanceTask):
     run_every = crontab(hour=5, minute=0)
 
     def run(self, **kwargs):
