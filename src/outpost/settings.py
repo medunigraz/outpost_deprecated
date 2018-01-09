@@ -285,6 +285,7 @@ DOWNLOADVIEW_RULES = [
 
 CELERY_BROKER_URL = 'amqp://guest:guest@localhost//'
 CELERY_RESULTS_BACKEND = 'django-db'
+CELERY_TASK_DEFAULT_QUEUE = 'default'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
