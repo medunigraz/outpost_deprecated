@@ -15,6 +15,7 @@ class MaintainanceTaskMixin:
     options = {
         'queue': 'maintainance'
     }
+    queue = 'maintainance'
 
 
 class RefreshMaterializedViewsTask(MaintainanceTaskMixin, PeriodicTask):

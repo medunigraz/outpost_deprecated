@@ -82,6 +82,7 @@ class VideoTaskMixin:
     options = {
         'queue': 'video'
     }
+    queue = 'video'
 
 
 class ProcessRecordingTask(VideoTaskMixin, Task):
