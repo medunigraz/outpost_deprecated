@@ -285,9 +285,6 @@ DOWNLOADVIEW_RULES = [
 
 CELERY_BROKER_URL = 'amqp://guest:guest@localhost//'
 CELERY_RESULTS_BACKEND = 'django-db'
-CELERY_TASK_ROUTES = ([
-    ('outpost.video.tasks.*', {'queue': 'video'}),
-],)
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
