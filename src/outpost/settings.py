@@ -290,10 +290,6 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 RUNSERVERPLUS_SERVER_ADDRESS_PORT = '0.0.0.0:8088'
 
-RAVEN_CONFIG = {
-    'release': raven.fetch_git_sha(BASE_DIR),
-}
-
 OUTPOST = {
     'epiphan_provisioning': False,
     'typo3_api': 'https://localhost/api/',
@@ -326,10 +322,6 @@ LOGGING = {
             'level': 'ERROR',
             'class': 'django.utils.log.AdminEmailHandler',
         },
-        'sentry': {
-            'level': 'ERROR',
-            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
-        },
         'graypy': {
             'level': 'WARNING',
             'class': 'graypy.GELFHandler',
@@ -339,8 +331,8 @@ LOGGING = {
     },
     'loggers': {
         'root': {
-            'level': 'WARNING',
-            'handlers': ['console', 'sentry'],
+            'level': 'INFO',
+            'handlers': ['console', 'graypy'],
         },
         'django': {
             'handlers': ['console'],
@@ -353,21 +345,11 @@ LOGGING = {
         },
         'rules': {
             'handlers': ['console'],
-            'level': 'DEBUG',
+            'level': 'INFO',
         },
         'outpost': {
             'handlers': ['console', 'mail_admins'],
-            'level': 'DEBUG',
-        },
-        'raven': {
-            'level': 'DEBUG',
-            'handlers': ['console'],
-            'propagate': False,
-        },
-        'sentry.errors': {
-            'level': 'DEBUG',
-            'handlers': ['console'],
-            'propagate': False,
+            'level': 'INFO',
         },
     },
 }
