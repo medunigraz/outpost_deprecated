@@ -11,14 +11,13 @@ from .models import NetworkedDeviceMixin
 logger = logging.getLogger(__name__)
 
 
-class PeriodicMaintainanceTask(PeriodicTask):
-    abstract = True
+class MaintainanceTaskMixin:
     options = {
         'queue': 'maintainance'
     }
 
 
-class RefreshMaterializedViewsTask(PeriodicMaintainanceTask):
+class RefreshMaterializedViewsTask(MaintainanceTaskMixin, PeriodicTask):
     run_every = timedelta(hours=1)
     views = '''
     SELECT oid::regclass::text FROM pg_class WHERE relkind = 'm';
@@ -80,7 +79,7 @@ class RefreshMaterializedViewsTask(PeriodicMaintainanceTask):
         connection.close()
 
 
-class RefreshNetworkedDeviceTask(PeriodicMaintainanceTask):
+class RefreshNetworkedDeviceTask(MaintainanceTaskMixin, PeriodicTask):
     run_every = timedelta(minutes=2)
 
     def run(self, **kwargs):
@@ -89,14 +88,14 @@ class RefreshNetworkedDeviceTask(PeriodicMaintainanceTask):
                 obj.update()
 
 
-class UpdateHaystackTask(PeriodicMaintainanceTask):
+class UpdateHaystackTask(MaintainanceTaskMixin, PeriodicTask):
     run_every = timedelta(hours=2)
 
     def run(self):
         CeleryHaystackUpdateIndex().run(remove=True)
 
 
-class CleanUpPermsTask(PeriodicMaintainanceTask):
+class CleanUpPermsTask(MaintainanceTaskMixin, PeriodicTask):
     run_every = timedelta(hours=1)
 
     def run(self):

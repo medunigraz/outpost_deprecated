@@ -20,7 +20,10 @@ from tempfile import mkdtemp
 from celery import states
 from celery.exceptions import Ignore
 from celery.schedules import crontab
-from celery.task import Task
+from celery.task import (
+    Task,
+    PeriodicTask,
+)
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.contrib.staticfiles import finders
@@ -34,7 +37,7 @@ from lxml import etree
 from lxml.builder import ElementMaker
 
 from outpost.base.utils import Process
-from outpost.base.tasks import PeriodicMaintainanceTask
+from outpost.base.tasks import MaintainanceTaskMixin
 
 from .models import (
     DASHAudio,
@@ -75,7 +78,13 @@ logger = logging.getLogger(__name__)
 # ffmpeg -i video-0x100.mp4 -filter:v "select='eq(pict_type,I)',atadenoise,select='eq(t,70)+eq(t,147)+eq(t,170)+eq(t,190)+eq(t,261)+eq(t,269)+eq(t,270)+eq(t,275)+eq(t,287)+eq(t,361)+eq(t,363)+eq(t,365)'" -vsync 0 frames/%05d.jpg'
 
 
-class ProcessRecordingTask(Task):
+class VideoTaskMixin:
+    options = {
+        'queue': 'video'
+    }
+
+
+class ProcessRecordingTask(VideoTaskMixin, Task):
 
     def run(self, pk, **kwargs):
         logger.debug('Processing recording: {}'.format(pk))
@@ -175,7 +184,7 @@ class EpiphanProvisionTask(Task):
         )
 
 
-class ExportTask(Task):
+class ExportTask(VideoTaskMixin, Task):
 
     def run(self, pk, exporter, **kwargs):
         classes = Export.__subclasses__()
@@ -216,7 +225,7 @@ class ExportTask(Task):
             )
 
 
-class ExportCleanupTask(PeriodicMaintainanceTask):
+class ExportCleanupTask(MaintainanceTaskMixin, PeriodicTask):
     run_every = timedelta(hours=1)
 
     def run(self, **kwargs):
@@ -226,7 +235,7 @@ class ExportCleanupTask(PeriodicMaintainanceTask):
             e.delete()
 
 
-class RecordingRetentionTask(PeriodicMaintainanceTask):
+class RecordingRetentionTask(MaintainanceTaskMixin, PeriodicTask):
     run_every = timedelta(hours=1)
 
     def run(self, **kwargs):
@@ -240,7 +249,7 @@ class RecordingRetentionTask(PeriodicMaintainanceTask):
                 rec.delete()
 
 
-class EpiphanSourceTask(PeriodicMaintainanceTask):
+class EpiphanSourceTask(MaintainanceTaskMixin, PeriodicTask):
     run_every = timedelta(minutes=1)
 
     def run(self, **kwargs):
@@ -254,7 +263,7 @@ class EpiphanSourceTask(PeriodicMaintainanceTask):
             EpiphanSourceWorkerTask().delay(s.pk)
 
 
-class EpiphanSourceWorkerTask(Task):
+class EpiphanSourceWorkerTask(MaintainanceTaskMixin, Task):
 
     def run(self, pk, **kwargs):
         source = EpiphanSource.objects.get(pk=pk)
@@ -262,7 +271,7 @@ class EpiphanSourceWorkerTask(Task):
         source.update()
 
 
-class EpiphanRebootTask(PeriodicMaintainanceTask):
+class EpiphanRebootTask(MaintainanceTaskMixin, PeriodicTask):
     run_every = crontab(hour=5, minute=0)
 
     def run(self, **kwargs):
@@ -276,7 +285,7 @@ class EpiphanRebootTask(PeriodicMaintainanceTask):
             e.reboot()
 
 
-class DASHPublishTask(Task):
+class DASHPublishTask(VideoTaskMixin, Task):
     pattern = re.compile(r'\w+')
     spells = [
         Dict('en'),
