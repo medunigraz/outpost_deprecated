@@ -24,14 +24,6 @@ from django.views.generic import (
 )
 from django_downloadview import PathDownloadView
 from guardian.shortcuts import get_objects_for_user
-from rest_framework.filters import DjangoFilterBackend
-from rest_framework.permissions import (
-    AllowAny,
-    DjangoModelPermissions,
-    DjangoModelPermissionsOrAnonReadOnly,
-    IsAuthenticatedOrReadOnly,
-)
-from rest_framework.viewsets import ModelViewSet
 
 from .models import (
     Broadcast,
@@ -44,20 +36,14 @@ from .models import (
     EventVideo,
     Export,
     Publish,
+    DASHPublish,
+    DASHAudio,
+    DASHVideo,
     Recorder,
     Recording,
     RecordingAsset,
     Stream,
     Token,
-)
-from .serializers import (
-    EventSerializer,
-    RecorderSerializer,
-    EpiphanSerializer,
-    EpiphanChannelSerializer,
-    EpiphanSourceSerializer,
-    RecordingAssetSerializer,
-    RecordingSerializer,
 )
 from .tasks import ExportTask
 
@@ -242,8 +228,13 @@ class PublishView(LoginRequiredMixin, DetailView):
     model = Publish
 
 
-class DASHView(PathDownloadView):
+class DASHView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+    model = Event
+    permission_required = 'video.add_publish'
+    template_name_suffix = '_publish_dash'
 
+
+class DASHMediaView(PathDownloadView):
     model = None
 
     def get_path(self):
@@ -254,115 +245,3 @@ class DASHView(PathDownloadView):
         if not path.is_file():
             return HttpResponseNotFound()
         return str(path)
-
-
-class RecorderViewSet(ModelViewSet):
-    queryset = Recorder.objects.all()
-    serializer_class = RecorderSerializer
-    permission_classes = (
-        DjangoModelPermissions,
-    )
-    filter_backends = (
-        DjangoFilterBackend,
-    )
-    filter_fields = ()
-
-    def get_queryset(self):
-        return get_objects_for_user(
-            self.request.user,
-            'video.view_recorder',
-            klass=self.queryset
-        )
-
-
-class RecordingViewSet(ModelViewSet):
-    queryset = Recording.objects.all()
-    serializer_class = RecordingSerializer
-    permission_classes = (
-        DjangoModelPermissions,
-    )
-    filter_backends = (
-        DjangoFilterBackend,
-    )
-    filter_fields = ()
-
-    def get_queryset(self):
-        return get_objects_for_user(
-            self.request.user,
-            'video.view_recording',
-            klass=self.queryset.model
-        )
-
-
-class RecordingAssetViewSet(ModelViewSet):
-    queryset = RecordingAsset.objects.all()
-    serializer_class = RecordingAssetSerializer
-    permission_classes = (
-        DjangoModelPermissions,
-    )
-    filter_backends = (
-        DjangoFilterBackend,
-    )
-    filter_fields = ()
-
-    def get_queryset(self):
-        return get_objects_for_user(
-            self.request.user,
-            'video.view_recordingasset',
-            klass=self.queryset.model
-        )
-
-
-class EventViewSet(ModelViewSet):
-    queryset = Event.objects.all()
-    serializer_class = EventSerializer
-    permission_classes = (
-        DjangoModelPermissions,
-    )
-    filter_backends = (
-        DjangoFilterBackend,
-    )
-    filter_fields = ()
-
-    def get_queryset(self):
-        return get_objects_for_user(
-            self.request.user,
-            'video.view_event',
-            klass=self.queryset
-        )
-
-
-class EpiphanViewSet(ModelViewSet):
-    queryset = Epiphan.objects.all()
-    serializer_class = EpiphanSerializer
-    permission_classes = (
-        DjangoModelPermissions,
-    )
-    filter_backends = (
-        DjangoFilterBackend,
-    )
-    filter_fields = ()
-
-
-class EpiphanChannelViewSet(ModelViewSet):
-    queryset = EpiphanChannel.objects.all()
-    serializer_class = EpiphanChannelSerializer
-    permission_classes = (
-        DjangoModelPermissions,
-    )
-    filter_backends = (
-        DjangoFilterBackend,
-    )
-    filter_fields = ()
-
-
-class EpiphanSourceViewSet(ModelViewSet):
-    queryset = EpiphanSource.objects.all()
-    serializer_class = EpiphanSourceSerializer
-    permission_classes = (
-        DjangoModelPermissions,
-    )
-    filter_backends = (
-        DjangoFilterBackend,
-    )
-    filter_fields = ()

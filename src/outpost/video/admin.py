@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.utils.html import linebreaks
 
+from outpost.base.admin import NotificationInlineAdmin
 from . import models
 
 
@@ -70,6 +71,7 @@ class EpiphanAdmin(admin.ModelAdmin):
         EpiphanChannelInlineAdmin,
         EpiphanSourceInlineAdmin,
         EpiphanRecordingInlineAdmin,
+        NotificationInlineAdmin,
     )
 
     def fingerprint(self, obj):

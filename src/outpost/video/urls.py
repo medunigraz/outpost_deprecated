@@ -78,18 +78,18 @@ event = [
 ]
 publish = [
     url(
-        r'^(?P<pk>[0-9a-f]{8}\-[0-9a-f]{4}\-4[0-9a-f]{3}\-[89ab][0-9a-f]{3}\-[0-9a-f]{12})/$',
-        views.PublishView.as_view(),
-        name='publish'
+        r'^dash/(?P<pk>[0-9a-f]{8}\-[0-9a-f]{4}\-4[0-9a-f]{3}\-[89ab][0-9a-f]{3}\-[0-9a-f]{12})/$',
+        views.DASHView.as_view(),
+        name='dash'
     ),
     url(
         r'^dash/video/(?P<pk>[0-9a-f]{8}\-[0-9a-f]{4}\-4[0-9a-f]{3}\-[89ab][0-9a-f]{3}\-[0-9a-f]{12})/(?P<path>.+)$',
-        views.DASHView.as_view(model=models.DASHVideoVariant),
+        views.DASHMediaView.as_view(model=models.DASHVideoVariant),
         name='dash-video'
     ),
     url(
         r'^dash/audio/(?P<pk>[0-9a-f]{8}\-[0-9a-f]{4}\-4[0-9a-f]{3}\-[89ab][0-9a-f]{3}\-[0-9a-f]{12})/(?P<path>.+)$',
-        views.DASHView.as_view(model=models.DASHAudio),
+        views.DASHMediaView.as_view(model=models.DASHAudio),
         name='dash-audio'
     ),
 ]

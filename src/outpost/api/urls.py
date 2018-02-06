@@ -12,7 +12,7 @@ from ..geo import views as geo
 from ..positioning import views as positioning
 from ..structure import views as structure
 from ..typo3 import views as typo3
-from ..video import views as video
+from ..video import api as video
 
 v1 = DefaultRouter()
 v1.register(
@@ -152,6 +152,11 @@ v1.register(
     base_name='news-search'
 )
 v1.register(
+    r'video/exportclass',
+    video.ExportClassViewSet,
+    base_name='video-export-class'
+)
+v1.register(
     r'video/recorder',
     video.RecorderViewSet
 )
@@ -178,6 +183,18 @@ v1.register(
 v1.register(
     r'video/event',
     video.EventViewSet
+)
+v1.register(
+    r'video/publish/dash',
+    video.DASHPublishViewSet
+)
+v1.register(
+    r'video/publish/dash-audio',
+    video.DASHAudioViewSet
+)
+v1.register(
+    r'video/publish/dash-video',
+    video.DASHVideoViewSet
 )
 v1.register(
     r'campusonline/event',
