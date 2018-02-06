@@ -351,7 +351,7 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'INFO',
         },
-        'outpost': {
+        __package__: {
             'handlers': ['console', 'mail_admins'],
             'level': 'INFO',
         },
