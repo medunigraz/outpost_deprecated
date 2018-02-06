@@ -1,6 +1,14 @@
+from django.contrib.contenttypes.models import ContentType
 from rest_framework import serializers
 
 from . import models
+
+
+class ContentTypeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ContentType
+        fields = '__all__'
 
 
 class NotificationSerializer(serializers.ModelSerializer):
@@ -8,7 +16,7 @@ class NotificationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Notification
-        fields =  '__all__'
+        fields = '__all__'
 
 
 class TaskSerializer(serializers.BaseSerializer):

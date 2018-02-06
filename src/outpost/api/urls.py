@@ -21,6 +21,10 @@ v1.register(
     base_name='autocomplete'
 )
 v1.register(
+    r'base/contenttype',
+    base.ContentTypeViewSet,
+)
+v1.register(
     r'base/notification',
     base.NotificationViewSet,
     base_name='notification'

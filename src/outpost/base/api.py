@@ -1,9 +1,39 @@
+from django.contrib.contenttypes.models import ContentType
 from rest_framework import generics
 from rest_framework import viewsets
 from rest_framework import permissions
 from celery.result import AsyncResult
 
 from . import models, serializers
+
+
+class ContentTypeViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = ContentType.objects.all()
+    serializer_class = serializers.ContentTypeSerializer
+    permission_classes = (
+        permissions.IsAuthenticated,
+    )
+    filter_fields = (
+        'app_label',
+        'model',
+    )
+
+
+class NotificationViewSet(viewsets.ModelViewSet):
+    queryset = models.Notification.objects.all()
+    serializer_class = serializers.NotificationSerializer
+    permission_classes = (
+        permissions.IsAuthenticated,
+    )
+    filter_fields = (
+        'object_id',
+        'content_type',
+    )
+
+    def get_queryset(self):
+        if (self.request.user.is_authenticated()):
+            return super().get_queryset().filter(user=self.request.user)
+        return super().get_queryset().none()
 
 
 class TaskViewSet(generics.ListAPIView, generics.RetrieveAPIView, viewsets.GenericViewSet):
@@ -27,20 +57,3 @@ class TaskViewSet(generics.ListAPIView, generics.RetrieveAPIView, viewsets.Gener
 
         task = self.kwargs[lookup_url_kwarg]
         return AsyncResult(task)
-
-
-class NotificationViewSet(viewsets.ModelViewSet):
-    queryset = models.Notification.objects.all()
-    serializer_class = serializers.NotificationSerializer
-    permission_classes = (
-        permissions.IsAuthenticatedOrReadOnly,
-    )
-    filter_fields = (
-        'object_id',
-        'content_type',
-    )
-
-    def get_queryset(self):
-        if (self.request.user.is_authenticated()):
-            return super().get_queryset().filter(user=self.request.user)
-        return super().get_queryset().none()
