@@ -1,6 +1,7 @@
 {% extends "outpost/base.html" %}
 
 {% load i18n %}
+{% load static %}
 
 {% block content %}
 {% if not error %}
@@ -9,7 +10,9 @@
     <span>
     {% trans "Authorize" %} {{ application.name }}
     </span>
-    <img class='pull-right' src="{{ application.logo.url }}"/>
+    <div class="thumbnail pull-right">
+      <img src="{{ application.logo.url }}"/>
+    </div>
   </h1>
 </div>
 <form id="authorizationForm" method="post">
@@ -59,4 +62,9 @@
   {{ error.description }}
 </div>
 {% endif %}
+{% endblock %}
+
+{% block style %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'oauth2/application.scss' %}" type="text/x-scss" charset="utf-8">
 {% endblock %}
