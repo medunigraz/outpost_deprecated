@@ -8,6 +8,7 @@ class NotificationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Notification
+        fields =  '__all__'
 
 
 class TaskSerializer(serializers.BaseSerializer):
