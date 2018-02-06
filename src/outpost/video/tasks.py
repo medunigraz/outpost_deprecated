@@ -198,7 +198,7 @@ class ExportTask(VideoTaskMixin, Task):
             raise Ignore()
         try:
             rec = Recording.objects.get(pk=pk)
-        except Recording.DoesNotExists:
+        except Recording.DoesNotExist:
             self.update_state(
                 state=states.FAILURE,
                 meta='Unknown recording: {}'.format(pk)
