@@ -13,16 +13,19 @@ from . import (
 class LanguageSerializer(ModelSerializer):
     class Meta:
         model = models.Language
+        fields = '__all__'
 
 
 class CategorySerializer(ModelSerializer):
     class Meta:
         model = models.Category
+        fields = '__all__'
 
 
 class CalendarSerializer(ModelSerializer):
     class Meta:
         model = models.Calendar
+        fields = '__all__'
 
 
 class EventSerializer(ModelSerializer):
@@ -30,10 +33,7 @@ class EventSerializer(ModelSerializer):
 
     class Meta:
         model = models.Event
-        fields = (
-            '__all__'
-        )
-        exclude = tuple()
+        fields = '__all__'
 
 
 class EventSearchSerializer(HaystackSerializerMixin, EventSerializer):
@@ -44,6 +44,7 @@ class EventSearchSerializer(HaystackSerializerMixin, EventSerializer):
         search_fields = (
             'text',
         )
+        fields = '__all__'
 
 
 class NewsSerializer(ModelSerializer):
@@ -51,10 +52,7 @@ class NewsSerializer(ModelSerializer):
 
     class Meta:
         model = models.News
-        fields = (
-            '__all__'
-        )
-        exclude = tuple()
+        fields = '__all__'
 
 
 class NewsSearchSerializer(HaystackSerializerMixin, NewsSerializer):
@@ -65,3 +63,4 @@ class NewsSearchSerializer(HaystackSerializerMixin, NewsSerializer):
         search_fields = (
             'text',
         )
+        fields = '__all__'

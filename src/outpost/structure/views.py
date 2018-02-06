@@ -1,4 +1,3 @@
-from rest_framework.filters import DjangoFilterBackend
 from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly
 from rest_framework.viewsets import ModelViewSet
 
@@ -15,9 +14,6 @@ class OrganizationViewSet(ModelViewSet):
         DjangoModelPermissionsOrAnonReadOnly,
     )
     pagination_class = None
-    filter_backends = (
-        DjangoFilterBackend,
-    )
     filter_fields = (
         'color',
         'campusonline',
@@ -31,10 +27,6 @@ class PersonViewSet(ModelViewSet):
     permission_classes = (
         DjangoModelPermissionsOrAnonReadOnly,
     )
-    filter_backends = (
-        DjangoFilterBackend,
-    )
     filter_fields = (
-        'color',
-        'campusonline',
+        'room',
     )

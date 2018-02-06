@@ -4,7 +4,7 @@ from braces.views import CsrfExemptMixin
 from drf_haystack.viewsets import HaystackViewSet
 from oauth2_provider.contrib.rest_framework import IsAuthenticatedOrTokenHasScope
 from rest_framework import viewsets
-from rest_framework.filters import DjangoFilterBackend
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import (
     AllowAny,
     DjangoModelPermissions,
@@ -69,9 +69,6 @@ class RoomCategoryViewSet(RevisionMixin, ModelViewSet):
     serializer_class = serializers.RoomCategorySerializer
     permission_classes = (
         DjangoModelPermissionsOrAnonReadOnly,
-    )
-    filter_backends = (
-        DjangoFilterBackend,
     )
     filter_fields = (
         'searchable',

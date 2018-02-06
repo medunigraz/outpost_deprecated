@@ -8,16 +8,8 @@ from django.views.generic import (
     TemplateView,
     View,
 )
-from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import (
-    AllowAny,
-    DjangoModelPermissions,
-    DjangoModelPermissionsOrAnonReadOnly,
-    IsAuthenticatedOrReadOnly,
-)
-from rest_framework.filters import DjangoFilterBackend
 
-from . import models, serializers
+from . import models
 
 
 class IndexView(TemplateView):
@@ -44,26 +36,6 @@ class TaskView(View):
                 'info': result.info
             }
         )
-
-
-class NotificationViewSet(ModelViewSet):
-    queryset = models.Notification.objects.all()
-    serializer_class = serializers.NotificationSerializer
-    permission_classes = (
-        IsAuthenticatedOrReadOnly,
-    )
-    filter_backends = (
-        DjangoFilterBackend,
-    )
-    filter_fields = (
-        'object_id',
-        'content_type',
-    )
-
-    def get_queryset(self):
-        if (self.request.user.is_authenticated()):
-            return super().get_queryset().filter(user=self.request.user)
-        return super().get_queryset().none()
 
 
 class Template404View(TemplateView):

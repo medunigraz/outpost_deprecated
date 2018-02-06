@@ -7,7 +7,6 @@ from django.db.models import Q
 from oauth2_provider.contrib.rest_framework import IsAuthenticatedOrTokenHasScope
 from rest_framework import viewsets
 from rest_framework.exceptions import NotFound
-from rest_framework.filters import DjangoFilterBackend
 from rest_framework.permissions import (
     DjangoModelPermissions,
     IsAuthenticatedOrReadOnly,
@@ -45,9 +44,6 @@ class BeaconViewSet(GeoModelViewSet):
         'editor',
     )
     pagination_class = None
-    filter_backends = (
-        DjangoFilterBackend,
-    )
     filter_fields = (
         'level',
     )

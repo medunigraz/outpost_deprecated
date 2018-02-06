@@ -1,6 +1,5 @@
 from django.utils import timezone
 from drf_haystack.viewsets import HaystackViewSet
-from rest_framework.filters import DjangoFilterBackend
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import ReadOnlyModelViewSet
@@ -66,9 +65,6 @@ class NewsViewSet(ReadOnlyModelViewSet):
         AllowAny,
     )
     pagination_class = LimitOffsetPagination
-    filter_backends = (
-        DjangoFilterBackend,
-    )
     filter_fields = (
         'page',
         'topnews',

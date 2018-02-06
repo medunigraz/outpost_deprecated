@@ -6,7 +6,7 @@ from rest_framework.routers import DefaultRouter
 
 from . import views as api
 from ..attendance import views as attendance
-from ..base import views as base
+from ..base import api as base
 from ..campusonline import views as campusonline
 from ..geo import views as geo
 from ..positioning import views as positioning
@@ -24,6 +24,11 @@ v1.register(
     r'base/notification',
     base.NotificationViewSet,
     base_name='notification'
+)
+v1.register(
+    r'base/task',
+    base.TaskViewSet,
+    base_name='task'
 )
 v1.register(
     r'positioning/locate',

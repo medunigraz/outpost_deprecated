@@ -1,6 +1,5 @@
 from django.utils import timezone
 from drf_haystack.viewsets import HaystackViewSet
-from rest_framework.filters import DjangoFilterBackend
 from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
@@ -29,9 +28,6 @@ class RoomViewSet(ReadOnlyModelViewSet):
     serializer_class = serializers.RoomSerializer
     permission_classes = (
         AllowAny,
-    )
-    filter_backends = (
-        DjangoFilterBackend,
     )
     filter_fields = (
         'category',

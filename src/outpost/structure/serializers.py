@@ -35,10 +35,10 @@ class OrganizationSerializer(ModelSerializer):
 
 
 class PersonSerializer(ModelSerializer):
-    campusonline = campusonline.PersonNameSerializer(
-        many=False,
-        read_only=True
-    )
+    # campusonline = campusonline.PersonNameSerializer(
+    #     many=False,
+    #     read_only=True
+    # )
     room = geo.RoomSerializer(
         many=False,
         read_only=True

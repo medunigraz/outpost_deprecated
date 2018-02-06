@@ -6,6 +6,7 @@ from . import models
 class RoomCategorySerializer(ModelSerializer):
     class Meta:
         model = models.RoomCategory
+        fields = '__all__'
 
 
 class FloorSerializer(ModelSerializer):
@@ -19,6 +20,7 @@ class FloorSerializer(ModelSerializer):
 class BuildingSerializer(ModelSerializer):
     class Meta:
         model = models.Building
+        fields = '__all__'
 
 
 class RoomSerializer(ModelSerializer):
@@ -37,6 +39,7 @@ class RoomSerializer(ModelSerializer):
 class OrganizationSerializer(ModelSerializer):
     class Meta:
         model = models.Organization
+        fields = '__all__'
 
 
 class PersonSerializer(ModelSerializer):
@@ -44,6 +47,7 @@ class PersonSerializer(ModelSerializer):
 
     class Meta:
         model = models.Person
+        fields = '__all__'
 
 
 class PersonNameSerializer(ModelSerializer):
@@ -61,3 +65,4 @@ class EventSerializer(ModelSerializer):
 
     class Meta:
         model = models.Event
+        fields = '__all__'

@@ -18,6 +18,7 @@ class BackgroundSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = models.Background
         geo_field = 'outline'
+        fields = '__all__'
 
 
 class LevelSerializer(ModelSerializer):
@@ -37,6 +38,7 @@ class RoomCategorySerializer(ModelSerializer):
 
     class Meta:
         model = models.RoomCategory
+        fields = '__all__'
 
 
 class RoomSerializer(GeoFeatureModelSerializer):
@@ -44,6 +46,7 @@ class RoomSerializer(GeoFeatureModelSerializer):
         many=False,
         read_only=True
     )
+    canonical = SerializerMethodField()
 
     class Meta:
         model = models.Room
@@ -56,6 +59,9 @@ class RoomSerializer(GeoFeatureModelSerializer):
         )
         id_field = 'id'
 
+    def get_canonical(self, obj):
+        return str(obj)
+
 
 class RoomSearchSerializer(HaystackSerializer):
     campusonline = campusonline.RoomSerializer(
@@ -65,9 +71,9 @@ class RoomSearchSerializer(HaystackSerializer):
 
     class Meta:
         index_classes = [search_indexes.RoomIndex]
-        fields = [
+        fields = (
             'text',
-        ]
+        )
 
 
 class FloorSerializer(GeoFeatureModelSerializer):
@@ -144,6 +150,7 @@ class EdgeCategorySerializer(ModelSerializer):
 
     class Meta:
         model = models.EdgeCategory
+        fields = '__all__'
 
 
 class EdgeSerializer(GeoFeatureModelSerializer):
@@ -162,6 +169,7 @@ class EdgeSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = models.Edge
         geo_field = 'path'
+        fields = '__all__'
 
     def get_length(self, obj):
         return obj.path.length
@@ -175,6 +183,7 @@ class PointOfInterestSerializer(ModelSerializer):
 
     class Meta:
         model = models.PointOfInterest
+        fields = '__all__'
 
 
 class PointOfInterestInstanceSerializer(GeoFeatureModelSerializer):
