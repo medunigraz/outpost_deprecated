@@ -5,13 +5,13 @@ from django.conf.urls import (
 from rest_framework.routers import DefaultRouter
 
 from . import views as api
-from ..attendance import views as attendance
+from ..attendance import api as attendance
 from ..base import api as base
-from ..campusonline import views as campusonline
-from ..geo import views as geo
-from ..positioning import views as positioning
-from ..structure import views as structure
-from ..typo3 import views as typo3
+from ..campusonline import api as campusonline
+from ..geo import api as geo
+from ..positioning import api as positioning
+from ..structure import api as structure
+from ..typo3 import api as typo3
 from ..video import api as video
 
 v1 = DefaultRouter()
