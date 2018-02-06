@@ -2,19 +2,21 @@ import logging
 import os
 import re
 import shutil
+import time
 import uuid
 from base64 import (
     b64encode,
     urlsafe_b64encode,
 )
-from statistics import mean
+from decimal import Decimal
 from functools import partial
 from hashlib import (
     md5,
     sha256,
 )
+from io import StringIO
 from pathlib import Path
-from decimal import Decimal
+from statistics import mean
 from tempfile import (
     NamedTemporaryFile,
     TemporaryDirectory,
@@ -42,6 +44,7 @@ from django_fsm import (
     transition,
 )
 from imagekit.models import ProcessedImageField
+from imagekit.processors import ResizeToFill
 from lxml import etree
 from memoize import (
     delete_memoized,
@@ -126,7 +129,8 @@ class Recorder(NetworkedDeviceMixin, PolymorphicModel):
     room = models.ForeignKey(
         'geo.Room',
         null=True,
-        blank=True
+        blank=True,
+        on_delete=models.SET_NULL
     )
     notifications = GenericRelation(
         'base.Notification'
@@ -154,7 +158,13 @@ class Recorder(NetworkedDeviceMixin, PolymorphicModel):
 class Epiphan(Recorder):
     username = models.CharField(max_length=128, blank=False, null=False)
     password = models.CharField(max_length=128, blank=False, null=False)
-    server = models.ForeignKey('Server', related_name='+')
+    server = models.ForeignKey(
+        'Server',
+        related_name='+',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL
+    )
     key = models.BinaryField(null=False)
     provision = models.BooleanField(default=False)
 
@@ -202,7 +212,10 @@ class Epiphan(Recorder):
 
 
 class EpiphanChannel(models.Model):
-    epiphan = models.ForeignKey('Epiphan')
+    epiphan = models.ForeignKey(
+        'Epiphan',
+        on_delete=models.CASCADE
+    )
     name = models.CharField(max_length=128)
     path = models.CharField(max_length=10)
 
@@ -258,7 +271,10 @@ class EpiphanChannel(models.Model):
 
 
 class EpiphanSource(models.Model):
-    epiphan = models.ForeignKey('Epiphan')
+    epiphan = models.ForeignKey(
+        'Epiphan',
+        on_delete=models.CASCADE
+    )
     number = models.PositiveSmallIntegerField()
     preview = ProcessedImageField(
         upload_to=Uuid4Upload,
@@ -326,7 +342,12 @@ class PanasonicCamera(NetworkedDeviceMixin, Input):
 
 @signal_connect
 class Recording(TimeStampedModel):
-    recorder = models.ForeignKey('Recorder')
+    recorder = models.ForeignKey(
+        'Recorder',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL
+    )
     data = models.FileField(
         upload_to=Uuid4Upload
     )
@@ -352,33 +373,55 @@ class EpiphanRecording(Recording):
 
 
 @signal_connect
-class RecordingAsset(models.Model):
+class RecordingAsset(TimeStampedModel):
     recording = models.ForeignKey(
-        'Recording'
+        'Recording',
+        on_delete=models.CASCADE
     )
     name = models.CharField(
         max_length=128
-    )
-    description = models.TextField(
-        null=True,
-        blank=True
     )
     data = models.FileField(
         upload_to=Uuid4Upload
     )
     mimetype = models.TextField()
+    preview = ProcessedImageField(
+        upload_to=Uuid4Upload,
+        processors=[
+            ResizeToFill(500, 50)
+        ],
+        format='JPEG',
+        options={
+            'quality': 60
+        },
+        null=True,
+        blank=True
+    )
+
+    class Meta:
+        ordering = (
+            '-created',
+        )
+        permissions = (
+            ('view_recordingasset', _('View Recording Asset')),
+        )
 
     def __str__(self):
         return self.name
 
     def pre_delete(self, *args, **kwargs):
         self.data.delete(False)
+        self.preview.delete(False)
 
 
 class Export(TimeStampedModel, PolymorphicModel):
     recording = models.ForeignKey(
         'Recording',
+        on_delete=models.CASCADE
     )
+
+    class Meta:
+        base_manager_name = 'base_objects'
 
 
 @signal_connect
@@ -551,7 +594,10 @@ class EventMedia(TimeStampedModel, PolymorphicModel):
         default=uuid.uuid4,
         editable=False
     )
-    event = models.ForeignKey('Event')
+    event = models.ForeignKey(
+        'Event',
+        on_delete=models.CASCADE
+    )
     name = models.CharField(
         max_length=256,
     )
@@ -652,7 +698,12 @@ class Publish(PolymorphicModel):
         default=uuid.uuid4,
         editable=False
     )
-    event = models.ForeignKey('Event')
+    event = models.ForeignKey(
+        'Event',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL
+    )
 
 
 class PublishMedia(PolymorphicModel):
@@ -661,7 +712,12 @@ class PublishMedia(PolymorphicModel):
         default=uuid.uuid4,
         editable=False
     )
-    eventmedia = models.ForeignKey('EventMedia')
+    eventmedia = models.ForeignKey(
+        'EventMedia',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL
+    )
 
 
 class PublishMediaScene(models.Model):
@@ -670,7 +726,12 @@ class PublishMediaScene(models.Model):
         default=uuid.uuid4,
         editable=False
     )
-    media = models.ForeignKey('PublishMedia')
+    media = models.ForeignKey(
+        'PublishMedia',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL
+    )
     timestamp = models.PositiveIntegerField()
     image = ProcessedImageField(
         upload_to=Uuid4Upload,
@@ -691,19 +752,22 @@ class DASHPublish(Publish):
         'DASHVideo',
         null=True,
         blank=True,
-        related_name='+'
+        related_name='+',
+        on_delete=models.SET_NULL
     )
     slides = models.ForeignKey(
         'DASHVideo',
         null=True,
         blank=True,
-        related_name='+'
+        related_name='+',
+        on_delete=models.SET_NULL
     )
     audio = models.ForeignKey(
         'DASHAudio',
         null=True,
         blank=True,
-        related_name='+'
+        related_name='+',
+        on_delete=models.SET_NULL
     )
 
     class Meta:
@@ -778,7 +842,10 @@ class DASHVideoVariant(DASHIngest, models.Model):
         default=uuid.uuid4,
         editable=False
     )
-    video = models.ForeignKey('DASHVideo')
+    video = models.ForeignKey(
+        'DASHVideo',
+        on_delete=models.CASCADE
+    )
     height = models.PositiveIntegerField()
 
     def pre_delete(self, *args, **kwargs):
