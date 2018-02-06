@@ -1,0 +1,95 @@
+{% extends 'outpost/base.html' %}
+
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+<h1 class="page-header">
+  {{ object.title }}
+  <small>{% trans "Publish over DASH" %}</small>
+</h1>
+<h2>
+  Media
+</h2>
+<div id="list">
+  {% for m in object.eventmedia_set.all %}
+<div class="panel panel-default panel-horizontal">
+  <div class="panel-heading text-center">
+    {% if m.preview %}
+    <a href="{{ m.preview.url }}" data-toggle="modal" data-target="#lightbox" data-remote="false">
+      <img src="{{ m.preview.url }}">
+    </a>
+    {% else %}
+    <span class="glyphicon glyphicon-file"></span>
+    {% endif %}
+  </div>
+  <div class="panel-body">
+    <div class="col-xs-12 col-md-12 section-box">
+      <h3>[[:name]][[if container]] <small>[[:container.format]], [[:size]]</small>[[/if]]</h3>
+      [[if container]]
+      <div>
+      </div>
+      [[/if]]
+      <dl>
+      [[for stream]]
+      <dt>
+      [[/for]]
+      </dl>
+    </div>
+  </div>
+  <div class="panel-footer text-center">
+    <button type="button" class="btn btn-default btn-sm btn-block" data-type="presenter">
+      <span class="glyphicon glyphicon-user"></span>
+      Presenter
+    </button>
+    <button type="button" class="btn btn-default btn-sm btn-block" data-type="slides">
+      <span class="glyphicon glyphicon-blackboard"></span>
+      Slides
+    </button>
+    <button type="button" class="btn btn-default btn-sm btn-block" data-type="audio">
+      <span class="glyphicon glyphicon-bullhorn"></span>
+      Audio
+    </button>
+  </div>
+</div>
+  {% endfor %}
+</div>
+<script id="tmpl-media" type="text/x-jsrender">
+</script>
+<script id="tmpl-upload" type="text/x-jsrender">
+<div class="row fade">
+  <div class="col-xs-10">
+    <div class="progress">
+      <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+        <span></span>
+      </div>
+    </div>
+  </div>
+  <div class="col-xs-2">
+    <button type="button" class="btn btn-warning btn-block btn-sm cancel">
+      <span class="glyphicon glyphicon-remove"></span>
+      {% trans "Abort" %}
+    </button>
+  </div>
+</div>
+</script>
+{% include 'base/includes/lightbox.html' %}
+{% include 'base/includes/confirm.html' %}
+{% endblock %}
+
+{% block script %}
+{{ block.super }}
+<script src="{% static 'base/lightbox.js' %}"></script>
+<script src="{% static 'video/event.js' %}"></script>
+<script>
+$(document).ready(function() {
+  var $list = $('#list');
+});
+</script>
+{% endblock %}
+
+{% block style %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'base/lightbox.scss' %}" type="text/x-scss" charset="utf-8">
+<link rel="stylesheet" href="{% static 'video/event.scss' %}" type="text/x-scss" charset="utf-8">
+{% endblock %}

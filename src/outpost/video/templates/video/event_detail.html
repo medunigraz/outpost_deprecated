@@ -7,10 +7,26 @@
 <h1 class="page-header">
   <span>{{ object.title }}</span>
   <small>{% trans "Event" %}</small>
-  <button type="button" class="btn btn-danger btn-sm pull-right" data-toggle="popover" title="{% trans "Really delete?" %}" id="delete" data-return="{% url 'video:event:list' %}">
-    <span class="glyphicon glyphicon-trash"></span>
-    {% trans "Delete" %}
-  </button>
+  <div class="pull-right" role="group" aria-label="...">
+    <button type="button" class="btn btn-danger btn-sm" data-toggle="popover" title="{% trans "Really delete?" %}" id="delete" data-return="{% url 'video:event:list' %}">
+      <span class="glyphicon glyphicon-trash"></span>
+      {% trans "Delete" %}
+    </button>
+    <div class="btn-group">
+      <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <span class="glyphicon glyphicon-play-circle"></span>
+        {% trans 'Publish' %}
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu">
+        <li>
+          <a href="{% url 'video:publish:dash' pk=object.pk %}">
+            {% trans 'DASH Player' %}
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
 </h1>
 <div class="alert alert-info text-center" id="upload" data-url={% url 'video:event:media' pk=object.pk %}>
   <div>
