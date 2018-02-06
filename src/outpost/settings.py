@@ -75,6 +75,7 @@ INSTALLED_APPS = [
     'taggit',
     'django_uwsgi',
     'memoize',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -234,7 +235,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 20,
     'DEFAULT_FILTER_BACKENDS': (
-        'rest_framework.filters.DjangoFilterBackend',
+        'django_filters.rest_framework.DjangoFilterBackend',
     ),
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.NamespaceVersioning',
     'DEFAULT_METADATA_CLASS': 'outpost.api.metadata.ExtendedMetadata',
