@@ -1,6 +1,11 @@
 from django.contrib import admin
+from django.contrib.contenttypes.admin import GenericTabularInline
 
 from . import models
+
+
+class NotificationInlineAdmin(GenericTabularInline):
+    model = models.Notification
 
 
 @admin.register(models.Icon)
