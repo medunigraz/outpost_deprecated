@@ -261,6 +261,8 @@ OAUTH2_PROVIDER = {
         'write': 'Write scope',
         'groups': 'Access to your groups',
         'editor': 'Edit objects',
+        'geo': 'Edit geo',
+        'media': 'Edit media',
     }
 }
 OAUTH2_PROVIDER_APPLICATION_MODEL = 'oauth2.Application'
