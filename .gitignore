@@ -65,6 +65,7 @@ docs/_build
 
 # Development
 *.sqlite3
+development.py
 /static/
 /media/
 /xapian_index/
