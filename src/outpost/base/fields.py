@@ -7,7 +7,7 @@ from django.utils.encoding import force_text
 
 
 def _hash_field_name(name):
-    return '{name}_markup_type'.format(name=name)
+    return '{name}_hash'.format(name=name)
 
 
 def _filter_fields(include, exclude):
@@ -34,8 +34,8 @@ foreign_data_changed = Signal(providing_args=['instance', 'field'])
 
 class ForeignDataWrapperDescriptor(ForwardManyToOneDescriptor):
 
-    def __init__(self, field, algorithm, filter_instance):
-        super(ForeignDataWrapperDescriptor, self).__init_(field)
+    def __init__(self, field, name, algorithm, filter_instance):
+        super(ForeignDataWrapperDescriptor, self).__init__(field)
         self.hash_field_name = _hash_field_name(self.field.name)
         self.algorithm = algorithm
         self.filter_instance = filter_instance
@@ -91,17 +91,18 @@ class ForeignDataWrapperKey(models.ForeignKey):
         val = super(ForeignDataWrapperKey, self).pre_save(model_instance, add)
         if val is not None:
             filter_instance = _filter_fields(self.fields, self.exclude)
-            fields = filter(filter_instance, val._meta.fields)
-            hashsum = _get_hash(self.algorithm, fields)
+            rel = self.related_model.objects.get(pk=val)
+            fields = filter(filter_instance, rel._meta.fields)
+            hashsum = _get_hash(self.algorithm, rel, fields)
         else:
             hashsum = None
-        if getattr(model_instance, _hash_field_name(self.attname)) != hashsum:
+        if getattr(model_instance, _hash_field_name(self.name)) != hashsum:
             foreign_data_changed.send(
                 sender=self.__class__,
                 instance=model_instance,
-                field=self.attname
+                field=self.name
             )
-        setattr(model_instance, _hash_field_name(self.attname), hashsum)
+        setattr(model_instance, _hash_field_name(self.name), hashsum)
         return val
 
 
