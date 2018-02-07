@@ -2,7 +2,6 @@ from django.core.files.base import ContentFile
 import re
 from pathlib import PurePosixPath
 from base64 import b64decode, urlsafe_b64encode
-from mimetypes import guess_extension
 import six
 from uuid import uuid4
 from drf_haystack.serializers import HaystackSerializer
@@ -74,9 +73,8 @@ class Base64FileField(FileField):
                 p = PurePosixPath()
                 uid = uuid4().bytes
                 u = urlsafe_b64encode(uid).decode('ascii').rstrip('=')
-                suffix = guess_extension(mimetype, strict=False)
 
-                filename = p.joinpath(u).with_suffix(suffix).as_posix()
+                filename = p.joinpath(u).as_posix()
 
                 raw = ContentFile(decoded_file, name=filename)
 
