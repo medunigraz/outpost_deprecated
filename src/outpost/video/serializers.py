@@ -44,7 +44,6 @@ class EpiphanChannelSerializer(serializers.ModelSerializer):
 
 
 class EpiphanSourceSerializer(serializers.ModelSerializer):
-    volume = serializers.DecimalField(max_digits=10, decimal_places=7)
 
     class Meta:
         model = models.EpiphanSource

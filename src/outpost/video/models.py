@@ -34,6 +34,7 @@ from django.contrib.postgres.fields import (
 )
 from django.core.cache import cache
 from django.core.files import File
+from django.core.files.images import ImageFile
 from django.core.files.base import ContentFile
 from django.db import models
 from django.utils import timezone
@@ -276,7 +277,7 @@ class EpiphanSource(models.Model):
         on_delete=models.CASCADE
     )
     number = models.PositiveSmallIntegerField()
-    preview = ProcessedImageField(
+    video = ProcessedImageField(
         upload_to=Uuid4Upload,
         format='JPEG',
         options={'quality': 60},
@@ -284,7 +285,13 @@ class EpiphanSource(models.Model):
         blank=True
     )
     port = models.PositiveIntegerField(default=554)
-    audio = JSONField(null=True, blank=True)
+    audio = ProcessedImageField(
+        upload_to=Uuid4Upload,
+        format='JPEG',
+        options={'quality': 60},
+        null=True,
+        blank=True
+    )
     input = models.ForeignKey(
         'Input',
         blank=True,
@@ -297,39 +304,50 @@ class EpiphanSource(models.Model):
         )
 
     def update(self):
+        rtsp = 'rtsp://{s.epiphan.hostname}:{s.port}/stream.sdp'.format(s=self)
+
+        # Video preview
         try:
-            path = 'api/channels/{s.number}/preview'.format(s=self)
-            url = self.epiphan.url.path(path).as_string()
-            logger.debug('Fetching preview for {s}'.format(s=self))
-            r = self.epiphan.session.get(url)
-            if self.preview:
-                self.preview.delete(False)
-            self.preview.save('preview.jpg', ContentFile(r.content))
+            args = [
+                'ffmpeg',
+                '-y',
+                '-i',
+                rtsp,
+                '-frames:v',
+                '1',
+            ]
+            with NamedTemporaryFile(suffix='.jpg', delete=False) as output:
+                args.append(output.name)
+                ffmpeg = Process(*args)
+                ffmpeg.run()
+                self.video.save(output.name, ImageFile(output))
         except Exception as e:
             logger.warn(e)
+
+        # Audio waveform
         try:
-            rtsp = 'rtsp\\://{s.epiphan.hostname}\\:{s.port}/stream.sdp'.format(s=self)
-            probe = FFProbeProcess(
-                '-f', 'lavfi',
-                '-i', 'amovie=\'{r}\',astats=metadata=1:reset=30'.format(r=rtsp),
-                '-read_intervals', '%+5',
-                '-show_entries', 'frame=pkt_pts_time:frame_tags',
-                timeout=10
-            )
-            self.audio = probe.run()
-            self.save()
+            args = [
+                'ffmpeg',
+                '-y',
+                '-t',
+                '10',
+                '-i',
+                rtsp,
+                '-filter_complex',
+                'showwavespic=s=1280x240',
+                '-frames:v',
+                '1',
+            ]
+            with NamedTemporaryFile(suffix='.png', delete=False) as output:
+                args.append(output.name)
+                ffmpeg = Process(*args)
+                ffmpeg.run()
+                self.audio.save(output.name, ImageFile(output))
         except Exception as e:
             logger.warn(e)
 
     def __str__(self):
         return '{s.epiphan}, {s.number}'.format(s=self)
-
-    def volume(self):
-        if not self.audio:
-            return 0
-        frame = self.audio['frames']
-        values = [x['tags']['lavfi.astats.Overall.RMS_level'] for x in frame]
-        return mean(map(float, values))
 
 
 class Input(PolymorphicModel):

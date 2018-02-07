@@ -41,15 +41,18 @@
 <h2>{% trans 'Sources' %}</h2>
 <div id="sources" class="row">
   {% for s in object.epiphansource_set.all %}
-  {% if s.preview %}
   <div class="col-xs-6 col-md-3 source" data-pk="{{ s.pk }}">
-    <a class="thumbnail" href="{{ s.preview.url }}" data-toggle="modal" data-target="#lightbox" data-remote="false">
-      {% generateimage 'video:source_thumbnail' source=s.preview %}
-      <div class="caption text-center">
-      </div>
+    {% if s.video %}
+    <a class="thumbnail" href="{{ s.video.url }}" data-toggle="modal" data-target="#lightbox" data-remote="false">
+      {% generateimage 'video:source_thumbnail' source=s.video %}
     </a>
+    {% endif %}
+    {% if s.audio %}
+    <a class="thumbnail" href="{{ s.audio.url }}" data-toggle="modal" data-target="#lightbox" data-remote="false">
+      {% generateimage 'video:source_thumbnail' source=s.audio %}
+    </a>
+    {% endif %}
   </div>
-  {% endif %}
   {% endfor %}
 </div>
 {% else %}

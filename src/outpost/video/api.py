@@ -245,7 +245,9 @@ class EpiphanChannelViewSet(ModelViewSet):
     permission_classes = (
         DjangoModelPermissions,
     )
-    filter_fields = ()
+    filter_fields = (
+        'epiphan',
+    )
 
 
 class EpiphanSourceViewSet(ModelViewSet):
@@ -255,4 +257,6 @@ class EpiphanSourceViewSet(ModelViewSet):
     permission_classes = (
         DjangoModelPermissions,
     )
-    filter_fields = ()
+    filter_fields = (
+        'epiphan',
+    )
