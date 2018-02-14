@@ -336,7 +336,7 @@ class EpiphanSource(models.Model):
                 'ffmpeg',
                 '-y',
                 '-t',
-                '10',
+                '5',
                 '-i',
                 rtsp,
                 '-filter_complex',
