@@ -316,7 +316,7 @@ class EpiphanSource(models.Model):
                 '-frames:v',
                 '1',
             ]
-            with NamedTemporaryFile(suffix='.jpg', delete=False) as output:
+            with NamedTemporaryFile(suffix='.jpg') as output:
                 args.append(output.name)
                 ffmpeg = Process(*args)
                 ffmpeg.run()
@@ -338,7 +338,7 @@ class EpiphanSource(models.Model):
                 '-frames:v',
                 '1',
             ]
-            with NamedTemporaryFile(suffix='.png', delete=False) as output:
+            with NamedTemporaryFile(suffix='.png') as output:
                 args.append(output.name)
                 ffmpeg = Process(*args)
                 ffmpeg.run()
