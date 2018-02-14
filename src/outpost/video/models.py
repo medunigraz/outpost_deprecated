@@ -212,6 +212,7 @@ class Epiphan(Recorder):
         self.save()
 
 
+@signal_connect
 class EpiphanChannel(models.Model):
     epiphan = models.ForeignKey(
         'Epiphan',
@@ -303,6 +304,10 @@ class EpiphanSource(models.Model):
             'number',
         )
 
+    def pre_delete(self, *args, **kwargs):
+        self.video.delete(False)
+        self.audio.delete(False)
+
     def update(self):
         rtsp = 'rtsp://{s.epiphan.hostname}:{s.port}/stream.sdp'.format(s=self)
 
@@ -320,6 +325,7 @@ class EpiphanSource(models.Model):
                 args.append(output.name)
                 ffmpeg = Process(*args)
                 ffmpeg.run()
+                self.video.delete(False)
                 self.video.save(output.name, ImageFile(output))
         except Exception as e:
             logger.warn(e)
@@ -342,6 +348,7 @@ class EpiphanSource(models.Model):
                 args.append(output.name)
                 ffmpeg = Process(*args)
                 ffmpeg.run()
+                self.audio.delete(False)
                 self.audio.save(output.name, ImageFile(output))
         except Exception as e:
             logger.warn(e)
