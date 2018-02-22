@@ -259,7 +259,7 @@ class RecordingRetentionTask(MaintainanceTaskMixin, PeriodicTask):
 
 
 class EpiphanSourceTask(MaintainanceTaskMixin, PeriodicTask):
-    run_every = timedelta(minutes=5)
+    run_every = timedelta(minutes=1)
 
     def run(self, **kwargs):
         sources = EpiphanSource.objects.filter(
