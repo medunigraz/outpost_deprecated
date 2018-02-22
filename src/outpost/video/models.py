@@ -316,6 +316,8 @@ class EpiphanSource(models.Model):
             args = [
                 'ffmpeg',
                 '-y',
+                '-stimeout',
+                '200000',
                 '-i',
                 rtsp,
                 '-frames:v',
@@ -335,6 +337,8 @@ class EpiphanSource(models.Model):
             args = [
                 'ffmpeg',
                 '-y',
+                '-stimeout',
+                '200000',
                 '-t',
                 '5',
                 '-i',
