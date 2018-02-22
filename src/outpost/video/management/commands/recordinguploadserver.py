@@ -124,7 +124,7 @@ class SFTPServer(asyncssh.SFTPServer):
                     epiphan=self._epiphan,
                     name=stream
                 )
-        except EpiphanChannel.DoesNotExists:
+        except EpiphanChannel.DoesNotExist:
             pass
         rec = EpiphanRecording(
             recorder=self._epiphan,
