@@ -445,9 +445,6 @@ class Export(TimeStampedModel, PolymorphicModel):
         on_delete=models.CASCADE
     )
 
-    class Meta:
-        base_manager_name = 'base_objects'
-
 
 @signal_connect
 class SideBySideExport(Export):
