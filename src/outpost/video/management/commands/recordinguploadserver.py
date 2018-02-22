@@ -11,6 +11,7 @@ from functools import (
 from pathlib import Path
 
 import asyncssh
+from celery import chain
 from django.core.files.base import ContentFile
 from django.core.management.base import (
     BaseCommand,
@@ -23,7 +24,10 @@ from ...models import (
     EpiphanRecording,
     Server,
 )
-from ...tasks import ProcessRecordingTask
+from ...tasks import (
+    ProcessRecordingTask,
+    NotifyRecordingTask
+)
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +38,7 @@ def log(func):
         try:
             return func(*args, **kwargs)
         except Exception as e:
-            logger.warn('Exception in {}: {}'.format(func.__name__, e))
+            logger.exception('Exception in {}: {}'.format(func.__name__, e))
     return wrapper
 
 
@@ -143,7 +147,12 @@ class SFTPServer(asyncssh.SFTPServer):
         if not rec.data.file.closed:
             rec.data.file.close()
         rec.save()
-        ProcessRecordingTask.delay(rec.pk)
+        logger.debug('Starting post-upload task chain')
+        chain(
+            ProcessRecordingTask().si(rec.pk),
+            NotifyRecordingTask().si(rec.pk)
+        ).delay()
+        logger.debug('Done starting post-upload task chain')
 
     @log
     def write(self, rec, offset, data):

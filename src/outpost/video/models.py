@@ -513,6 +513,9 @@ class ZipStreamExport(Export):
         verbose_name = 'Zip-Stream'
 
     def process(self, notify):
+        if 'streams' not in self.recording.info:
+            from .tasks import ProcessRecordingTask
+            ProcessRecordingTask().run(self.pk)
         mapping = {
             'h264': 'm4v',
             'aac': 'm4a',

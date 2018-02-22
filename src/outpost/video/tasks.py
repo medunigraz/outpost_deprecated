@@ -88,7 +88,7 @@ class VideoTaskMixin:
 class ProcessRecordingTask(VideoTaskMixin, Task):
 
     def run(self, pk, **kwargs):
-        logger.debug('Processing recording: {}'.format(pk))
+        logger.debug(f'Processing recording: {pk}')
         rec = Recording.objects.get(pk=pk)
         probe = FFProbeProcess(
             '-show_format',
@@ -96,16 +96,24 @@ class ProcessRecordingTask(VideoTaskMixin, Task):
             rec.data.path
         )
         rec.info = probe.run()
-        logger.debug('Extracted metadata: {}'.format(rec.info))
+        logger.debug(f'Extracted metadata: {rec.info}')
         rec.save()
-        logger.info('Finished recording: {}'.format(pk))
-        for notification in rec.recorder.notifications.all():
+        logger.info(f'Finished recording: {pk}')
+
+
+class NotifyRecordingTask(MaintainanceTaskMixin, Task):
+
+    def run(self, pk, **kwargs):
+        logger.debug(f'Sending notifications: {pk}')
+        rec = Recording.objects.get(pk=pk)
+        for notification in rec.recorder.epiphan.notifications.all():
             user = notification.user
             if not user.email:
+                logger.warn(f'{user} wants notifications but has no email')
                 continue
-            logger.debug('Sending notification to {}'.format(user.email))
+            logger.debug(f'Sending {rec} notification to {user.email}')
             EmailMessage(
-                _('New recording from {}').format(rec.recorder),
+                _(f'New recording from {rec.recorder}'),
                 render_to_string(
                     'video/mail/recording.txt',
                     {
