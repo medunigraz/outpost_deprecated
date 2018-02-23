@@ -102,7 +102,7 @@ class RecordingExportView(LoginRequiredMixin, PermissionRequiredMixin, View):
     permission_required = 'video.change_recording'
 
     def post(self, request, pk, exporter):
-        task = ExportTask.delay(pk, exporter)
+        task = ExportTask.delay(pk, exporter, request.build_absolute_uri('/'))
         return JsonResponse(
             {
                 'task': task.id,

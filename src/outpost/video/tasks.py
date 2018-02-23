@@ -15,6 +15,7 @@ from itertools import chain
 from math import gcd
 from operator import truediv
 from pathlib import Path
+from urllib.parse import urljoin
 from tempfile import mkdtemp
 
 from celery import states
@@ -195,7 +196,7 @@ class EpiphanProvisionTask(Task):
 
 class ExportTask(VideoTaskMixin, Task):
 
-    def run(self, pk, exporter, **kwargs):
+    def run(self, pk, exporter, base_uri, **kwargs):
         classes = Export.__subclasses__()
         exporters = {c.__name__: c for c in classes}
         if exporter not in exporters:
@@ -219,7 +220,7 @@ class ExportTask(VideoTaskMixin, Task):
             logger.info('Recording {} processing: {}'.format(rec.pk, cls))
             inst.process(self.progress)
             logger.debug('Recording {} download URL: {}'.format(rec.pk, inst.data.url))
-        return inst.data.url
+        return urljoin(base_uri, inst.data.url)
 
     def progress(self, action, current, maximum):
         logger.debug('Progress: {} {}/{}'.format(action, current, maximum))

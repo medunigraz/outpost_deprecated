@@ -103,7 +103,11 @@ class ExportClassViewSet(ListAPIView, RetrieveAPIView, GenericViewSet):
     def post(self, request, *args, **kwargs):
         exporter = request.data.get('exporter')
         recording = request.data.get('recording')
-        task = ExportTask.delay(recording, exporter)
+        task = ExportTask.delay(
+            recording,
+            exporter,
+            request.build_absolute_uri('/')
+        )
         result = {
             'task': task.id,
         }
