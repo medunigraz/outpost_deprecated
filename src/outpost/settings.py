@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'outpost.oauth2',
     'outpost.video',
     'outpost.structure',
+    'outpost.networktoken',
     'django.contrib.admin',
     'django_extensions',
     'crispy_forms',

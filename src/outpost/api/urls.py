@@ -9,6 +9,7 @@ from ..attendance import api as attendance
 from ..base import api as base
 from ..campusonline import api as campusonline
 from ..geo import api as geo
+from ..networktoken import api as networktoken
 from ..positioning import api as positioning
 from ..structure import api as structure
 from ..typo3 import api as typo3
@@ -129,6 +130,10 @@ v1.register(
     r'attendance/clock',
     attendance.ClockViewSet,
     base_name='attendance-clock'
+)
+v1.register(
+    r'networktoken/token',
+    networktoken.TokenViewSet
 )
 v1.register(
     r'typo3/languages',

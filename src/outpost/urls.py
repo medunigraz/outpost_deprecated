@@ -52,6 +52,10 @@ urlpatterns.extend([
         include('outpost.video.urls', namespace='video')
     ),
     url(
+        r'^networktoken/',
+        include('outpost.networktoken.urls', namespace='networktoken')
+    ),
+    url(
         r'^',
         include('outpost.api.urls', namespace='api')
     ),
