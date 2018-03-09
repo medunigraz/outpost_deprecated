@@ -17,6 +17,7 @@ from django.core.management.base import (
     BaseCommand,
     CommandError,
 )
+from django.utils import timezone
 
 from ...models import (
     Epiphan,
@@ -130,10 +131,23 @@ class SFTPServer(asyncssh.SFTPServer):
                 )
         except EpiphanChannel.DoesNotExist:
             pass
+        start = None
+        try:
+            created = matches.groupdict().get('created')
+            start = timezone.make_aware(datetime.strptime(
+                created,
+                '%b%d_%H-%M-%S'
+            ).replace(year=timezone.now().year))
+            if timezone.now() < start:
+                start = start.replace(start.year - 1)
+            logger.debug(f'Determined start of recording: {start}')
+        except Exception as e:
+            logger.warn(e)
         rec = EpiphanRecording(
             recorder=self._epiphan,
             info={},
-            channel=channel
+            channel=channel,
+            start=start
         )
         rec.data.save(path.name, ContentFile(b''))
         if not rec.data.file.closed:

@@ -384,6 +384,9 @@ class Recording(TimeStampedModel):
     archived = models.BooleanField(
         default=False
     )
+    start = models.DateTimeField(
+        null=True
+    )
 
     class Meta:
         ordering = (
