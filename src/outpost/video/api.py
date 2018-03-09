@@ -138,7 +138,10 @@ class RecordingViewSet(ModelViewSet):
     permission_classes = (
         DjangoModelPermissions,
     )
-    filter_fields = ()
+    filter_fields = (
+        'recorder',
+        'archived',
+    )
 
     def get_queryset(self):
         return get_objects_for_user(
