@@ -337,7 +337,6 @@ class CourseGroupTerm(models.Model):
         db_constraint=False,
         null=True,
         blank=True,
-        related_name='+'
     )
     person = models.ForeignKey(
         'Person',
@@ -345,7 +344,6 @@ class CourseGroupTerm(models.Model):
         db_constraint=False,
         null=True,
         blank=True,
-        related_name='+'
     )
     start = models.DateTimeField()
     end = models.DateTimeField()
@@ -355,7 +353,6 @@ class CourseGroupTerm(models.Model):
         db_constraint=False,
         null=True,
         blank=True,
-        related_name='+'
     )
 
     class Meta:
