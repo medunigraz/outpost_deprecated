@@ -381,6 +381,9 @@ class Recording(TimeStampedModel):
         upload_to=Uuid4Upload
     )
     info = JSONField(null=True)
+    archived = models.BooleanField(
+        default=False
+    )
 
     class Meta:
         ordering = (
