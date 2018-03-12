@@ -40,6 +40,9 @@ from lxml.builder import ElementMaker
 from outpost.base.utils import Process
 from outpost.base.tasks import MaintainanceTaskMixin
 
+from outpost.campusonline.models import Course, CourseGroupTerm, Person
+from outpost.campusonline.serializers import CourseSerializer, PersonSerializer, RoomSerializer
+
 from .models import (
     DASHAudio,
     DASHPublish,
@@ -60,6 +63,7 @@ from .utils import (
     FFMPEGCropHandler,
     FFProbeProcess,
 )
+
 
 logger = logging.getLogger(__name__)
 
@@ -100,6 +104,63 @@ class ProcessRecordingTask(VideoTaskMixin, Task):
         logger.debug(f'Extracted metadata: {rec.info}')
         rec.save()
         logger.info(f'Finished recording: {pk}')
+
+
+class MetadataRecordingTask(MaintainanceTaskMixin, Task):
+
+    def run(self, pk, **kwargs):
+        logger.debug(f'Fetching metadata: {pk}')
+        rec = Recording.objects.get(pk=pk)
+        if not rec.start:
+            logger.warn(f'No start time recorded: {pk}')
+            return
+        if not rec.end:
+            logger.warn(f'No end time found: {pk}')
+            return
+        if not rec.recorder.room:
+            logger.warn(f'No room found: {pk}')
+            return
+        data = MetadataRecordingTask.find(
+            rec.recorder.room.campusonline,
+            rec.start + timedelta(minutes=10),
+            rec.end - timedelta(minutes=10)
+        )
+        if not data:
+            return
+        (rec.course, rec.presenter) = data
+        rec.metadata = {
+            'room': RoomSerializer(rec.recorder.room.campusonline).data,
+            'presenter': PersonSerializer(rec.presenter).data if rec.presenter else None,
+            'course': CourseSerializer(rec.course).data
+        }
+        rec.save()
+
+    @staticmethod
+    def find(room, start, end):
+        cgt = CourseGroupTerm.objects.filter(
+            room=room,
+            start__lte=start,
+            end__gte=end
+        ).values(
+            'start',
+            'end',
+            'person',
+            'coursegroup__course',
+        ).distinct().first()
+        if not cgt:
+            logger.warn('No Course Group Term found')
+            return
+        course = None
+        try:
+            course = Course.objects.get(pk=cgt.get('coursegroup__course'))
+        except Course.DoesNotExist as e:
+            logger.warn(f'No Course found: {e}')
+        person = None
+        try:
+            person = Person.objects.get(pk=cgt.get('person'))
+        except Person.DoesNotExist as e:
+            logger.warn(f'No Person found: {e}')
+        return (course, person)
 
 
 class NotifyRecordingTask(MaintainanceTaskMixin, Task):

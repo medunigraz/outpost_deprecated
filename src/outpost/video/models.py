@@ -8,6 +8,7 @@ from base64 import (
     b64encode,
     urlsafe_b64encode,
 )
+from datetime import timedelta
 from decimal import Decimal
 from functools import partial
 from hashlib import (
@@ -387,6 +388,37 @@ class Recording(TimeStampedModel):
     start = models.DateTimeField(
         null=True
     )
+    course = models.ForeignKey(
+        'campusonline.Course',
+        on_delete=models.SET_NULL,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        related_name='+'
+    )
+    presenter = models.ForeignKey(
+        'campusonline.Person',
+        on_delete=models.SET_NULL,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        related_name='+'
+    )
+    metadata = JSONField(
+        blank=True,
+        null=True
+    )
+
+    @property
+    def end(self):
+        if not self.start:
+            return None
+        try:
+            duration = float(self.info['format']['duration'])
+            return self.start + timedelta(seconds=duration)
+        except KeyError as e:
+            logger.warn(e)
+            return None
 
     class Meta:
         ordering = (

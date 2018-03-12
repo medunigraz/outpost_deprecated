@@ -59,6 +59,48 @@ class PersonNameSerializer(ModelSerializer):
         )
 
 
+class CourseSerializer(ModelSerializer):
+
+    class Meta:
+        model = models.Course
+        fields = (
+            'id',
+            'name',
+            'category',
+            'year',
+            'semester',
+        )
+
+
+class CourseGroupSerializer(ModelSerializer):
+    course = CourseSerializer()
+
+    class Meta:
+        model = models.CourseGroup
+        fields = (
+            'id',
+            'course',
+            'name',
+        )
+
+
+class CourseGroupTermSerializer(ModelSerializer):
+    coursegroup = CourseGroupSerializer()
+    person = PersonSerializer()
+    room = RoomSerializer()
+
+    class Meta:
+        model = models.Event
+        fields = (
+            'id',
+            'coursegroup',
+            'person',
+            'start',
+            'end',
+            'room',
+        )
+
+
 class EventSerializer(ModelSerializer):
     building = BuildingSerializer()
     room = RoomSerializer()

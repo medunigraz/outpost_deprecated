@@ -1,9 +1,10 @@
 import asyncio
 import logging
 import os
+import pytz
 import re
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 from functools import (
     partial,
     wraps,
@@ -133,12 +134,13 @@ class SFTPServer(asyncssh.SFTPServer):
             pass
         start = None
         try:
+            now = datetime.utcnow()
             created = matches.groupdict().get('created')
-            start = timezone.make_aware(datetime.strptime(
+            start = datetime.strptime(
                 created,
                 '%b%d_%H-%M-%S'
-            ).replace(year=timezone.now().year))
-            if timezone.now() < start:
+            ).replace(year=now.year, tzinfo=pytz.utc))
+            if now < start:
                 start = start.replace(start.year - 1)
             logger.debug(f'Determined start of recording: {start}')
         except Exception as e:
@@ -163,6 +165,7 @@ class SFTPServer(asyncssh.SFTPServer):
         rec.save()
         logger.debug('Starting post-upload task chain')
         chain(
+            MetadataRecordingTask().si(rec.pk),
             ProcessRecordingTask().si(rec.pk),
             NotifyRecordingTask().si(rec.pk)
         ).delay()
