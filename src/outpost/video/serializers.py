@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from outpost.api.serializers import Base64FileField
 from outpost.geo.serializers import RoomSerializer
-from outpost.campusonline.serializers import CourseGroupTermSerializer
+from outpost.campusonline.serializers import CourseSerializer, PersonSerializer
 from . import models
 
 
@@ -53,7 +53,8 @@ class EpiphanSourceSerializer(serializers.ModelSerializer):
 
 class RecordingSerializer(serializers.ModelSerializer):
     recorder = RecorderSerializer()
-    course_group_term = CourseGroupTermSerializer()
+    course = CourseSerializer()
+    presenter = PersonSerializer()
 
     class Meta:
         model = models.Recording
