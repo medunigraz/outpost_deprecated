@@ -27,6 +27,7 @@ from ...models import (
     Server,
 )
 from ...tasks import (
+    MetadataRecordingTask,
     ProcessRecordingTask,
     NotifyRecordingTask
 )
@@ -139,7 +140,7 @@ class SFTPServer(asyncssh.SFTPServer):
             start = datetime.strptime(
                 created,
                 '%b%d_%H-%M-%S'
-            ).replace(year=now.year, tzinfo=pytz.utc))
+            ).replace(year=now.year, tzinfo=pytz.utc)
             if now < start:
                 start = start.replace(start.year - 1)
             logger.debug(f'Determined start of recording: {start}')
