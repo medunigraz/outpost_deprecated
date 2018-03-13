@@ -4,6 +4,7 @@ import os
 import pytz
 import re
 import sys
+import sdnotify
 from datetime import datetime, timedelta
 from functools import (
     partial,
@@ -263,7 +264,8 @@ class Command(BaseCommand):
             cond['pk__in'] = options['server']
 
         tasks = [start_server(s) for s in Server.objects.filter(**cond)]
-
+        n = sdnotify.SystemdNotifier()
+        n.notify('READY=1')
         try:
             loop.run_until_complete(asyncio.gather(*tasks))
         except (OSError, asyncssh.Error) as exc:
