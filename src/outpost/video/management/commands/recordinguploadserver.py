@@ -136,12 +136,12 @@ class SFTPServer(asyncssh.SFTPServer):
             pass
         start = None
         try:
-            now = datetime.utcnow()
+            now = timezone.now()
             created = matches.groupdict().get('created')
-            start = datetime.strptime(
+            start = timezone.make_aware(datetime.strptime(
                 created,
                 '%b%d_%H-%M-%S'
-            ).replace(year=now.year, tzinfo=pytz.utc)
+            ).replace(year=now.year))
             if now < start:
                 start = start.replace(start.year - 1)
             logger.debug(f'Determined start of recording: {start}')
