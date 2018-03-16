@@ -122,8 +122,8 @@ class MetadataRecordingTask(MaintainanceTaskMixin, Task):
             return
         data = MetadataRecordingTask.find(
             rec.recorder.room.campusonline,
-            rec.start + timedelta(minutes=10),
-            rec.end - timedelta(minutes=10)
+            rec.start + timedelta(minutes=30),
+            rec.end - timedelta(minutes=30)
         )
         if not data:
             return
