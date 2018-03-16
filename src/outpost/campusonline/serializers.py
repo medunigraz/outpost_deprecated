@@ -98,6 +98,7 @@ class CourseGroupTermSerializer(ModelSerializer):
             'start',
             'end',
             'room',
+            'title',
         )
 
 

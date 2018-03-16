@@ -331,6 +331,9 @@ class CourseGroupTerm(models.Model):
         primary_key=True,
         max_length=128
     )
+    title = models.TextField(
+        null=True
+    )
     coursegroup = models.ForeignKey(
         'CourseGroup',
         models.SET_NULL,
