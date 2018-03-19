@@ -404,6 +404,10 @@ class Recording(TimeStampedModel):
         blank=True,
         related_name='+'
     )
+    title = models.TextField(
+        blank=True,
+        null=True
+    )
     metadata = JSONField(
         blank=True,
         null=True

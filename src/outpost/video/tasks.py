@@ -127,8 +127,9 @@ class MetadataRecordingTask(MaintainanceTaskMixin, Task):
         )
         if not data:
             return
-        (rec.course, rec.presenter) = data
+        (rec.title, rec.course, rec.presenter) = data
         rec.metadata = {
+            'title': rec.title,
             'room': RoomSerializer(rec.recorder.room.campusonline).data,
             'presenter': PersonSerializer(rec.presenter).data if rec.presenter else None,
             'course': CourseSerializer(rec.course).data
@@ -145,6 +146,7 @@ class MetadataRecordingTask(MaintainanceTaskMixin, Task):
             'start',
             'end',
             'person',
+            'title',
             'coursegroup__course',
         ).distinct().first()
         if not cgt:
@@ -160,7 +162,7 @@ class MetadataRecordingTask(MaintainanceTaskMixin, Task):
             person = Person.objects.get(pk=cgt.get('person'))
         except Person.DoesNotExist as e:
             logger.warn(f'No Person found: {e}')
-        return (course, person)
+        return (cgt.get('title', None), course, person)
 
 
 class NotifyRecordingTask(MaintainanceTaskMixin, Task):

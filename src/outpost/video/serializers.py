@@ -72,6 +72,7 @@ class RecordingSerializer(serializers.ModelSerializer):
             'start',
             'end',
             'metadata',
+            'title',
         )
 
 
