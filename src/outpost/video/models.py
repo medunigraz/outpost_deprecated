@@ -412,6 +412,9 @@ class Recording(TimeStampedModel):
         blank=True,
         null=True
     )
+    ready = models.BooleanField(
+        default=False
+    )
 
     @property
     def end(self):

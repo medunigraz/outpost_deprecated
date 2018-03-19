@@ -164,6 +164,7 @@ class SFTPServer(asyncssh.SFTPServer):
         logger.info('Finished file: {}'.format(rec.data.path))
         if not rec.data.file.closed:
             rec.data.file.close()
+        rec.ready = True
         rec.save()
         logger.debug('Starting post-upload task chain')
         chain(

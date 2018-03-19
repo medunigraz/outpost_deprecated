@@ -148,7 +148,7 @@ class RecordingViewSet(ModelViewSet):
             self.request.user,
             'video.view_recording',
             klass=self.queryset.model
-        )
+        ).filter(ready=True)
 
 
 class RecordingAssetViewSet(ModelViewSet):
