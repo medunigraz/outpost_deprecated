@@ -55,10 +55,24 @@ class RecordingSerializer(serializers.ModelSerializer):
     recorder = RecorderSerializer()
     course = CourseSerializer()
     presenter = PersonSerializer()
+    end = serializers.DateTimeField()
 
     class Meta:
         model = models.Recording
-        fields = '__all__'
+        fields = (
+            'id',
+            'recorder',
+            'course',
+            'presenter',
+            'created',
+            'modified',
+            'data',
+            'info',
+            'archived',
+            'start',
+            'end',
+            'metadata',
+        )
 
 
 class RecordingAssetSerializer(serializers.ModelSerializer):
