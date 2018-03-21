@@ -151,7 +151,8 @@ class SFTPServer(asyncssh.SFTPServer):
             recorder=self._epiphan,
             info={},
             channel=channel,
-            start=start
+            start=start,
+            ready=False
         )
         rec.data.save(path.name, ContentFile(b''))
         if not rec.data.file.closed:
