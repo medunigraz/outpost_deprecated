@@ -23,6 +23,7 @@ class Token(TimeStampedModel):
     lifetime = models.DurationField(
         default=timedelta(hours=6)
     )
+    purpose = models.TextField()
 
     @property
     def expires(self):

@@ -2,14 +2,12 @@ from django.urls import reverse_lazy as reverse
 from django.views.generic import CreateView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from . import models
+from . import models, forms
 
 
 class TokenCreateView(LoginRequiredMixin, CreateView):
     model = models.Token
-    fields = (
-        'lifetime',
-    )
+    form_class = forms.TokenForm
 
     def form_valid(self, form):
         form.instance.user = self.request.user
