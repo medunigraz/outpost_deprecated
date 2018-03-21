@@ -11,10 +11,7 @@ from base64 import (
 from datetime import timedelta
 from decimal import Decimal
 from functools import partial
-from hashlib import (
-    md5,
-    sha256,
-)
+from hashlib import sha256
 from io import StringIO
 from pathlib import Path
 from statistics import mean
@@ -174,8 +171,9 @@ class Epiphan(Recorder):
         if not self.key:
             return None
         k = asyncssh.import_private_key(self.key.tobytes())
-        d = md5(k.get_ssh_public_key()).hexdigest()
-        return ':'.join(a + b for a, b in zip(d[::2], d[1::2]))
+        d = sha256(k.get_ssh_public_key()).digest()
+        f = b64encode(d).replace(b'=', b'').decode('utf-8')
+        return 'SHA256:{}'.format(f)
 
     def private_key(self):
         return self.key.tobytes().decode('ascii')
