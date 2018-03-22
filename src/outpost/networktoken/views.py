@@ -1,4 +1,6 @@
 from django.urls import reverse_lazy as reverse
+from django.utils import timezone
+from django.db.models import DateTimeField, ExpressionWrapper, F
 from django.views.generic import CreateView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -19,10 +21,14 @@ class TokenCreateView(LoginRequiredMixin, CreateView):
 
 class TokenDetailView(LoginRequiredMixin, DetailView):
     model = models.Token
-    fields = (
-        'lifetime',
-    )
 
     def get_queryset(self):
         qs = super().get_queryset()
-        return qs.filter(user=self.request.user)
+        return qs.filter(
+            user=self.request.user
+        ).annotate(
+            expired=ExpressionWrapper(
+                F('created') + F('lifetime'),
+                output_field=DateTimeField()
+            )
+        ).filter(expired__gt=timezone.now())

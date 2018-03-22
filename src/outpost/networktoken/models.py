@@ -31,3 +31,19 @@ class Token(TimeStampedModel):
 
     def __str__(self):
         return '{s.user}: {s.pk}'.format(s=self)
+
+
+class Login(models.Model):
+    username = models.CharField(
+        max_length=256,
+        default=''
+    )
+    password = models.CharField(
+        max_length=256,
+        default=''
+    )
+    response = models.CharField(
+        max_length=256,
+        default=''
+    )
+    created = models.DateTimeField()

@@ -287,6 +287,8 @@ DOWNLOADVIEW_RULES = [
     }
 ]
 
+RADIUS_USER = 'radius'
+
 CELERY_BROKER_URL = 'amqp://guest:guest@localhost//'
 CELERY_RESULTS_BACKEND = 'django-db'
 CELERY_TASK_DEFAULT_QUEUE = 'default'
