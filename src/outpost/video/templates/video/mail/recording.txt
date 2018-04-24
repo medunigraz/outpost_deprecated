@@ -7,7 +7,7 @@ Size: {{ recording.info.format.size|filesizeformat }}
 
 The recording is available at this location:
 
-https://{{ site.domain }}{% url 'video:recording:detail' pk=recording.pk %}
+{{ url }}
 
 Yours,
 {{ site.name }}

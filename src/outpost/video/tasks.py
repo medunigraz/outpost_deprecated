@@ -184,6 +184,7 @@ class NotifyRecordingTask(MaintainanceTaskMixin, Task):
                         'recording': rec,
                         'user': user,
                         'site': Site.objects.get_current(),
+                        'url': settings.OUTPOST['crates_recording_url'].format(pk=rec.pk),
                     }
                 ),
                 settings.SERVER_EMAIL,
