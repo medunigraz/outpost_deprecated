@@ -329,6 +329,7 @@ class EpiphanSource(models.Model):
                 self.video.delete(False)
                 self.video.save(output.name, ImageFile(output))
         except Exception as e:
+            self.video.delete(True)
             logger.warn(e)
 
         # Audio waveform
