@@ -34,7 +34,7 @@ from rest_framework.permissions import (
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.decorators import detail_route
+from rest_framework.decorators import detail_route, action
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
 
@@ -58,6 +58,7 @@ from .models import (
     Stream,
     Token,
 )
+from .permissions import EpiphanChannelPermissions
 from .serializers import (
     ExportClassSerializer,
     EventSerializer,
@@ -250,11 +251,20 @@ class EpiphanChannelViewSet(ModelViewSet):
     serializer_class = EpiphanChannelSerializer
     pagination_class = LimitOffsetPagination
     permission_classes = (
-        DjangoModelPermissions,
+        EpiphanChannelPermissions,
     )
     filter_fields = (
         'epiphan',
     )
+    http_method_names = ModelViewSet.http_method_names + [
+        'start', 'stop'
+    ]
+
+    @action(methods=['start', 'stop'], detail=True)
+    def control(self, request, pk):
+        obj = get_object_or_404(EpiphanChannel, pk=pk)
+        result = getattr(obj, request.method.lower())()
+        return Response(result)
 
 
 class EpiphanSourceViewSet(ModelViewSet):
