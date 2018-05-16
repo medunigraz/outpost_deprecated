@@ -325,9 +325,8 @@ class EpiphanSource(models.Model):
             with NamedTemporaryFile(suffix='.jpg') as output:
                 args.append(output.name)
                 ffmpeg = Process(*args)
-                ffmpeg.run()
-                self.video.delete(False)
-                self.video.save(output.name, ImageFile(output))
+                if ffmpeg.run() == 0:
+                    self.video.save(output.name, ImageFile(output))
         except Exception as e:
             self.video.delete(True)
             logger.warn(e)
@@ -351,10 +350,10 @@ class EpiphanSource(models.Model):
             with NamedTemporaryFile(suffix='.png') as output:
                 args.append(output.name)
                 ffmpeg = Process(*args)
-                ffmpeg.run()
-                self.audio.delete(False)
-                self.audio.save(output.name, ImageFile(output))
+                if ffmpeg.run() == 0:
+                    self.audio.save(output.name, ImageFile(output))
         except Exception as e:
+            self.audio.delete(True)
             logger.warn(e)
 
     def __str__(self):
