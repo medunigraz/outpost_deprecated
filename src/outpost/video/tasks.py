@@ -91,6 +91,7 @@ class VideoTaskMixin:
 
 
 class ProcessRecordingTask(VideoTaskMixin, Task):
+    ignore_result = False
 
     def run(self, pk, **kwargs):
         logger.debug(f'Processing recording: {pk}')
@@ -107,6 +108,7 @@ class ProcessRecordingTask(VideoTaskMixin, Task):
 
 
 class MetadataRecordingTask(MaintainanceTaskMixin, Task):
+    ignore_result = False
 
     def run(self, pk, **kwargs):
         logger.debug(f'Fetching metadata: {pk}')
@@ -166,6 +168,7 @@ class MetadataRecordingTask(MaintainanceTaskMixin, Task):
 
 
 class NotifyRecordingTask(MaintainanceTaskMixin, Task):
+    ignore_result = False
 
     def run(self, pk, **kwargs):
         logger.debug(f'Sending notifications: {pk}')
@@ -301,6 +304,7 @@ class ExportTask(VideoTaskMixin, Task):
 
 class ExportCleanupTask(MaintainanceTaskMixin, PeriodicTask):
     run_every = timedelta(hours=1)
+    ignore_result = False
 
     def run(self, **kwargs):
         expires = timezone.now() - timedelta(hours=24)
@@ -311,6 +315,7 @@ class ExportCleanupTask(MaintainanceTaskMixin, PeriodicTask):
 
 class RecordingRetentionTask(MaintainanceTaskMixin, PeriodicTask):
     run_every = timedelta(hours=1)
+    ignore_result = False
 
     def run(self, **kwargs):
         recorders = Recorder.objects.filter(enabled=True).exclude(retention=None)
@@ -325,6 +330,7 @@ class RecordingRetentionTask(MaintainanceTaskMixin, PeriodicTask):
 
 class EpiphanSourceTask(MaintainanceTaskMixin, PeriodicTask):
     run_every = timedelta(minutes=1)
+    ignore_result = False
 
     def run(self, **kwargs):
         sources = EpiphanSource.objects.filter(
@@ -338,6 +344,7 @@ class EpiphanSourceTask(MaintainanceTaskMixin, PeriodicTask):
 
 
 class EpiphanSourceWorkerTask(MaintainanceTaskMixin, Task):
+    ignore_result = False
 
     def run(self, pk, **kwargs):
         source = EpiphanSource.objects.get(pk=pk)
@@ -347,6 +354,7 @@ class EpiphanSourceWorkerTask(MaintainanceTaskMixin, Task):
 
 class EpiphanRebootTask(MaintainanceTaskMixin, PeriodicTask):
     run_every = crontab(hour=5, minute=0)
+    ignore_result = False
 
     def run(self, **kwargs):
         epiphans = Epiphan.objects.filter(
