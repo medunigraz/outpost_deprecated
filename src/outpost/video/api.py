@@ -25,21 +25,33 @@ from django.views.generic import (
 )
 from django_downloadview import PathDownloadView
 from guardian.shortcuts import get_objects_for_user
+from rest_framework.decorators import (
+    action,
+    detail_route,
+)
+from rest_framework.generics import (
+    ListAPIView,
+    RetrieveAPIView,
+)
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import (
     AllowAny,
     DjangoModelPermissions,
     DjangoModelPermissionsOrAnonReadOnly,
     IsAuthenticatedOrReadOnly,
 )
-from rest_framework.viewsets import ModelViewSet, GenericViewSet
-from rest_framework.generics import ListAPIView, RetrieveAPIView
-from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.decorators import detail_route, action
-from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
+from rest_framework.response import Response
+from rest_framework.viewsets import (
+    GenericViewSet,
+    ModelViewSet,
+)
 
 from .models import (
     Broadcast,
+    DASHAudio,
+    DASHPublish,
+    DASHVideo,
     Epiphan,
     EpiphanChannel,
     EpiphanSource,
@@ -49,9 +61,6 @@ from .models import (
     EventVideo,
     Export,
     Publish,
-    DASHPublish,
-    DASHAudio,
-    DASHVideo,
     Recorder,
     Recording,
     RecordingAsset,
@@ -60,17 +69,17 @@ from .models import (
 )
 from .permissions import EpiphanChannelPermissions
 from .serializers import (
-    ExportClassSerializer,
-    EventSerializer,
-    RecorderSerializer,
-    EpiphanSerializer,
+    DASHAudioSerializer,
+    DASHPublishSerializer,
+    DASHVideoSerializer,
     EpiphanChannelSerializer,
+    EpiphanSerializer,
     EpiphanSourceSerializer,
+    EventSerializer,
+    ExportClassSerializer,
+    RecorderSerializer,
     RecordingAssetSerializer,
     RecordingSerializer,
-    DASHPublishSerializer,
-    DASHAudioSerializer,
-    DASHVideoSerializer,
 )
 from .tasks import ExportTask
 
@@ -141,7 +150,6 @@ class RecordingViewSet(ModelViewSet):
     )
     filter_fields = (
         'recorder',
-        'archived',
     )
 
     def get_queryset(self):

@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.utils.html import linebreaks
 
 from outpost.base.admin import NotificationInlineAdmin
+
 from . import models
 
 

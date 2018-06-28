@@ -1,7 +1,9 @@
+import io
 import logging
 import os
 import re
 import shutil
+import subprocess
 import time
 import uuid
 from base64 import (
@@ -30,10 +32,13 @@ from django.contrib.postgres.fields import (
     ArrayField,
     JSONField,
 )
+from django.contrib.staticfiles import finders
 from django.core.cache import cache
 from django.core.files import File
-from django.core.files.images import ImageFile
 from django.core.files.base import ContentFile
+from django.core.files.images import ImageFile
+from django.core.files.storage import FileSystemStorage
+from django.core.validators import RegexValidator
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
@@ -49,6 +54,7 @@ from memoize import (
     delete_memoized,
     memoize,
 )
+from PIL import Image
 from polymorphic.models import PolymorphicModel
 from purl import URL
 from requests import (
@@ -155,8 +161,16 @@ class Recorder(NetworkedDeviceMixin, PolymorphicModel):
 
 @signal_connect
 class Epiphan(Recorder):
-    username = models.CharField(max_length=128, blank=False, null=False)
-    password = models.CharField(max_length=128, blank=False, null=False)
+    username = models.CharField(
+        max_length=128,
+        blank=False,
+        null=False
+    )
+    password = models.CharField(
+        max_length=128,
+        blank=False,
+        null=False
+    )
     server = models.ForeignKey(
         'Server',
         related_name='+',
@@ -166,6 +180,14 @@ class Epiphan(Recorder):
     )
     key = models.BinaryField(null=False)
     provision = models.BooleanField(default=False)
+    ntp = models.CharField(
+        max_length=128,
+        default='0.pool.ntp.org 1.pool.ntp.org 2.pool.ntp.org 3.pool.ntp.org'
+    )
+    version = models.CharField(
+        max_length=16,
+        default='0'
+    )
 
     def fingerprint(self):
         if not self.key:
@@ -219,6 +241,21 @@ class EpiphanChannel(models.Model):
     )
     name = models.CharField(max_length=128)
     path = models.CharField(max_length=10)
+    sizelimit = models.CharField(
+        max_length=16,
+        default='1GiB',
+        validators=[
+            RegexValidator(
+                regex=re.compile(
+                    '^\d+(?:[kmgtpe]i?b?)?$',
+                    re.IGNORECASE
+                ),
+                message=_('Size limit must be an integer followed by a SI unit'),
+                code='no_filesize'
+            ),
+        ]
+    )
+    timelimit = models.DurationField(default=timedelta(hours=3))
 
     class Meta:
         ordering = (
@@ -271,27 +308,15 @@ class EpiphanChannel(models.Model):
         return '{s.__class__.__name__}({s.pk})'.format(s=self)
 
 
+@signal_connect
 class EpiphanSource(models.Model):
     epiphan = models.ForeignKey(
         'Epiphan',
         on_delete=models.CASCADE
     )
+    name = models.CharField(max_length=64)
     number = models.PositiveSmallIntegerField()
-    video = ProcessedImageField(
-        upload_to=Uuid4Upload,
-        format='JPEG',
-        options={'quality': 60},
-        null=True,
-        blank=True
-    )
     port = models.PositiveIntegerField(default=554)
-    audio = ProcessedImageField(
-        upload_to=Uuid4Upload,
-        format='JPEG',
-        options={'quality': 60},
-        null=True,
-        blank=True
-    )
     input = models.ForeignKey(
         'Input',
         blank=True,
@@ -304,13 +329,17 @@ class EpiphanSource(models.Model):
         )
 
     def pre_delete(self, *args, **kwargs):
+        logger.debug(f'{self}: Cleaning up files before object deletion')
         self.video.delete(False)
         self.audio.delete(False)
 
-    def update(self):
-        rtsp = 'rtsp://{s.epiphan.hostname}:{s.port}/stream.sdp'.format(s=self)
+    @property
+    def rtsp(self):
+        return f'rtsp://{self.epiphan.hostname}:{self.port}/stream.sdp'
 
+    def generate_video_preview(self):
         # Video preview
+        logger.debug(f'{self}: Fetching video preview from {self.rtsp}')
         try:
             args = [
                 'ffmpeg',
@@ -318,20 +347,45 @@ class EpiphanSource(models.Model):
                 '-stimeout',
                 '200000',
                 '-i',
-                rtsp,
+                self.rtsp,
                 '-frames:v',
                 '1',
+                '-f',
+                'image2pipe',
+                '-'
             ]
-            with NamedTemporaryFile(suffix='.jpg') as output:
-                args.append(output.name)
-                ffmpeg = Process(*args)
-                if ffmpeg.run() == 0:
-                    self.video.save(output.name, ImageFile(output))
+            ffmpeg = subprocess.run(
+                args,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.DEVNULL,
+                check=True
+            )
+            img = Image.open(io.BytesIO(ffmpeg.stdout))
+            buf = io.BytesIO()
+            img.save(buf, 'JPEG', optimize=True, quality=70)
+            logger.debug(f'{self}: Saving new preview image')
+            cache.set(
+                f'EpiphanSource-{self.id}-video-preview',
+                buf.getbuffer().tobytes(),
+                120
+            )
         except Exception as e:
-            self.video.delete(True)
-            logger.warn(e)
+            logger.warn(f'{self}: Failed to generate video preview: {e}')
+            cache.delete(f'EpiphanSource-{self.id}-video-preview')
 
+    @property
+    def video_preview(self):
+        data = cache.get(f'EpiphanSource-{self.id}-video-preview')
+        if not data:
+            name = finders.find('video/placeholder/video.jpg')
+            with open(name, 'rb') as f:
+                data = f.read()
+        b64 = b64encode(data).decode()
+        return f'data:image/jpeg;base64,{b64}'
+
+    def generate_audio_waveform(self):
         # Audio waveform
+        logger.debug(f'{self}: Fetching audio waveform from {self.rtsp}')
         try:
             args = [
                 'ffmpeg',
@@ -341,20 +395,43 @@ class EpiphanSource(models.Model):
                 '-t',
                 '5',
                 '-i',
-                rtsp,
+                self.rtsp,
                 '-filter_complex',
-                'showwavespic=s=1280x240',
+                'showwavespic=s=1280x240:colors=#51AE32',
                 '-frames:v',
                 '1',
+                '-f',
+                'image2pipe',
+                '-'
             ]
-            with NamedTemporaryFile(suffix='.png') as output:
-                args.append(output.name)
-                ffmpeg = Process(*args)
-                if ffmpeg.run() == 0:
-                    self.audio.save(output.name, ImageFile(output))
+            ffmpeg = subprocess.run(
+                args,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.DEVNULL,
+                check=True
+            )
+            img = Image.open(io.BytesIO(ffmpeg.stdout))
+            buf = io.BytesIO()
+            img.save(buf, 'PNG', optimize=True, quality=70)
+            logger.debug(f'{self}: Saving new waveform image')
+            cache.set(
+                f'EpiphanSource-{self.id}-audio-waveform',
+                buf.getbuffer().tobytes(),
+                120
+            )
         except Exception as e:
-            self.audio.delete(True)
-            logger.warn(e)
+            logger.warn(f'{self}: Failed to generate audio waveform: {e}')
+            cache.delete(f'EpiphanSource-{self.id}-audio-waveform')
+
+    @property
+    def audio_waveform(self):
+        data = cache.get(f'EpiphanSource-{self.id}-audio-waveform')
+        if not data:
+            name = finders.find('video/placeholder/audio.png')
+            with open(name, 'rb') as f:
+                data = f.read()
+        b64 = b64encode(data).decode()
+        return f'data:image/png;base64,{b64}'
 
     def __str__(self):
         return '{s.epiphan}, {s.number}'.format(s=self)
@@ -369,19 +446,23 @@ class PanasonicCamera(NetworkedDeviceMixin, Input):
 
 
 @signal_connect
-class Recording(TimeStampedModel):
+class Recording(TimeStampedModel, PolymorphicModel):
     recorder = models.ForeignKey(
         'Recorder',
         null=True,
         blank=True,
         on_delete=models.SET_NULL
     )
-    data = models.FileField(
-        upload_to=Uuid4Upload
+    online = models.FileField(
+        upload_to=Uuid4Upload,
+        null=True
     )
     info = JSONField(null=True)
-    archived = models.BooleanField(
-        default=False
+    archive = models.FileField(
+        upload_to=Uuid4Upload,
+        default=None,
+        null=True,
+        storage=FileSystemStorage(location='/archive')
     )
     start = models.DateTimeField(
         null=True

@@ -7,7 +7,10 @@ import socket
 import subprocess
 import time
 from concurrent import futures
-from datetime import timedelta
+from datetime import (
+    date,
+    timedelta,
+)
 from decimal import Decimal
 from difflib import SequenceMatcher
 from functools import reduce
@@ -15,15 +18,16 @@ from itertools import chain
 from math import gcd
 from operator import truediv
 from pathlib import Path
-from urllib.parse import urljoin
 from tempfile import mkdtemp
+from urllib.parse import urljoin
 
+from bs4 import BeautifulSoup
 from celery import states
 from celery.exceptions import Ignore
 from celery.schedules import crontab
 from celery.task import (
-    Task,
     PeriodicTask,
+    Task,
 )
 from django.conf import settings
 from django.contrib.sites.models import Site
@@ -36,12 +40,20 @@ from enchant import Dict
 from guardian.shortcuts import get_users_with_perms
 from lxml import etree
 from lxml.builder import ElementMaker
+from pint import UnitRegistry
 
-from outpost.base.utils import Process
 from outpost.base.tasks import MaintainanceTaskMixin
-
-from outpost.campusonline.models import Course, CourseGroupTerm, Person
-from outpost.campusonline.serializers import CourseSerializer, PersonSerializer, RoomSerializer
+from outpost.base.utils import Process
+from outpost.campusonline.models import (
+    Course,
+    CourseGroupTerm,
+    Person,
+)
+from outpost.campusonline.serializers import (
+    CourseSerializer,
+    PersonSerializer,
+    RoomSerializer,
+)
 
 from .models import (
     DASHAudio,
@@ -64,8 +76,9 @@ from .utils import (
     FFProbeProcess,
 )
 
-
 logger = logging.getLogger(__name__)
+
+ureg = UnitRegistry()
 
 # Metadata:
 # ffprobe -v quiet -print_format json -show_format -show_streams Recorder_Aug07_12-56-01.ts
@@ -202,9 +215,9 @@ class EpiphanProvisionTask(Task):
         if not settings.OUTPOST.get('epiphan_provisioning'):
             logger.warn('Epiphan provisioning disabled!')
             return
-        epiphan = Epiphan.objects.get(pk=pk)
-        epiphan.session.post(
-            epiphan.url.path('admin/afucfg').as_string(),
+        self.epiphan = Epiphan.objects.get(pk=pk)
+        self.epiphan.session.post(
+            self.epiphan.url.path('admin/afucfg').as_string(),
             data={
                 'pfd_form_id': 'fn_afu',
                 'afuEnable': 'on',
@@ -247,18 +260,95 @@ class EpiphanProvisionTask(Task):
                 'preserve-channel-name': None,
             }
         )
-        epiphan.session.post(
-            epiphan.url.path('admin/sshkeys.cgi').as_string(),
+        self.epiphan.session.post(
+            self.epiphan.url.path('admin/sshkeys.cgi').as_string(),
             files={
                 'identity': (
                     'key',
-                    epiphan.private_key()
+                    self.epiphan.private_key()
                 )
             },
             data={
                 'command': 'add',
             }
         )
+
+    def createRecorder(self, name):
+        response = self.epiphan.session.post(
+            self.epiphan.url.path('api/recorders').as_string()
+        )
+
+    def renameRecorder(self, pk, name):
+        response = self.epiphan.session.post(
+            self.epiphan.url.path('admin/ajax/rename_channel.cgi').as_string(),
+            data={
+                'channel': pk,
+                'id': 'channelname',
+                'value': name
+            }
+        )
+
+    def setRecorderChannels(self, pk, use_all=True, channels=[]):
+        response = self.epiphan.session.post(
+            self.epiphan.url.path(f'admin/recorder{pk}/archive').as_string(),
+            data={
+                'pfd_form_id': 'recorder_channels',
+                'rc[]': 'all' if use_all else channels
+            }
+        )
+
+    def setRecorderSettings(self, pk, recorder):
+        hours, remainder = divmod(recorder.timelimit.total_seconds(), 3600)
+        minutes, seconds = map(lambda x: str(x).rjust(2, '0'), divmod(remainder, 60))
+        response = self.epiphan.session.post(
+            self.epiphan.url.path(f'admin/recorder{pk}/archive').as_string(),
+            data={
+                'afu_enabled': '',
+                'exclude_singletouch': '',
+                'output_format': 'ts',
+                'pfd_form_id': 'rec_settings',
+                'sizelimit': int(ureg(recorder.sizelimit).to('byte').m),
+                'svc_afu_enabled': 'on' if recorder.auto_upload else '',
+                'timelimit': f'{hours}:{minutes}:{seconds}',
+                'upnp_enabled': '',
+                'user_prefix': ''
+            }
+        )
+
+    def setTime(self, pk, use_all=True, channels=[]):
+        now = datetime.now()
+        response = self.epiphan.session.post(
+            self.epiphan.url.path(f'admin/recorder{pk}/archive').as_string(),
+            data={
+                'date': now.strftime('%Y-%m-%d'),
+                'fn': 'date',
+                'ptp_domain': '_DFLT',
+                'rdate': 'auto',
+                'rdate_proto': 'NTP',
+                'rdate_secs': 900,
+                'server': epiphan.ntp,
+                'time': now.strftime('%H:%M:%S'),
+                'tz': 'Europe/Vienna'
+            }
+        )
+
+
+class EpiphanFirmwareTask(MaintainanceTaskMixin, PeriodicTask):
+    run_every = timedelta(hours=12)
+    ignore_result = False
+    regex = re.compile('^Current firmware version: "(?P<version>[\w\.]+)"')
+
+    def run(self, pk, **kwargs):
+        epiphan = Epiphan.objects.get(pk=pk)
+        response = epiphan.session.get(
+            self.epiphan.url.path('admin/firmwarecfg').as_string()
+        )
+        bs = BeautifulSoup(response.content, 'lxml')
+        text = bs.find(id='fn_upgrade').find('p').text
+        version = self.regex.match(text).groupdict().get('version', '0')
+        if (epiphan.version != version):
+            epiphan.version = version
+            epiphan.save()
 
 
 class ExportTask(VideoTaskMixin, Task):
@@ -269,7 +359,7 @@ class ExportTask(VideoTaskMixin, Task):
         if exporter not in exporters:
             self.update_state(
                 state=states.FAILURE,
-                meta='Unknown exporter: {}'.format(exporter)
+                meta=f'Unknown exporter: {exporter}'
             )
             raise Ignore()
         try:
@@ -277,20 +367,20 @@ class ExportTask(VideoTaskMixin, Task):
         except Recording.DoesNotExist:
             self.update_state(
                 state=states.FAILURE,
-                meta='Unknown recording: {}'.format(pk)
+                meta=f'Unknown recording: {pk}'
             )
             raise Ignore()
         cls = exporters.get(exporter)
         logger.info('Recording {} export requested: {}'.format(rec.pk, cls))
         (inst, _) = cls.objects.get_or_create(recording=rec)
         if not inst.data:
-            logger.info('Recording {} processing: {}'.format(rec.pk, cls))
+            logger.info(f'Recording {rec.pk} processing: {cls}')
             inst.process(self.progress)
-            logger.debug('Recording {} download URL: {}'.format(rec.pk, inst.data.url))
+            logger.debug(f'Recording {rec.pk} download URL: {inst.data.url}')
         return urljoin(base_uri, inst.data.url)
 
     def progress(self, action, current, maximum):
-        logger.debug('Progress: {} {}/{}'.format(action, current, maximum))
+        logger.debug(f'Progress: {action} {current}/{maximum}')
         if self.request.id:
             self.update_state(
                 state='PROGRESS',
@@ -309,7 +399,7 @@ class ExportCleanupTask(MaintainanceTaskMixin, PeriodicTask):
     def run(self, **kwargs):
         expires = timezone.now() - timedelta(hours=24)
         for e in Export.objects.filter(modified__lt=expires):
-            logger.debug('Remove expired export: {}'.format(e))
+            logger.debug(f'Remove expired export: {e}')
             e.delete()
 
 
@@ -319,37 +409,47 @@ class RecordingRetentionTask(MaintainanceTaskMixin, PeriodicTask):
 
     def run(self, **kwargs):
         recorders = Recorder.objects.filter(enabled=True).exclude(retention=None)
-        logger.info('Enforcing retention on {} sources.'.format(recorders.count()))
+        logger.info(f'Enforcing retention on {recorders.count()} sources')
         now = timezone.now()
 
         for r in recorders:
             for rec in Recording.objects.filter(recorder=r, created__lt=(now - r.retention)):
-                logger.warn('Removing recording {r.pk} from {r.created} after retention'.format(r=rec))
+                logger.warn(f'Removing recording {rec.pk} from {rec.created} after retention')
                 rec.delete()
 
 
 class EpiphanSourceTask(MaintainanceTaskMixin, PeriodicTask):
     run_every = timedelta(minutes=1)
-    ignore_result = False
+    ignore_result = True
 
     def run(self, **kwargs):
         sources = EpiphanSource.objects.filter(
             epiphan__enabled=True,
             epiphan__online=True,
         )
-        logger.info('Updating {} sources.'.format(sources.count()))
+        logger.info(f'Updating {sources.count()} sources.')
 
         for s in sources:
-            EpiphanSourceWorkerTask().delay(s.pk)
+            EpiphanSourceVideoPreviewTask().delay(s.pk)
+            EpiphanSourceAudioWaveformTask().delay(s.pk)
 
 
-class EpiphanSourceWorkerTask(MaintainanceTaskMixin, Task):
-    ignore_result = False
+class EpiphanSourceVideoPreviewTask(MaintainanceTaskMixin, Task):
+    ignore_result = True
 
     def run(self, pk, **kwargs):
         source = EpiphanSource.objects.get(pk=pk)
-        logger.info('Updating Epiphan source: {}'.format(source))
-        source.update()
+        logger.info(f'Epiphan source video preview: {source}')
+        source.generate_video_preview()
+
+
+class EpiphanSourceAudioWaveformTask(MaintainanceTaskMixin, Task):
+    ignore_result = True
+
+    def run(self, pk, **kwargs):
+        source = EpiphanSource.objects.get(pk=pk)
+        logger.info(f'Epiphan source audio waveform: {source}')
+        source.generate_audio_waveform()
 
 
 class EpiphanRebootTask(MaintainanceTaskMixin, PeriodicTask):
@@ -361,7 +461,7 @@ class EpiphanRebootTask(MaintainanceTaskMixin, PeriodicTask):
             enabled=True,
             online=True,
         )
-        logger.info('Rebooting Epiphans: {}'.format(epiphans.count()))
+        logger.info(f'Rebooting Epiphans: {epiphans.count()}')
 
         for e in epiphans:
             e.reboot()

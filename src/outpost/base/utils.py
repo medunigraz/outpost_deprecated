@@ -55,14 +55,15 @@ def colorscale(hexstr, scalefactor):
 
 class Process():
 
-    def __init__(self, *args):
+    def __init__(self, *args, stderr=subprocess.STDOUT):
         self.handlers = []
         logger.debug('Preparing: {}'.format(' '.join(args)))
+        self.args = args
         self.cmd = partial(
             subprocess.Popen,
             args,
             stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
+            stderr=stderr,
             universal_newlines=True
         )
 
@@ -71,11 +72,8 @@ class Process():
             self.handlers.append(h)
 
     def run(self):
+        logger.debug(f'Executing: {self.args}')
         pipe = self.cmd()
-
-        duration = None
-        position = None
-        current = 0
 
         while True:
             line = pipe.stdout.readline().strip()
@@ -86,4 +84,6 @@ class Process():
             logger.debug('Process line: {}'.format(line))
             for h in self.handlers:
                 h(line)
-        return pipe.returncode
+        retcode = pipe.returncode
+        logger.debug(f'Done: {self.args} returns {retcode}')
+        return retcode

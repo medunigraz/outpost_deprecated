@@ -1,6 +1,4 @@
-from rest_framework.permissions import (
-    DjangoModelPermissions,
-)
+from rest_framework.permissions import DjangoModelPermissions
 
 
 class EpiphanChannelPermissions(DjangoModelPermissions):

@@ -27,6 +27,9 @@ from guardian.shortcuts import get_objects_for_user
 
 from .models import (
     Broadcast,
+    DASHAudio,
+    DASHPublish,
+    DASHVideo,
     Epiphan,
     EpiphanChannel,
     EpiphanSource,
@@ -36,9 +39,6 @@ from .models import (
     EventVideo,
     Export,
     Publish,
-    DASHPublish,
-    DASHAudio,
-    DASHVideo,
     Recorder,
     Recording,
     RecordingAsset,
