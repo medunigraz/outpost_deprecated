@@ -11,6 +11,7 @@ from django_auth_ldap.config import (
     GroupOfNamesType,
     LDAPSearch,
 )
+from corsheaders.defaults import default_methods
 from docutils.core import publish_parts
 
 BASE_DIR = os.path.abspath(os.path.join(__file__, '../../..'))
@@ -271,6 +272,10 @@ OAUTH2_PROVIDER_APPLICATION_MODEL = 'oauth2.Application'
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_REPLACE_HTTPS_REFERER = True
+CORS_ALLOW_METHODS = default_methods + (
+    'START',
+    'STOP',
+)
 
 DEFAULT_SRID = 3857
 
