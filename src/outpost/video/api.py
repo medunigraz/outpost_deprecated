@@ -150,8 +150,6 @@ class RecordingViewSet(ModelViewSet):
     )
     filter_fields = (
         'recorder',
-        'online',
-        'archive',
     )
 
     def get_queryset(self):
