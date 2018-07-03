@@ -515,7 +515,10 @@ class Recording(TimeStampedModel, PolymorphicModel):
         )
 
     def pre_delete(self, *args, **kwargs):
-        self.data.delete(False)
+        if self.online:
+            self.online.delete(False)
+        if self.archive:
+            self.archive.delete(False)
 
     def __str__(self):
         return 'Recorded by {s.recorder} on {s.modified}'.format(s=self)
@@ -611,7 +614,7 @@ class SideBySideExport(Export):
                 'ffmpeg',
                 '-y',
                 '-i',
-                self.recording.data.path,
+                self.recording.online.path,
                 '-filter_complex',
                 fc,
                 '-map',
@@ -653,7 +656,7 @@ class ZipStreamExport(Export):
             'ffmpeg',
             '-y',
             '-i',
-            self.recording.data.path,
+            self.recording.online.path,
         ]
         with TemporaryDirectory(prefix='recording') as path:
             for s in self.recording.info['streams']:
