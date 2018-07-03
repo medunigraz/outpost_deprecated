@@ -112,7 +112,7 @@ class ProcessRecordingTask(VideoTaskMixin, Task):
         probe = FFProbeProcess(
             '-show_format',
             '-show_streams',
-            rec.data.path
+            rec.online.path
         )
         rec.info = probe.run()
         logger.debug(f'Extracted metadata: {rec.info}')

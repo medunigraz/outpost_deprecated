@@ -154,17 +154,17 @@ class SFTPServer(asyncssh.SFTPServer):
             start=start,
             ready=False
         )
-        rec.data.save(path.name, ContentFile(b''))
-        if not rec.data.file.closed:
-            rec.data.file.close()
-        rec.data.file.open('wb')
+        rec.online.save(path.name, ContentFile(b''))
+        if not rec.online.file.closed:
+            rec.online.file.close()
+        rec.online.file.open('wb')
         return rec
 
     @log
     def close(self, rec):
-        logger.info('Finished file: {}'.format(rec.data.path))
-        if not rec.data.file.closed:
-            rec.data.file.close()
+        logger.info('Finished file: {}'.format(rec.online.path))
+        if not rec.online.file.closed:
+            rec.online.file.close()
         rec.ready = True
         rec.save()
         logger.debug('Starting post-upload task chain')
@@ -183,15 +183,15 @@ class SFTPServer(asyncssh.SFTPServer):
                 offset
             )
         )
-        rec.data.file.seek(offset)
-        written = rec.data.file.write(data)
+        rec.online.file.seek(offset)
+        written = rec.online.file.write(data)
         logger.debug('Wrote {} bytes'.format(written))
         return written
 
     def fstat(self, rec):
         now = int(datetime.timestamp(datetime.now()))
         return asyncssh.SFTPAttrs(
-            size=rec.data.file.size,
+            size=rec.online.file.size,
             uid=0,
             gid=0,
             permissions=int('100600', 8),
