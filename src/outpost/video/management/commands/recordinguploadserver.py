@@ -1,11 +1,12 @@
 import asyncio
 import logging
 import os
-import pytz
 import re
 import sys
-import sdnotify
-from datetime import datetime, timedelta
+from datetime import (
+    datetime,
+    timedelta,
+)
 from functools import (
     partial,
     wraps,
@@ -13,6 +14,8 @@ from functools import (
 from pathlib import Path
 
 import asyncssh
+import pytz
+import sdnotify
 from celery import chain
 from django.core.files.base import ContentFile
 from django.core.management.base import (
@@ -29,8 +32,8 @@ from ...models import (
 )
 from ...tasks import (
     MetadataRecordingTask,
+    NotifyRecordingTask,
     ProcessRecordingTask,
-    NotifyRecordingTask
 )
 
 logger = logging.getLogger(__name__)
