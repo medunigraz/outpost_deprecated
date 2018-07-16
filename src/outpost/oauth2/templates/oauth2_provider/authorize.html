@@ -1,9 +1,10 @@
-{% extends "outpost/base.html" %}
+{% extends "registration/base.html" %}
 
 {% load i18n %}
 {% load static %}
 
 {% block content %}
+<div class="well">
 {% if not error %}
 <div class="page-header">
   <h1>
@@ -60,6 +61,7 @@
 </div>
 <div class="alert alert-danger" role="alert">
   {{ error.description }}
+</div>
 </div>
 {% endif %}
 {% endblock %}
