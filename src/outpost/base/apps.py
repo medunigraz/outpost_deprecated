@@ -7,7 +7,7 @@ default_app_config = 'outpost.base.apps.BaseConfig'
 
 
 class BaseConfig(AppConfig):
-    name = 'base'
+    name = 'outpost.base'
 
     def ready(self):
         if settings.DEBUG:
