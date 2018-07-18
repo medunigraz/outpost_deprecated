@@ -15,6 +15,9 @@ class Language(models.Model):
         managed = False
         db_table = 'typo3_language'
 
+    def __str__(self):
+        return self.title
+
 
 class Category(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -36,6 +39,9 @@ class Category(models.Model):
         managed = False
         db_table = 'typo3_category'
 
+    def __str__(self):
+        return self.title
+
 
 class Calendar(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -52,6 +58,9 @@ class Calendar(models.Model):
     class Meta:
         managed = False
         db_table = 'typo3_calendar'
+
+    def __str__(self):
+        return self.title
 
 
 class Event(models.Model):
@@ -118,6 +127,9 @@ class Event(models.Model):
         realurl = realurl.fragment('sl-content')
         return realurl.as_string()
 
+    def __str__(self):
+        return self.title
+
     def __repr__(self):
         return '{s.__class__.__name__}({s.pk})'.format(s=self)
 
@@ -163,6 +175,9 @@ class News(models.Model):
         realurl = URL(r.headers['location'])
         realurl = realurl.fragment('sl-content')
         return realurl.as_string()
+
+    def __str__(self):
+        return self.title
 
     def __repr__(self):
         return '{s.__class__.__name__}({s.pk})'.format(s=self)

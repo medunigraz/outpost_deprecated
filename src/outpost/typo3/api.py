@@ -22,6 +22,9 @@ class LanguageViewSet(ReadOnlyModelViewSet):
     permission_classes = (
         AllowAny,
     )
+    filter_fields = (
+        'isocode',
+    )
 
 
 class CategoryViewSet(ReadOnlyModelViewSet):
@@ -30,6 +33,11 @@ class CategoryViewSet(ReadOnlyModelViewSet):
     permission_classes = (
         AllowAny,
     )
+    filter_fields = (
+        'language',
+        'start',
+        'end',
+    )
 
 
 class CalendarViewSet(ReadOnlyModelViewSet):
@@ -37,6 +45,9 @@ class CalendarViewSet(ReadOnlyModelViewSet):
     serializer_class = serializers.CalendarSerializer
     permission_classes = (
         AllowAny,
+    )
+    filter_fields = (
+        'language',
     )
 
 
@@ -47,6 +58,20 @@ class EventViewSet(ReadOnlyModelViewSet):
         AllowAny,
     )
     pagination_class = LimitOffsetPagination
+    filter_fields = (
+        'start',
+        'end',
+        'allday',
+        'location',
+        'register',
+        'registration_end',
+        'attending_fees',
+        'dfp_points',
+        'target',
+        'calendar',
+        'category',
+        'language',
+    )
 
 
 class EventSearchViewSet(HaystackViewSet):
@@ -69,6 +94,7 @@ class NewsViewSet(ReadOnlyModelViewSet):
         'page',
         'topnews',
         'email',
+        'language',
     )
 
 
