@@ -19,21 +19,22 @@ v1 = DefaultRouter()
 v1.register(
     r'api/autocomplete',
     api.AutocompleteViewSet,
-    base_name='autocomplete'
+    base_name='api-autocomplete'
 )
 v1.register(
     r'base/contenttype',
     base.ContentTypeViewSet,
+    base_name='base-contenttype'
 )
 v1.register(
     r'base/notification',
     base.NotificationViewSet,
-    base_name='notification'
+    base_name='base-notification'
 )
 v1.register(
     r'base/task',
     base.TaskViewSet,
-    base_name='task'
+    base_name='base-task'
 )
 v1.register(
     r'positioning/locate',
@@ -42,89 +43,103 @@ v1.register(
 )
 v1.register(
     r'positioning/beacons',
-    positioning.BeaconViewSet
+    positioning.BeaconViewSet,
+    base_name='positioning-beacons'
 )
 v1.register(
     r'geo/background',
-    geo.BackgroundViewSet
+    geo.BackgroundViewSet,
+    base_name='geo-background'
 )
 v1.register(
     r'geo/level',
-    geo.LevelViewSet
+    geo.LevelViewSet,
+    base_name='geo-level'
 )
 v1.register(
     r'geo/rooms',
     geo.RoomViewSet,
-    base_name='geo-room-list'
+    base_name='geo-rooms'
 )
 v1.register(
     r'geo/roomcategory',
     geo.RoomCategoryViewSet,
-    base_name='geo-roomcategory-list'
+    base_name='geo-roomcategory'
 )
 v1.register(
     r'geo/doors',
-    geo.DoorViewSet
+    geo.DoorViewSet,
+    base_name='geo-doors'
 )
 v1.register(
     r'geo/floors',
     geo.FloorViewSet,
-    base_name='geo-floor-list'
+    base_name='geo-floors'
 )
 v1.register(
     r'geo/buildings',
     geo.BuildingViewSet,
-    base_name='geo-building-list'
+    base_name='geo-buildings'
 )
 v1.register(
     r'geo/nodes',
-    geo.NodeViewSet
+    geo.NodeViewSet,
+    base_name='geo-nodes'
 )
 v1.register(
     r'geo/edgecategory',
-    geo.EdgeCategoryViewSet
+    geo.EdgeCategoryViewSet,
+    base_name='geo-edgecategory'
 )
 v1.register(
     r'geo/edges',
-    geo.EdgeViewSet
+    geo.EdgeViewSet,
+    base_name='geo-edges'
 )
 v1.register(
     r'geo/pointofinterest',
-    geo.PointOfInterestViewSet
+    geo.PointOfInterestViewSet,
+    base_name='geo-pointofinterest'
 )
 v1.register(
     r'geo/pointofinterestinstance',
-    geo.PointOfInterestInstanceViewSet
+    geo.PointOfInterestInstanceViewSet,
+    base_name='geo-pointofinterestinstance'
 )
 v1.register(
     r'geo/routing/edges',
     geo.RoutingEdgeViewSet,
-    base_name='edge-routing'
+    base_name='geo-routing-edge'
 )
 v1.register(
     r'geo/search/rooms',
     geo.RoomSearchViewSet,
-    base_name='room-search'
+    base_name='geo-room-search'
 )
 v1.register(
     r'structure/organization',
     structure.OrganizationViewSet,
+    base_name='structure-organization'
 )
 v1.register(
     r'structure/person',
     structure.PersonViewSet,
+    base_name='structure-person'
 )
 v1.register(
     r'attendance/terminal',
-    attendance.TerminalViewSet
+    attendance.TerminalViewSet,
+    base_name='attendance-terminal'
 )
 v1.register(
     r'attendance/holding',
-    attendance.HoldingViewSet
+    attendance.HoldingViewSet,
+    base_name='attendance-holding'
 )
 v1.register(
     r'attendance/entry',
-    attendance.EntryViewSet
+    attendance.EntryViewSet,
+    base_name='attendance-entry'
 )
 v1.register(
     r'attendance/clock',
@@ -133,86 +148,103 @@ v1.register(
 )
 v1.register(
     r'networktoken/token',
-    networktoken.TokenViewSet
+    networktoken.TokenViewSet,
+    base_name='networktoken-token'
 )
 v1.register(
-    r'typo3/languages',
-    typo3.LanguageViewSet
+    r'typo3/language',
+    typo3.LanguageViewSet,
+    base_name='typo3-language'
 )
 v1.register(
-    r'typo3/categories',
-    typo3.CategoryViewSet
+    r'typo3/category',
+    typo3.CategoryViewSet,
+    base_name='typo3-category'
 )
 v1.register(
-    r'typo3/calendars',
-    typo3.CalendarViewSet
+    r'typo3/calendar',
+    typo3.CalendarViewSet,
+    base_name='typo3-calendar'
 )
 v1.register(
-    r'typo3/events',
-    typo3.EventViewSet
+    r'typo3/event',
+    typo3.EventViewSet,
+    base_name='typo3-event'
 )
 v1.register(
-    r'typo3/search/events',
+    r'typo3/search/event',
     typo3.EventSearchViewSet,
-    base_name='event-search'
+    base_name='typo3-event-search'
 )
 v1.register(
     r'typo3/news',
-    typo3.NewsViewSet
+    typo3.NewsViewSet,
+    base_name='typo3-news'
 )
 v1.register(
     r'typo3/search/news',
     typo3.NewsSearchViewSet,
-    base_name='news-search'
+    base_name='typo3-news-search'
 )
 v1.register(
     r'video/exportclass',
     video.ExportClassViewSet,
-    base_name='video-export-class'
+    base_name='video-exportclass'
 )
 v1.register(
     r'video/recorder',
-    video.RecorderViewSet
+    video.RecorderViewSet,
+    base_name='video-recorder'
 )
 v1.register(
     r'video/epiphan',
-    video.EpiphanViewSet
+    video.EpiphanViewSet,
+    base_name='video-epiphan'
 )
 v1.register(
     r'video/epiphanchannel',
-    video.EpiphanChannelViewSet
+    video.EpiphanChannelViewSet,
+    base_name='video-epiphanchannel'
 )
 v1.register(
     r'video/epiphansource',
-    video.EpiphanSourceViewSet
+    video.EpiphanSourceViewSet,
+    base_name='video-epiphansource'
 )
 v1.register(
     r'video/recording',
-    video.RecordingViewSet
+    video.RecordingViewSet,
+    base_name='video-recording'
 )
 v1.register(
     r'video/recordingasset',
-    video.RecordingAssetViewSet
+    video.RecordingAssetViewSet,
+    base_name='video-recordingasset'
 )
 v1.register(
     r'video/event',
-    video.EventViewSet
+    video.EventViewSet,
+    base_name='video-event'
 )
 v1.register(
     r'video/publish/dash',
-    video.DASHPublishViewSet
+    video.DASHPublishViewSet,
+    base_name='video-publish-dash'
 )
 v1.register(
     r'video/publish/dash-audio',
-    video.DASHAudioViewSet
+    video.DASHAudioViewSet,
+    base_name='video-publish-dash-audio'
 )
 v1.register(
     r'video/publish/dash-video',
-    video.DASHVideoViewSet
+    video.DASHVideoViewSet,
+    base_name='video-publish-dash-video'
 )
 v1.register(
     r'campusonline/event',
-    campusonline.EventViewSet
+    campusonline.EventViewSet,
+    base_name='campusonline-event'
 )
 
 urlpatterns = [
