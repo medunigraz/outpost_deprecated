@@ -90,7 +90,7 @@ class CourseGroupTermSerializer(ModelSerializer):
     room = RoomSerializer()
 
     class Meta:
-        model = models.Event
+        model = models.CourseGroupTerm
         fields = (
             'id',
             'coursegroup',
@@ -99,6 +99,7 @@ class CourseGroupTermSerializer(ModelSerializer):
             'end',
             'room',
             'title',
+            'term',
         )
 
 
@@ -108,4 +109,11 @@ class EventSerializer(ModelSerializer):
 
     class Meta:
         model = models.Event
+        fields = '__all__'
+
+
+class BulletinSerializer(ModelSerializer):
+
+    class Meta:
+        model = models.Bulletin
         fields = '__all__'

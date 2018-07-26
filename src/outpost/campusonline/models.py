@@ -1,4 +1,5 @@
 from django.contrib.gis.db import models
+from django.utils.translation import gettext_lazy as _
 from ordered_model.models import OrderedModel
 
 
@@ -350,6 +351,7 @@ class CourseGroupTerm(models.Model):
     )
     start = models.DateTimeField()
     end = models.DateTimeField()
+    term = models.IntegerField()
     room = models.ForeignKey(
         'Room',
         models.SET_NULL,
@@ -361,9 +363,16 @@ class CourseGroupTerm(models.Model):
     class Meta:
         managed = False
         db_table = 'campusonline_coursegroupterm'
+        ordering = (
+            'start',
+            'end',
+        )
+        permissions = (
+            ('view_coursegroupterm', _('Can view course group term')),
+        )
 
-    def __str__(self):
-        return '{s.coursegroup} ({s.person}): {s.room} {s.start}-{s.end}'.format(s=self)
+    def __str__(s):
+        return f'{s.coursegroup} ({s.person}): {s.room} {s.start}-{s.end}'
 
 
 class Event(OrderedModel):
@@ -412,3 +421,28 @@ class Event(OrderedModel):
 
     def __str__(self):
         return '{s.category} {s.date}: {s.title} ({s.room})'.format(s=self)
+
+
+class Bulletin(models.Model):
+    id = models.IntegerField(
+        primary_key=True
+    )
+    academic_year = models.CharField(
+        max_length=256
+    )
+    issue = models.CharField(
+        max_length=256
+    )
+    published = models.DateTimeField()
+    teaser = models.TextField()
+    url = models.URLField()
+
+    class Meta:
+        managed = False
+        db_table = 'campusonline_bulletin'
+        ordering = (
+            '-published',
+        )
+
+    def __str__(s):
+        return f'{s.issue} {s.academic_year} ({s.published})'

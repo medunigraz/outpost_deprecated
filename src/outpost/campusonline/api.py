@@ -1,7 +1,20 @@
 from django.utils import timezone
+from django_filters.rest_framework import DjangoFilterBackend
 from drf_haystack.viewsets import HaystackViewSet
+from rest_framework.filters import DjangoObjectPermissionsFilter
 from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import ReadOnlyModelViewSet
+
+from outpost.api.permissions import (
+    ExtendedDjangoModelPermissions,
+    ExtendedDjangoObjectPermissions,
+)
+
+from . import (
+    models,
+    serializers,
+    filters,
+)
 
 # from rest_framework_extensions.mixins import (
 #     CacheResponseAndETAGMixin,
@@ -9,10 +22,6 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 # from rest_framework_extensions.cache.mixins import (
 #     CacheResponseMixin,
 # )
-from . import (
-    models,
-    serializers,
-)
 
 
 class RoomCategoryViewSet(ReadOnlyModelViewSet):
@@ -75,3 +84,24 @@ class EventViewSet(ReadOnlyModelViewSet):
 
     def get_queryset(self):
         return self.queryset.filter(show_end__gte=timezone.now())
+
+
+class CourseGroupTermViewSet(ReadOnlyModelViewSet):
+    queryset = models.CourseGroupTerm.objects.all()
+    serializer_class = serializers.CourseGroupTermSerializer
+    filter_backends = (
+        DjangoFilterBackend,
+    )
+    filter_class = filters.CourseGroupTermFilter
+    permission_classes = (
+        ExtendedDjangoModelPermissions,
+    )
+
+
+class BulletinViewSet(ReadOnlyModelViewSet):
+    queryset = models.Bulletin.objects.all()
+    serializer_class = serializers.BulletinSerializer
+    filter_backends = (
+        DjangoFilterBackend,
+    )
+    filter_class = filters.BulletinFilter

@@ -246,6 +246,16 @@ v1.register(
     campusonline.EventViewSet,
     base_name='campusonline-event'
 )
+v1.register(
+    r'campusonline/bulletin',
+    campusonline.BulletinViewSet,
+    base_name='campusonline-bulletin'
+)
+v1.register(
+    r'campusonline/course-group-term',
+    campusonline.CourseGroupTermViewSet,
+    base_name='campusonline-course-group-term'
+)
 
 urlpatterns = [
     url(r'^v1/', include(v1.urls, namespace='v1')),

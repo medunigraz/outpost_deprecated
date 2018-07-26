@@ -46,8 +46,8 @@ class Migration(migrations.Migration):
         '''.format(settings.MULTICORN.get('campusonline')),
         '''
         CREATE MATERIALIZED VIEW "public"."campusonline_coursegroupterm" AS SELECT
-            format('%s-%s-%s', termin_nr, lv_grp_nr, pers_nr) AS id,
-            termin_nr::integer AS termroom_id,
+            format('%s-%s-%s', termin_nr::integer, lv_grp_nr::integer, pers_nr::integer) AS id,
+            termin_nr::integer AS term,
             lv_grp_nr::integer AS coursegroup_id,
             pers_nr::integer AS person_id,
             (lv_beginn AT TIME ZONE 'Europe/Vienna') ::timestamptz AS start,
