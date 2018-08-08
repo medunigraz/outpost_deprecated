@@ -1,8 +1,10 @@
 from django.contrib.contenttypes.models import ContentType
+
 from rest_framework import generics
 from rest_framework import viewsets
 from rest_framework import permissions
 from celery.result import AsyncResult
+from rest_hooks.models import Hook
 
 from . import models, serializers
 
@@ -57,3 +59,15 @@ class TaskViewSet(generics.ListAPIView, generics.RetrieveAPIView, viewsets.Gener
 
         task = self.kwargs[lookup_url_kwarg]
         return AsyncResult(task)
+
+
+class HookViewSet(viewsets.ModelViewSet):
+    """
+    Retrieve, create, update or destroy webhooks.
+    """
+    queryset = Hook.objects.all()
+    model = Hook
+    serializer_class = serializers.HookSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)

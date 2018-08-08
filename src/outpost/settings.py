@@ -81,6 +81,7 @@ INSTALLED_APPS = [
     'django_uwsgi',
     'memoize',
     'django_filters',
+    'rest_hooks',
 ]
 
 MIDDLEWARE = [
@@ -303,6 +304,9 @@ CELERY_RESULTS_BACKEND = 'django-db'
 CELERY_TASK_DEFAULT_QUEUE = 'default'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+HOOK_DELIVERER = 'outpost.base.hooks.deliver_hook_wrapper'
+HOOK_EVENTS = {}
 
 RUNSERVERPLUS_SERVER_ADDRESS_PORT = '0.0.0.0:8088'
 
