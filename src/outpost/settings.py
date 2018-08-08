@@ -5,6 +5,8 @@ Django settings for Outpost project.
 import json
 import os
 
+from django.utils.translation import ugettext_lazy as _
+
 import ldap
 import raven
 from django_auth_ldap.config import (
@@ -263,8 +265,9 @@ OAUTH2_PROVIDER = {
         'write': 'Write scope',
         'groups': 'Access to your groups',
         'editor': 'Edit objects',
-        'geo': 'Edit geo',
-        'media': 'Edit media',
+        'geo': _('Manage geopgraphic information'),
+        'media': _('Manage multimedia data'),
+        'holding': _('Manage holdings'),
     }
 }
 OAUTH2_PROVIDER_APPLICATION_MODEL = 'oauth2.Application'
