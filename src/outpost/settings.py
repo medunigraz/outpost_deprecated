@@ -34,6 +34,7 @@ INTERNAL_IPS = list()
 ALLOWED_HOSTS = list()
 
 INSTALLED_APPS = [
+    'django_dbconn_retry',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
