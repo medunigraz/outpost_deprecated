@@ -1,6 +1,5 @@
 from django.utils import timezone
 from drf_haystack.viewsets import HaystackViewSet
-from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
@@ -57,7 +56,6 @@ class EventViewSet(ReadOnlyModelViewSet):
     permission_classes = (
         AllowAny,
     )
-    pagination_class = LimitOffsetPagination
     filter_fields = (
         'start',
         'end',
@@ -80,7 +78,6 @@ class EventSearchViewSet(HaystackViewSet):
     permission_classes = (
         AllowAny,
     )
-    pagination_class = LimitOffsetPagination
 
 
 class NewsViewSet(ReadOnlyModelViewSet):
@@ -89,7 +86,6 @@ class NewsViewSet(ReadOnlyModelViewSet):
     permission_classes = (
         AllowAny,
     )
-    pagination_class = LimitOffsetPagination
     filter_fields = (
         'page',
         'topnews',
@@ -104,4 +100,3 @@ class NewsSearchViewSet(HaystackViewSet):
     permission_classes = (
         AllowAny,
     )
-    pagination_class = LimitOffsetPagination

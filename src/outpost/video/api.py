@@ -33,7 +33,6 @@ from rest_framework.generics import (
     ListAPIView,
     RetrieveAPIView,
 )
-from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import (
     AllowAny,
     DjangoModelPermissions,
@@ -86,7 +85,6 @@ from .tasks import ExportTask
 
 class ExportClassViewSet(ListAPIView, RetrieveAPIView, GenericViewSet):
     serializer_class = ExportClassSerializer
-    pagination_class = LimitOffsetPagination
     renderer_classes = [JSONRenderer]
 
     def get_queryset(self):
@@ -127,7 +125,6 @@ class ExportClassViewSet(ListAPIView, RetrieveAPIView, GenericViewSet):
 class RecorderViewSet(ModelViewSet):
     queryset = Recorder.objects.all()
     serializer_class = RecorderSerializer
-    pagination_class = LimitOffsetPagination
     permission_classes = (
         DjangoModelPermissions,
     )
@@ -144,7 +141,6 @@ class RecorderViewSet(ModelViewSet):
 class RecordingViewSet(ModelViewSet):
     queryset = Recording.objects.all()
     serializer_class = RecordingSerializer
-    pagination_class = LimitOffsetPagination
     permission_classes = (
         DjangoModelPermissions,
     )
@@ -163,7 +159,6 @@ class RecordingViewSet(ModelViewSet):
 class RecordingAssetViewSet(ModelViewSet):
     queryset = RecordingAsset.objects.all()
     serializer_class = RecordingAssetSerializer
-    pagination_class = LimitOffsetPagination
     permission_classes = (
         DjangoModelPermissions,
     )
@@ -247,7 +242,6 @@ class DASHVideoViewSet(ModelViewSet):
 class EpiphanViewSet(ModelViewSet):
     queryset = Epiphan.objects.all()
     serializer_class = EpiphanSerializer
-    pagination_class = LimitOffsetPagination
     permission_classes = (
         DjangoModelPermissions,
     )
@@ -257,7 +251,6 @@ class EpiphanViewSet(ModelViewSet):
 class EpiphanChannelViewSet(ModelViewSet):
     queryset = EpiphanChannel.objects.all()
     serializer_class = EpiphanChannelSerializer
-    pagination_class = LimitOffsetPagination
     permission_classes = (
         EpiphanChannelPermissions,
     )
@@ -278,7 +271,6 @@ class EpiphanChannelViewSet(ModelViewSet):
 class EpiphanSourceViewSet(ModelViewSet):
     queryset = EpiphanSource.objects.all()
     serializer_class = EpiphanSourceSerializer
-    pagination_class = LimitOffsetPagination
     permission_classes = (
         DjangoModelPermissions,
     )

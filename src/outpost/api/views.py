@@ -1,7 +1,6 @@
 from drf_haystack.filters import HaystackAutocompleteFilter
 from drf_haystack.viewsets import HaystackViewSet
 from haystack.backends import SQ
-from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny
 from xapian_backend import NGRAM_MAX_LENGTH
 
@@ -55,7 +54,6 @@ class AutocompleteViewSet(HaystackViewSet):
     filter_backends = (
         LimitingHaystackAutocompleteFilter,
     )
-    pagination_class = LimitOffsetPagination
 
     def get_queryset(self, index_models=[]):
         queryset = self.object_class()._clone()
