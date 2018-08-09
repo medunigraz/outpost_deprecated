@@ -34,8 +34,8 @@ class StructureSyncTask(PeriodicTask):
             if not p.pk or p.room.pk != r.pk:
                 p.room = r
                 p.save()
-        for p in Person.objects.all():
-            logger.debug(f'Sync structure.Person {p} ({p.pk})')
+        for p in Person.objects.all().order_by('pk'):
+            logger.debug(f'Sync structure.Person {p.pk}')
             try:
                 cop = COPerson.objects.get(pk=p.campusonline_id)
                 logger.debug(f'Found {cop}')
@@ -51,7 +51,7 @@ class StructureSyncTask(PeriodicTask):
                 o = Organization(campusonline=coo)
                 logger.info(f'Create {o}')
                 o.save()
-        for o in Organization.objects.all():
+        for o in Organization.objects.all().order_by('pk'):
             logger.debug(f'Sync structure.Organization {o.pk}')
             try:
                 coo = COOrganization.objects.get(pk=o.campusonline_id)
