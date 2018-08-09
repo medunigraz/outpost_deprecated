@@ -3,10 +3,13 @@ from datetime import timedelta
 
 from celery.task import PeriodicTask
 
-from ..campusonline.models import Person as COPerson
 from ..campusonline.models import Organization as COOrganization
+from ..campusonline.models import Person as COPerson
 from ..geo.models import Room
-from .models import Person, Organization
+from .models import (
+    Organization,
+    Person,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +30,7 @@ class StructureSyncTask(PeriodicTask):
                 logger.debug('Found {}'.format(p))
             except Person.DoesNotExist:
                 p = Person(campusonline=cop)
-                logger.debug('Create {}'.format(p))
+                logger.info('Create {}'.format(p))
             if not p.pk or p.room.pk != r.pk:
                 p.room = r
                 p.save()
@@ -37,7 +40,7 @@ class StructureSyncTask(PeriodicTask):
                 cop = COPerson.objects.get(pk=p.campusonline_id)
                 logger.debug('Found {}'.format(cop))
             except COPerson.DoesNotExist:
-                logger.debug('Remove {}'.format(p.pk))
+                logger.warn('Remove {}'.format(p.pk))
                 p.delete()
         for coo in COOrganization.objects.all():
             logger.debug('Sync campusonline.Organization {}'.format(coo))
@@ -46,7 +49,7 @@ class StructureSyncTask(PeriodicTask):
                 logger.debug('Found {}'.format(o))
             except Organization.DoesNotExist:
                 o = Organization(campusonline=coo)
-                logger.debug('Create {}'.format(o))
+                logger.info('Create {}'.format(o))
                 o.save()
         for o in Organization.objects.all():
             logger.debug('Sync structure.Organization {}'.format(o))
@@ -54,5 +57,5 @@ class StructureSyncTask(PeriodicTask):
                 coo = COOrganization.objects.get(pk=o.campusonline_id)
                 logger.debug('Found {}'.format(coo))
             except COOrganization.DoesNotExist:
-                logger.debug('Remove {}'.format(o.pk))
+                logger.warn('Remove {}'.format(o.pk))
                 o.delete()
