@@ -5,15 +5,14 @@ Django settings for Outpost project.
 import json
 import os
 
-from django.utils.translation import ugettext_lazy as _
-
 import ldap
 import raven
+from corsheaders.defaults import default_methods
+from django.utils.translation import ugettext_lazy as _
 from django_auth_ldap.config import (
     GroupOfNamesType,
     LDAPSearch,
 )
-from corsheaders.defaults import default_methods
 from docutils.core import publish_parts
 
 BASE_DIR = os.path.abspath(os.path.join(__file__, '../../..'))
@@ -96,7 +95,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.sites.middleware.CurrentSiteMiddleware',
     #'django_downloadview.SmartDownloadMiddleware',
 ]
@@ -141,6 +139,10 @@ CACHES = {
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 SESSION_CACHE_ALIAS = 'default'
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
+
+CSRF_COOKIE_SECURE = True
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
