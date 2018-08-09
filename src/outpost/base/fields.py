@@ -1,9 +1,32 @@
 import hashlib
 
+from django import forms
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models.fields.related_descriptors import ForwardManyToOneDescriptor
 from django.dispatch import Signal
 from django.utils.encoding import force_text
+
+# Taken from:
+# https://stackoverflow.com/questions/31426010/better-arrayfield-admin-widget
+
+class ChoiceArrayField(ArrayField):
+    """
+    A field that allows us to store an array of choices.
+    Uses Django's Postgres ArrayField
+    and a MultipleChoiceField for its formfield.
+    """
+
+    def formfield(self, **kwargs):
+        defaults = {
+            'form_class': forms.MultipleChoiceField,
+            'choices': self.base_field.choices,
+        }
+        defaults.update(kwargs)
+        # Skip our parent's formfield implementation completely as we don't
+        # care for it.
+        # pylint:disable=bad-super-call
+        return super(ArrayField, self).formfield(**defaults)
 
 
 def _hash_field_name(name):
