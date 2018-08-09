@@ -1,6 +1,9 @@
 import django_filters
 
-from .models import CourseGroupTerm, Bulletin
+from .models import (
+    Bulletin,
+    CourseGroupTerm,
+)
 
 
 class CourseGroupTermFilter(django_filters.FilterSet):
@@ -32,6 +35,10 @@ class CourseGroupTermFilter(django_filters.FilterSet):
         field_name='start',
         lookup_expr='lt'
     )
+    start__date = django_filters.DateFilter(
+        field_name='start',
+        lookup_expr='date'
+    )
     end__gte = django_filters.IsoDateTimeFilter(
         field_name='end',
         lookup_expr='gte'
@@ -47,6 +54,10 @@ class CourseGroupTermFilter(django_filters.FilterSet):
     end__lt = django_filters.IsoDateTimeFilter(
         field_name='end',
         lookup_expr='lt'
+    )
+    end__date = django_filters.DateFilter(
+        field_name='end',
+        lookup_expr='date'
     )
 
     class Meta:
