@@ -134,6 +134,36 @@ class Event(models.Model):
         return '{s.__class__.__name__}({s.pk})'.format(s=self)
 
 
+class NewsCategory(models.Model):
+    id = models.CharField(
+        max_length=128,
+        primary_key=True
+    )
+    category = models.ForeignKey(
+        'Category',
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        related_name='+'
+    )
+    news = models.ForeignKey(
+        'News',
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        related_name='+'
+    )
+
+    class Meta:
+        managed = False
+        db_table = 'typo3_newscategory'
+
+    def __str__(s):
+        return f'{s.news.title}: {f.category.title}'
+
+
 class News(models.Model):
     id = models.IntegerField(primary_key=True)
     page = models.IntegerField(blank=True, null=True)
@@ -154,6 +184,10 @@ class News(models.Model):
     keywords = models.TextField(blank=True, null=True)
     tags = models.IntegerField(blank=True, null=True)
     topnews = models.BooleanField()
+    categories = models.ManyToManyField(
+        'Category',
+        through='NewsCategory'
+    )
 
     class Meta:
         managed = False
