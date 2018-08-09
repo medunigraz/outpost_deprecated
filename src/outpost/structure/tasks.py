@@ -19,43 +19,43 @@ class StructureSyncTask(PeriodicTask):
 
     def run(self, **kwargs):
         for cop in COPerson.objects.all():
-            logger.debug('Sync campusonline.Person {}'.format(cop))
+            logger.debug(f'Sync campusonline.Person {cop.pk}')
             try:
                 r = Room.objects.get(campusonline=cop.room)
             except Room.DoesNotExist:
-                logger.debug('No geo.Room for {}'.format(cop))
+                logger.debug(f'No geo.Room for {cop}) ({cop.pk})')
                 continue
             try:
                 p = Person.objects.get(campusonline_id=cop.pk)
-                logger.debug('Found {}'.format(p))
+                logger.debug(f'Found {p}')
             except Person.DoesNotExist:
                 p = Person(campusonline=cop)
-                logger.info('Create {}'.format(p))
+                logger.info(f'Create {p}')
             if not p.pk or p.room.pk != r.pk:
                 p.room = r
                 p.save()
         for p in Person.objects.all():
-            logger.debug('Sync structure.Person {}'.format(p))
+            logger.debug(f'Sync structure.Person {p} ({p.pk})')
             try:
                 cop = COPerson.objects.get(pk=p.campusonline_id)
-                logger.debug('Found {}'.format(cop))
+                logger.debug(f'Found {cop}')
             except COPerson.DoesNotExist:
-                logger.warn('Remove {}'.format(p.pk))
+                logger.warn(f'Remove {p.pk}')
                 p.delete()
         for coo in COOrganization.objects.all():
-            logger.debug('Sync campusonline.Organization {}'.format(coo))
+            logger.debug(f'Sync campusonline.Organization {coo} ({coo.pk})')
             try:
                 o = Organization.objects.get(campusonline_id=coo.pk)
-                logger.debug('Found {}'.format(o))
+                logger.debug(f'Found {o}')
             except Organization.DoesNotExist:
                 o = Organization(campusonline=coo)
-                logger.info('Create {}'.format(o))
+                logger.info(f'Create {o}')
                 o.save()
         for o in Organization.objects.all():
-            logger.debug('Sync structure.Organization {}'.format(o))
+            logger.debug(f'Sync structure.Organization {o.pk}')
             try:
                 coo = COOrganization.objects.get(pk=o.campusonline_id)
-                logger.debug('Found {}'.format(coo))
+                logger.debug(f'Found {coo}')
             except COOrganization.DoesNotExist:
-                logger.warn('Remove {}'.format(o.pk))
+                logger.warn(f'Remove {o.pk}')
                 o.delete()
