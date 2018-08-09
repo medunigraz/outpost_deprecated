@@ -7,10 +7,10 @@ from xapian_backend import (
 class SearchBackend(XapianSearchBackend):
 
     def update(self, index, iterable, commit=True):
-        return super(SearchBackend, self).update(index, iterable)
+        return super().update(index, iterable)
 
     def remove(self, obj, commit=True):
-        return super(SearchBackend, self).update(obj)
+        return super().remove(obj)
 
 
 class Engine(XapianEngine):
