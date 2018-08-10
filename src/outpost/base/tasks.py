@@ -47,8 +47,20 @@ class RefreshMaterializedViewsTask(MaintainanceTaskMixin, PeriodicTask):
         ns.nspname,
         cl_d.relname;
     '''
+    indizes = '''
+    SELECT
+        COUNT(1) AS count
+    FROM
+        pg_indexes
+    WHERE
+        tablename = '{}' AND
+        indexdef LIKE 'CREATE UNIQUE INDEX %'
+    '''
     refresh = '''
     REFRESH MATERIALIZED VIEW {};
+    '''
+    refresh_concurrent = '''
+    REFRESH MATERIALIZED VIEW CONCURRENTLY {};
     '''
 
     def run(self, **kwargs):
@@ -58,7 +70,7 @@ class RefreshMaterializedViewsTask(MaintainanceTaskMixin, PeriodicTask):
         with connection.cursor() as relations:
             relations.execute(self.views)
             for (rel,) in relations:
-                logger.debug('Refresh materialized view: %s', rel)
+                logger.debug(f'Refresh materialized view: {rel}')
                 with connection.cursor() as check:
                     check.execute(self.wrappers.format(rel))
                     online = True
@@ -71,12 +83,18 @@ class RefreshMaterializedViewsTask(MaintainanceTaskMixin, PeriodicTask):
                                 logger.warn(e)
                                 online = False
                     if online:
+                        with connection.cursor() as indizes:
+                            indizes.execute(self.indizes.format(rel))
+                            (index,) = indizes.fetchone()
                         with connection.cursor() as refresh:
-                            refresh.execute(self.refresh.format(rel))
+                            if index > 0:
+                                logger.debug(f'Concurrent refresh: {rel}')
+                                refresh.execute(self.refresh_concurrent.format(rel))
+                            else:
+                                refresh.execute(self.refresh.format(rel))
+
                     else:
-                        logger.warn(
-                            'Could not refresh materialized view: {}'.format(rel)
-                        )
+                        logger.warn(f'Could not refresh materialized view: {rel}')
         connection.close()
 
 
