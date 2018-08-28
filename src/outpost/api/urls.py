@@ -242,6 +242,21 @@ v1.register(
     base_name='video-publish-dash-video'
 )
 v1.register(
+    r'campusonline/function',
+    campusonline.FunctionViewSet,
+    base_name='campusonline-function'
+)
+v1.register(
+    r'campusonline/organization',
+    campusonline.OrganizationViewSet,
+    base_name='campusonline-organization'
+)
+v1.register(
+    r'campusonline/person',
+    campusonline.PersonViewSet,
+    base_name='campusonline-person'
+)
+v1.register(
     r'campusonline/event',
     campusonline.EventViewSet,
     base_name='campusonline-event'

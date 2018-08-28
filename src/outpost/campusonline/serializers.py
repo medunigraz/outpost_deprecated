@@ -36,6 +36,12 @@ class RoomSerializer(ModelSerializer):
         )
 
 
+class FunctionSerializer(ModelSerializer):
+    class Meta:
+        model = models.Function
+        fields = '__all__'
+
+
 class OrganizationSerializer(ModelSerializer):
     class Meta:
         model = models.Organization

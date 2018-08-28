@@ -158,6 +158,37 @@ class Building(models.Model):
         return '{s.name} ({s.short})'.format(s=self)
 
 
+class Function(models.Model):
+    id = models.IntegerField(
+        primary_key=True
+    )
+    name = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True
+    )
+    category = models.CharField(
+        max_length=32,
+        blank=True,
+        null=True
+    )
+    persons = models.ManyToManyField(
+        'Person',
+        through='PersonOrganizationFunction'
+    )
+
+    class Meta:
+        managed = False
+        db_table = 'campusonline_function'
+        ordering = (
+            'name',
+            'category',
+        )
+
+    def __str__(s):
+        return f'{s.name} ({s.category})'
+
+
 class Organization(AL_Node):
     id = models.IntegerField(
         primary_key=True
@@ -267,6 +298,10 @@ class Person(models.Model):
         blank=True,
         null=True
     )
+    functions = models.ManyToManyField(
+        'Function',
+        through='PersonOrganizationFunction'
+    )
 
     class Meta:
         managed = False
@@ -278,6 +313,47 @@ class Person(models.Model):
 
     def __str__(self):
         return '{s.last_name}, {s.first_name}'.format(s=self)
+
+
+class PersonOrganizationFunction(models.Model):
+    id = models.CharField(
+        primary_key=True,
+        max_length=128
+    )
+    person = models.ForeignKey(
+        'Person',
+        models.DO_NOTHING,
+        db_constraint=False,
+        null=False,
+        blank=False,
+        related_name='+'
+    )
+    organization = models.ForeignKey(
+        'Organization',
+        models.DO_NOTHING,
+        db_constraint=False,
+        null=False,
+        blank=False,
+        related_name='+'
+    )
+    function = models.ForeignKey(
+        'function',
+        models.DO_NOTHING,
+        db_constraint=False,
+        null=False,
+        blank=False,
+        related_name='+'
+    )
+
+    class Meta:
+        managed = False
+        db_table = 'campusonline_personorganizationfunction'
+        ordering = (
+            'id',
+        )
+
+    def __str__(self):
+        return '{s.person}, {s.organization}: {s.function}'.format(s=self)
 
 
 class Student(models.Model):

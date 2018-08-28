@@ -2,7 +2,10 @@ from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_haystack.viewsets import HaystackViewSet
 from rest_framework.filters import DjangoObjectPermissionsFilter
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import (
+    AllowAny,
+    IsAuthenticated,
+)
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from outpost.api.permissions import (
@@ -11,9 +14,9 @@ from outpost.api.permissions import (
 )
 
 from . import (
+    filters,
     models,
     serializers,
-    filters,
 )
 
 # from rest_framework_extensions.mixins import (
@@ -56,6 +59,14 @@ class BuildingViewSet(ReadOnlyModelViewSet):
     serializer_class = serializers.BuildingSerializer
     permission_classes = (
         AllowAny,
+    )
+
+
+class FunctionViewSet(ReadOnlyModelViewSet):
+    queryset = models.Function.objects.all()
+    serializer_class = serializers.FunctionSerializer
+    permission_classes = (
+        IsAuthenticated,
     )
 
 
