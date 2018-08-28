@@ -263,6 +263,10 @@ class Person(models.Model):
         blank=True,
         null=True
     )
+    avatar = models.URLField(
+        blank=True,
+        null=True
+    )
 
     class Meta:
         managed = False

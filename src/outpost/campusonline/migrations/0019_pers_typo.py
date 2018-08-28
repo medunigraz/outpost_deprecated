@@ -43,6 +43,7 @@ class Migration(migrations.Migration):
             pers_benutzername AS username,
             pers_sprechstunde AS consultation,
             pers_zusatz_info AS appendix,
+            pers_profilbild AS avatar,
             raum_nr ::integer AS room_id
         FROM "campusonline"."personen"
         WITH DATA;
