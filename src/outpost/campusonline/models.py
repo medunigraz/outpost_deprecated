@@ -1,6 +1,7 @@
 from django.contrib.gis.db import models
 from django.utils.translation import gettext_lazy as _
 from ordered_model.models import OrderedModel
+from treebeard.al_tree import AL_Node
 
 
 class RoomCategory(models.Model):
@@ -157,12 +158,32 @@ class Building(models.Model):
         return '{s.name} ({s.short})'.format(s=self)
 
 
-class Organization(models.Model):
+class Organization(AL_Node):
     id = models.IntegerField(
         primary_key=True
     )
     name = models.CharField(
         max_length=256,
+        blank=True,
+        null=True
+    )
+    short = models.CharField(
+        max_length=32,
+        blank=True,
+        null=True
+    )
+    parent = models.ForeignKey(
+        'self',
+        models.SET_NULL,
+        related_name='children_set',
+        db_constraint=False,
+        db_index=False,
+        null=True,
+        blank=True
+    )
+    sib_order = models.PositiveIntegerField()
+    category = models.CharField(
+        max_length=32,
         blank=True,
         null=True
     )
