@@ -47,7 +47,9 @@ class PersonSerializer(ModelSerializer):
 
     class Meta:
         model = models.Person
-        fields = '__all__'
+        exclude = (
+            'username',
+        )
 
 
 class PersonNameSerializer(ModelSerializer):
@@ -55,6 +57,7 @@ class PersonNameSerializer(ModelSerializer):
     class Meta:
         model = models.Person
         exclude = (
+            'username',
             'room',
         )
 

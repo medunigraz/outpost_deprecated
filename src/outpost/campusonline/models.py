@@ -224,6 +224,24 @@ class Person(models.Model):
         blank=True,
         related_name='+'
     )
+    sex = models.CharField(
+        max_length=1,
+        blank=True,
+        null=True
+    )
+    username = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True
+    )
+    consultation = models.TextField(
+        blank=True,
+        null=True
+    )
+    appendix = models.TextField(
+        blank=True,
+        null=True
+    )
 
     class Meta:
         managed = False
