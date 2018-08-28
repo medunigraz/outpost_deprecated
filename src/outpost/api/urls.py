@@ -257,6 +257,11 @@ v1.register(
     base_name='campusonline-person'
 )
 v1.register(
+    r'campusonline/personorganizationfunction',
+    campusonline.PersonOrganizationFunctionViewSet,
+    base_name='campusonline-personorganizationfunction'
+)
+v1.register(
     r'campusonline/event',
     campusonline.EventViewSet,
     base_name='campusonline-event'

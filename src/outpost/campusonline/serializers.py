@@ -58,6 +58,13 @@ class PersonSerializer(ModelSerializer):
         )
 
 
+class PersonOrganizationFunctionSerializer(ModelSerializer):
+
+    class Meta:
+        model = models.PersonOrganizationFunction
+        fields = '__all__'
+
+
 class PersonNameSerializer(ModelSerializer):
 
     class Meta:

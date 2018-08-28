@@ -86,6 +86,14 @@ class PersonViewSet(ReadOnlyModelViewSet):
     )
 
 
+class PersonOrganizationFunctionViewSet(ReadOnlyModelViewSet):
+    queryset = models.PersonOrganizationFunction.objects.all()
+    serializer_class = serializers.PersonOrganizationFunctionSerializer
+    permission_classes = (
+        IsAuthenticated,
+    )
+
+
 class EventViewSet(ReadOnlyModelViewSet):
     queryset = models.Event.objects.all()
     serializer_class = serializers.EventSerializer
