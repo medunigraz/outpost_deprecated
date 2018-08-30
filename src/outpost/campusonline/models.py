@@ -250,6 +250,12 @@ class Organization(AL_Node):
 
 
 class Person(models.Model):
+
+    GENDER_CHOICES = (
+        ('W', _('Female')),
+        ('M', _('Male')),
+    )
+
     id = models.IntegerField(
         primary_key=True
     )
@@ -277,6 +283,7 @@ class Person(models.Model):
         related_name='+'
     )
     sex = models.CharField(
+        choices=GENDER_CHOICES,
         max_length=1,
         blank=True,
         null=True

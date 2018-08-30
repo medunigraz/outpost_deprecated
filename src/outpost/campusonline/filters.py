@@ -1,9 +1,97 @@
 import django_filters
+from django.utils.translation import gettext_lazy as _
 
 from .models import (
     Bulletin,
     CourseGroupTerm,
+    Function,
+    Person,
 )
+
+
+class PersonFilter(django_filters.FilterSet):
+    '''
+    Filters
+    -------
+
+    To filter for exact value matches:
+
+        ?<fieldname>=<value>
+
+    For advanced filtering use lookups:
+
+        ?<fieldname>__<lookup>=<value>
+
+    Possible lookups:
+
+      - `first_name`: `iexact`, `contains`, `icontains`, `startswith`, `istartswith`, `endswith`, `iendswith`, `isnull`, `regex`, `iregex`
+      - `last_name`: `iexact`, `contains`, `icontains`, `startswith`, `istartswith`, `endswith`, `iendswith`, `isnull`, `regex`, `iregex`
+      - `title`: `iexact`, `contains`, `icontains`, `isnull`, `regex`, `iregex`
+      - `consultation`: `contains`, `icontains`, `isnull`, `regex`, `iregex`
+      - `appendix`: `contains`, `icontains`, `isnull`, `regex`, `iregex`
+    '''
+    sex = django_filters.ChoiceFilter(
+        label=_('Sex'),
+        choices=Person.GENDER_CHOICES
+    )
+    functions = django_filters.ModelMultipleChoiceFilter(
+        label=_('Function'),
+        queryset=Function.objects.all()
+    )
+
+    class Meta:
+        model = Person
+        fields = {
+            'first_name': (
+                'exact',
+                'iexact',
+                'contains',
+                'icontains',
+                'startswith',
+                'istartswith',
+                'endswith',
+                'iendswith',
+                'isnull',
+                'regex',
+                'iregex',
+            ),
+            'last_name': (
+                'exact',
+                'iexact',
+                'contains',
+                'icontains',
+                'startswith',
+                'istartswith',
+                'endswith',
+                'iendswith',
+                'isnull',
+                'regex',
+                'iregex',
+            ),
+            'title': (
+                'exact',
+                'iexact',
+                'contains',
+                'icontains',
+                'isnull',
+                'regex',
+                'iregex',
+            ),
+            'consultation': (
+                'contains',
+                'icontains',
+                'isnull',
+                'regex',
+                'iregex',
+            ),
+            'appendix': (
+                'contains',
+                'icontains',
+                'isnull',
+                'regex',
+                'iregex',
+            ),
+        }
 
 
 class CourseGroupTermFilter(django_filters.FilterSet):

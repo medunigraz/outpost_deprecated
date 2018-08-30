@@ -12,6 +12,7 @@ from outpost.api.permissions import (
     ExtendedDjangoModelPermissions,
     ExtendedDjangoObjectPermissions,
 )
+from outpost.base.decorators import docstring_format
 
 from . import (
     filters,
@@ -78,9 +79,19 @@ class OrganizationViewSet(ReadOnlyModelViewSet):
     )
 
 
+@docstring_format(filter=filters.PersonFilter.__doc__)
 class PersonViewSet(ReadOnlyModelViewSet):
+    '''
+    List staff accounts from CAMPUSonline.
+
+    {filter}
+    '''
     queryset = models.Person.objects.all()
     serializer_class = serializers.PersonSerializer
+    filter_backends = (
+        DjangoFilterBackend,
+    )
+    filter_class = filters.PersonFilter
     permission_classes = (
         AllowAny,
     )
