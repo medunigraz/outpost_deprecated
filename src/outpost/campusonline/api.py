@@ -63,9 +63,19 @@ class BuildingViewSet(ReadOnlyModelViewSet):
     )
 
 
+@docstring_format(filter=filters.FunctionFilter.__doc__)
 class FunctionViewSet(ReadOnlyModelViewSet):
+    '''
+    List organizational functions from CAMPUSonline.
+
+    {filter}
+    '''
     queryset = models.Function.objects.all()
     serializer_class = serializers.FunctionSerializer
+    filter_backends = (
+        DjangoFilterBackend,
+    )
+    filter_class = filters.FunctionFilter
     permission_classes = (
         IsAuthenticated,
     )

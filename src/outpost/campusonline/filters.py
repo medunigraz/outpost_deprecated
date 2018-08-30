@@ -10,6 +10,50 @@ from .models import (
 )
 
 
+class FunctionFilter(django_filters.FilterSet):
+    '''
+    Filters
+    -------
+
+    To filter for exact value matches:
+
+        ?<fieldname>=<value>
+
+    For advanced filtering use lookups:
+
+        ?<fieldname>__<lookup>=<value>
+
+    Possible lookups:
+
+      - `name`: `iexact`, `contains`, `icontains`, `startswith`, `istartswith`, `endswith`, `iendswith`, `regex`, `iregex`
+    '''
+    category = django_filters.ChoiceFilter(
+        label=_('Category'),
+        choices=Function.CATEGORY_CHOICES
+    )
+    persons = django_filters.ModelMultipleChoiceFilter(
+        label=_('Person'),
+        queryset=Person.objects.all()
+    )
+
+    class Meta:
+        model = Function
+        fields = {
+            'name': (
+                'exact',
+                'iexact',
+                'contains',
+                'icontains',
+                'startswith',
+                'istartswith',
+                'endswith',
+                'iendswith',
+                'regex',
+                'iregex',
+            ),
+        }
+
+
 class OrganizationFilter(django_filters.FilterSet):
     '''
     Filters

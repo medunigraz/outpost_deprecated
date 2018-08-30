@@ -159,6 +159,12 @@ class Building(models.Model):
 
 
 class Function(models.Model):
+
+    CATEGORY_CHOICES = (
+        ('fachliche', _('Technical')),
+        ('rechtliche', _('Legal')),
+    )
+
     id = models.IntegerField(
         primary_key=True
     )
@@ -168,6 +174,7 @@ class Function(models.Model):
         null=True
     )
     category = models.CharField(
+        choices=CATEGORY_CHOICES,
         max_length=32,
         blank=True,
         null=True
