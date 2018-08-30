@@ -54,3 +54,10 @@ def signal_skip(func):
         instance.skip_signal = True
         return func(sender, instance, **kwargs)
     return _decorator
+
+
+def docstring_format(*args, **kwargs):
+    def _decorator(obj):
+        obj.__doc__ = obj.__doc__.format(*args, **kwargs)
+        return obj
+    return _decorator
