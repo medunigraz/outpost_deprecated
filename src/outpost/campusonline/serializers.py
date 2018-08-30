@@ -59,6 +59,9 @@ class PersonSerializer(ModelSerializer):
 
 
 class PersonOrganizationFunctionSerializer(ModelSerializer):
+    person = PersonSerializer()
+    organization = OrganizationSerializer()
+    function = FunctionSerializer()
 
     class Meta:
         model = models.PersonOrganizationFunction
