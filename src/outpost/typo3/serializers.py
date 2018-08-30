@@ -1,8 +1,9 @@
 from drf_haystack.serializers import HaystackSerializerMixin
 from rest_framework.serializers import (
     ModelSerializer,
-    URLField,
     PrimaryKeyRelatedField,
+    ReadOnlyField,
+    URLField,
 )
 
 from . import (
@@ -48,9 +49,19 @@ class EventSearchSerializer(HaystackSerializerMixin, EventSerializer):
         fields = '__all__'
 
 
+class NewsCategorySerializer(ModelSerializer):
+
+    class Meta:
+        model = models.NewsCategory
+        fields = (
+            'category',
+        )
+
+
 class NewsSerializer(ModelSerializer):
     url = URLField(read_only=True, allow_null=True)
     categories = PrimaryKeyRelatedField(many=True, read_only=True)
+    breadcrumb = ReadOnlyField()
 
     class Meta:
         model = models.News

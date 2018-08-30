@@ -210,6 +210,16 @@ class News(models.Model):
         realurl = realurl.fragment('sl-content')
         return realurl.as_string()
 
+    #@memoize(timeout=86400)
+    def breadcrumb(self):
+        url = URL(settings.OUTPOST['typo3_api'])
+        url = url.query_param('tx_mugapi_endpoint[recordType]', 'RootLine')
+        url = url.query_param('tx_mugapi_endpoint[pageUid]', self.page)
+        r = requests.get(url.as_string(), allow_redirects=False)
+        if r.status_code != 200:
+            return []
+        return r.json()
+
     def __str__(self):
         return self.title
 
