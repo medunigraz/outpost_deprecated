@@ -117,9 +117,19 @@ class PersonViewSet(ReadOnlyModelViewSet):
     )
 
 
+@docstring_format(filter=filters.PersonOrganizationFunctionFilter.__doc__)
 class PersonOrganizationFunctionViewSet(ReadOnlyModelViewSet):
+    '''
+    Map person to organizational unit and function through CAMPUSonline.
+
+    {filter}
+    '''
     queryset = models.PersonOrganizationFunction.objects.all()
     serializer_class = serializers.PersonOrganizationFunctionSerializer
+    filter_backends = (
+        DjangoFilterBackend,
+    )
+    filter_class = filters.PersonOrganizationFunctionFilter
     permission_classes = (
         IsAuthenticated,
     )

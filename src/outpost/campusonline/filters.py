@@ -7,6 +7,7 @@ from .models import (
     Function,
     Organization,
     Person,
+    PersonOrganizationFunction,
 )
 
 
@@ -251,6 +252,25 @@ class PersonFilter(django_filters.FilterSet):
                 'iregex',
             ),
         }
+
+
+class PersonOrganizationFunctionFilter(django_filters.FilterSet):
+    '''
+    Filters
+    -------
+
+    To filter for exact value matches:
+
+        ?<fieldname>=<value>
+    '''
+
+    class Meta:
+        model = PersonOrganizationFunction
+        fields = (
+            'person',
+            'organization',
+            'function',
+        )
 
 
 class CourseGroupTermFilter(django_filters.FilterSet):
