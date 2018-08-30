@@ -58,9 +58,17 @@ class NewsCategorySerializer(ModelSerializer):
         )
 
 
+class NewsMediaSerializer(ModelSerializer):
+
+    class Meta:
+        model = models.NewsMedia
+        fields = '__all__'
+
+
 class NewsSerializer(ModelSerializer):
     url = URLField(read_only=True, allow_null=True)
     categories = PrimaryKeyRelatedField(many=True, read_only=True)
+    media = NewsMediaSerializer(many=True, read_only=True)
     breadcrumb = ReadOnlyField()
 
     class Meta:
