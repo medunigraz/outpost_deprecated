@@ -5,8 +5,123 @@ from .models import (
     Bulletin,
     CourseGroupTerm,
     Function,
+    Organization,
     Person,
 )
+
+
+class OrganizationFilter(django_filters.FilterSet):
+    '''
+    Filters
+    -------
+
+    To filter for exact value matches:
+
+        ?<fieldname>=<value>
+
+    For advanced filtering use lookups:
+
+        ?<fieldname>__<lookup>=<value>
+
+    Possible lookups:
+
+      - `name`: `iexact`, `contains`, `icontains`, `startswith`, `istartswith`, `endswith`, `iendswith`, `regex`, `iregex`
+      - `short`: `iexact`, `contains`, `icontains`, `startswith`, `istartswith`, `endswith`, `iendswith`, `isnull`, `regex`, `iregex`
+      - `address`: `iexact`, `contains`, `icontains`, `startswith`, `istartswith`, `endswith`, `iendswith`, `isnull`, `regex`, `iregex`
+      - `email`: `iexact`, `contains`, `icontains`, `startswith`, `istartswith`, `endswith`, `iendswith`, `isnull`, `regex`, `iregex`
+      - `phone`: `iexact`, `contains`, `icontains`, `startswith`, `istartswith`, `endswith`, `iendswith`, `isnull`, `regex`, `iregex`
+      - `url`: `iexact`, `contains`, `icontains`, `startswith`, `istartswith`, `endswith`, `iendswith`, `isnull`, `regex`, `iregex`
+    '''
+    category = django_filters.ChoiceFilter(
+        label=_('Category'),
+        choices=Organization.CATEGORY_CHOICES
+    )
+    parent = django_filters.ModelChoiceFilter(
+        label=_('Parent'),
+        queryset=Organization.objects.all()
+    )
+
+    class Meta:
+        model = Organization
+        fields = {
+            'name': (
+                'exact',
+                'iexact',
+                'contains',
+                'icontains',
+                'startswith',
+                'istartswith',
+                'endswith',
+                'iendswith',
+                'regex',
+                'iregex',
+            ),
+            'short': (
+                'exact',
+                'iexact',
+                'contains',
+                'icontains',
+                'startswith',
+                'istartswith',
+                'endswith',
+                'iendswith',
+                'isnull',
+                'regex',
+                'iregex',
+            ),
+            'address': (
+                'exact',
+                'iexact',
+                'contains',
+                'icontains',
+                'startswith',
+                'istartswith',
+                'endswith',
+                'iendswith',
+                'isnull',
+                'regex',
+                'iregex',
+            ),
+            'email': (
+                'exact',
+                'iexact',
+                'contains',
+                'icontains',
+                'startswith',
+                'istartswith',
+                'endswith',
+                'iendswith',
+                'isnull',
+                'regex',
+                'iregex',
+            ),
+            'phone': (
+                'exact',
+                'iexact',
+                'contains',
+                'icontains',
+                'startswith',
+                'istartswith',
+                'endswith',
+                'iendswith',
+                'isnull',
+                'regex',
+                'iregex',
+            ),
+            'url': (
+                'exact',
+                'iexact',
+                'contains',
+                'icontains',
+                'startswith',
+                'istartswith',
+                'endswith',
+                'iendswith',
+                'isnull',
+                'regex',
+                'iregex',
+            ),
+        }
 
 
 class PersonFilter(django_filters.FilterSet):

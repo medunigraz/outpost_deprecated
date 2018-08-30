@@ -71,9 +71,19 @@ class FunctionViewSet(ReadOnlyModelViewSet):
     )
 
 
+@docstring_format(filter=filters.OrganizationFilter.__doc__)
 class OrganizationViewSet(ReadOnlyModelViewSet):
+    '''
+    List staff accounts from CAMPUSonline.
+
+    {filter}
+    '''
     queryset = models.Organization.objects.all()
     serializer_class = serializers.OrganizationSerializer
+    filter_backends = (
+        DjangoFilterBackend,
+    )
+    filter_class = filters.OrganizationFilter
     permission_classes = (
         AllowAny,
     )

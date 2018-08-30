@@ -190,6 +190,14 @@ class Function(models.Model):
 
 
 class Organization(AL_Node):
+
+    CATEGORY_CHOICES = (
+        ('OE', _('Organizational Unit')),
+        ('FE', _('Research Unit')),
+        ('TE', _('Teaching Unit')),
+        ('V', _('Virtual')),
+    )
+
     id = models.IntegerField(
         primary_key=True
     )
@@ -214,6 +222,7 @@ class Organization(AL_Node):
     )
     sib_order = models.PositiveIntegerField()
     category = models.CharField(
+        choices=CATEGORY_CHOICES,
         max_length=32,
         blank=True,
         null=True
