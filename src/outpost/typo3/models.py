@@ -134,6 +134,61 @@ class Event(models.Model):
         return '{s.__class__.__name__}({s.pk})'.format(s=self)
 
 
+class EventMedia(models.Model):
+    id = models.IntegerField(primary_key=True)
+    event = models.ForeignKey(
+        'Event',
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        related_name='media'
+    )
+    title = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True
+    )
+    description = models.TextField(
+        blank=True,
+        null=True
+    )
+    alternative = models.TextField(
+        blank=True,
+        null=True
+    )
+    language = models.ForeignKey(
+        'Language',
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        related_name='+'
+    )
+    url = models.URLField()
+    mimetype = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True
+    )
+    filename = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True
+    )
+    size = models.PositiveIntegerField(
+        blank=True,
+        null=True
+    )
+
+    class Meta:
+        managed = False
+        db_table = 'typo3_eventmedia'
+
+    def __str__(s):
+        return f'{s.event}: {s.filename}'
+
+
 class NewsCategory(models.Model):
     id = models.CharField(
         max_length=128,

@@ -30,7 +30,15 @@ class CalendarSerializer(ModelSerializer):
         fields = '__all__'
 
 
+class EventMediaSerializer(ModelSerializer):
+
+    class Meta:
+        model = models.EventMedia
+        fields = '__all__'
+
+
 class EventSerializer(ModelSerializer):
+    media = EventMediaSerializer(many=True, read_only=True)
     url = URLField(read_only=True, allow_null=True)
 
     class Meta:
