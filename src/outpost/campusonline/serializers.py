@@ -78,6 +78,13 @@ class PersonNameSerializer(ModelSerializer):
         )
 
 
+class DistributionListSerializer(ModelSerializer):
+
+    class Meta:
+        model = models.DistributionList
+        fields = '__all__'
+
+
 class CourseSerializer(ModelSerializer):
 
     class Meta:

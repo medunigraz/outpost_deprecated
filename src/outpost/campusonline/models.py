@@ -379,6 +379,34 @@ class PersonOrganizationFunction(models.Model):
         return '{s.person}, {s.organization}: {s.function}'.format(s=self)
 
 
+class DistributionList(models.Model):
+    id = models.CharField(
+        primary_key=True,
+        max_length=128
+    )
+    name = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True
+    )
+    persons = models.ManyToManyField(
+        'Person',
+        db_table='campusonline_distributionlist_person',
+        db_constraint=False,
+        related_name='+'
+    )
+
+    class Meta:
+        managed = False
+        db_table = 'campusonline_distributionlist'
+        ordering = (
+            'name',
+        )
+
+    def __str__(self):
+        return self.name
+
+
 class Student(models.Model):
     id = models.IntegerField(
         primary_key=True

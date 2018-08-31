@@ -135,6 +135,24 @@ class PersonOrganizationFunctionViewSet(ReadOnlyModelViewSet):
     )
 
 
+@docstring_format(filter=filters.DistributionListFilter.__doc__)
+class DistributionListViewSet(ReadOnlyModelViewSet):
+    '''
+    List distribution lists from CAMPUSonline.
+
+    {filter}
+    '''
+    queryset = models.DistributionList.objects.all()
+    serializer_class = serializers.DistributionListSerializer
+    filter_backends = (
+        DjangoFilterBackend,
+    )
+    filter_class = filters.DistributionListFilter
+    permission_classes = (
+        IsAuthenticated,
+    )
+
+
 class EventViewSet(ReadOnlyModelViewSet):
     queryset = models.Event.objects.all()
     serializer_class = serializers.EventSerializer

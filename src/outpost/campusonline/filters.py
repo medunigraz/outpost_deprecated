@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from .models import (
     Bulletin,
     CourseGroupTerm,
+    DistributionList,
     Function,
     Organization,
     Person,
@@ -270,6 +271,24 @@ class PersonOrganizationFunctionFilter(django_filters.FilterSet):
             'person',
             'organization',
             'function',
+        )
+
+
+class DistributionListFilter(django_filters.FilterSet):
+    '''
+    Filters
+    -------
+
+    To filter for exact value matches:
+
+        ?<fieldname>=<value>
+    '''
+
+    class Meta:
+        model = DistributionList
+        fields = (
+            'name',
+            'persons',
         )
 
 

@@ -262,6 +262,11 @@ v1.register(
     base_name='campusonline-personorganizationfunction'
 )
 v1.register(
+    r'campusonline/distributionlist',
+    campusonline.DistributionListViewSet,
+    base_name='campusonline-distributionlist'
+)
+v1.register(
     r'campusonline/event',
     campusonline.EventViewSet,
     base_name='campusonline-event'
