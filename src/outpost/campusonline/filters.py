@@ -53,6 +53,9 @@ class FunctionFilter(django_filters.FilterSet):
                 'regex',
                 'iregex',
             ),
+            'leader': (
+                'exact',
+            )
         }
 
 

@@ -179,6 +179,9 @@ class Function(models.Model):
         blank=True,
         null=True
     )
+    leader = models.BooleanField(
+        null=False
+    )
     persons = models.ManyToManyField(
         'Person',
         through='PersonOrganizationFunction'
