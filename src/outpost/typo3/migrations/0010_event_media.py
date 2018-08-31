@@ -10,8 +10,9 @@ class Migration(migrations.Migration):
 
     forward = [
         '''
-        CREATE VIEW "public"."typo3_eventmedia" AS  SELECT
-            f.uid AS id,
+        CREATE MATERIALIZED VIEW "public"."typo3_eventmedia" AS  SELECT
+            r.uid AS id,
+            f.uid AS media_id,
             e.uid AS event_id,
             CASE trim(both ' ' from r.title) WHEN '' THEN NULL ELSE trim(both ' ' from r.title) END AS title,
             CASE trim(both ' ' from r.description) WHEN '' THEN NULL ELSE trim(both ' ' from r.description) END AS description,
@@ -39,7 +40,7 @@ class Migration(migrations.Migration):
     ]
     reverse = [
         '''
-        DROP VIEW IF EXISTS "public"."typo3_eventmedia";
+        DROP MATERIALIZED VIEW IF EXISTS "public"."typo3_eventmedia";
         ''',
     ]
 

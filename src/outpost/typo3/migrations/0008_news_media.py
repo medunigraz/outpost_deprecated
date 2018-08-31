@@ -67,8 +67,9 @@ class Migration(migrations.Migration):
         );
         '''.format(typo3=settings.MULTICORN.get('typo3')),
         '''
-        CREATE VIEW "public"."typo3_newsmedia" AS SELECT
-            f.uid AS id,
+        CREATE MATERIALIZED VIEW "public"."typo3_newsmedia" AS SELECT
+            r.uid AS id,
+            f.uid AS media_id,
             n.uid AS news_id,
             CASE trim(both ' ' from r.title) WHEN '' THEN NULL ELSE trim(both ' ' from r.title) END AS title,
             CASE trim(both ' ' from r.description) WHEN '' THEN NULL ELSE trim(both ' ' from r.description) END AS description,
@@ -96,7 +97,7 @@ class Migration(migrations.Migration):
     ]
     reverse = [
         '''
-        DROP VIEW IF EXISTS "public"."typo3_newsmedia";
+        DROP MATERIALIZED VIEW IF EXISTS "public"."typo3_newsmedia";
         ''',
         '''
         DROP FOREIGN TABLE IF EXISTS "typo3"."file_reference";
