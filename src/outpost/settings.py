@@ -33,6 +33,7 @@ INTERNAL_IPS = list()
 ALLOWED_HOSTS = list()
 
 INSTALLED_APPS = [
+    'channels',
     'django_dbconn_retry',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -123,6 +124,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'outpost.wsgi.application'
+ASGI_APPLICATION = "outpost.asgi.application"
 
 DATABASES = {
     'default': {
@@ -135,6 +137,17 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.dummy.DummyCache'
     }
+}
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [
+                ('localhost', 6379)
+            ],
+        },
+    },
 }
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
