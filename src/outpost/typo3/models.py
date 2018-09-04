@@ -113,6 +113,7 @@ class Event(models.Model):
             'start',
             'end',
         )
+        get_latest_by = 'start'
 
     @memoize(timeout=3600)
     def url(self):
@@ -250,6 +251,7 @@ class News(models.Model):
         ordering = (
             '-datetime',
         )
+        get_latest_by = 'datetime'
 
     @memoize(timeout=3600)
     def url(self):
