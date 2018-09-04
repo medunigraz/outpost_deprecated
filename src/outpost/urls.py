@@ -36,6 +36,10 @@ urlpatterns.extend([
         include('rest_framework.urls', namespace='rest_framework')
     ),
     url(
+        r'^prometheus/',
+        include('django_prometheus.urls')
+    ),
+    url(
         r'^auth/token/',
         authtoken.obtain_auth_token
     ),
