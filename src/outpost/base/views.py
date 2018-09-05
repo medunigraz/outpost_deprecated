@@ -45,7 +45,9 @@ class TaskView(View):
 class ImageConvertView(TemplateView):
     template_name = 'outpost/image-convert.html'
 
-    def post(self, request, format='pdf'):
+    def post(self, request, format):
+        if not format:
+            format = 'PDF'
         response = HttpResponse()
         with Image(file=request) as img:
             img.format = format.upper()
