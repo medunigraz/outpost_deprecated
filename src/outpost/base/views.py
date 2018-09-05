@@ -4,10 +4,13 @@ from django.http import (
     JsonResponse,
 )
 from django.shortcuts import get_object_or_404
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import (
     TemplateView,
     View,
 )
+from wand.image import Image
 
 from . import models
 
@@ -36,6 +39,19 @@ class TaskView(View):
                 'info': result.info
             }
         )
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class ImageConvertView(TemplateView):
+    template_name = 'outpost/image-convert.html'
+
+    def post(self, request, format='pdf'):
+        response = HttpResponse()
+        with Image(file=request) as img:
+            img.format = format.upper()
+            img.save(response)
+            response['Content-Type'] = img.mimetype
+        return response
 
 
 class Template404View(TemplateView):

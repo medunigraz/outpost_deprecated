@@ -4,6 +4,11 @@ from . import views
 
 urlpatterns = [
         url(
+            r'^image/convert(?:\/(?P<format>[\w\d]+))?$',
+            views.ImageConvertView.as_view(),
+            name='image-convert'
+        ),
+        url(
             r'^icon/(?P<pk>[0-9]+)/(?P<color>[0-9a-f]{6})$',
             views.ColorizedIconView.as_view(),
             name='icon'
