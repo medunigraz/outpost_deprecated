@@ -132,19 +132,19 @@ v1.register(
     base_name='attendance-terminal'
 )
 v1.register(
-    r'attendance/holding',
-    attendance.HoldingViewSet,
-    base_name='attendance-holding'
-)
-v1.register(
-    r'attendance/entry',
-    attendance.EntryViewSet,
-    base_name='attendance-entry'
-)
-v1.register(
     r'attendance/clock',
     attendance.ClockViewSet,
     base_name='attendance-clock'
+)
+v1.register(
+    r'attendance/campusonline-holding',
+    attendance.CampusOnlineHoldingViewSet,
+    base_name='attendance-campusonline-holding'
+)
+v1.register(
+    r'attendance/statistics',
+    attendance.StatisticsViewSet,
+    base_name='attendance-statistics'
 )
 v1.register(
     r'networktoken/token',

@@ -1,34 +1,34 @@
 import logging
 from datetime import timedelta
 
-from django.utils import timezone
-from django.db.models import Q
-from celery.task.schedules import crontab
 from celery.task import (
     PeriodicTask,
     Task,
 )
+from celery.task.schedules import crontab
+from django.db.models import Q
+from django.utils import timezone
 
 from .models import (
+    CampusOnlineEntry,
     Holding,
     Terminal,
-    Entry,
 )
 
 logger = logging.getLogger(__name__)
 
 
-class EntryCleanUpTask(PeriodicTask):
+class CampusOnlineEntryCleanUpTask(PeriodicTask):
     run_every = timedelta(minutes=5)
 
     def run(self, **kwargs):
         past = timezone.now() - timedelta(hours=12)
-        cond = (Q(state='registered') & Q(registered__lt=past)) | (Q(state='assigned') & Q(assigned__lt=past))
-        for e in Entry.objects.filter(cond):
-            if e.state == 'registered':
-                e.cancel(True)
+        cond = (Q(state='created') & Q(incoming__created__lt=past)) | (Q(state='assigned') & Q(assigned__lt=past))
+        for e in CampusOnlineEntry.objects.filter(cond):
+            if e.state == 'created':
+                e.cancel()
             if e.state == 'assigned':
-                e.leave(True)
+                e.leave()
             e.save()
 
 

@@ -1,43 +1,28 @@
-from django.shortcuts import get_object_or_404
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
+from guardian.shortcuts import get_objects_for_user
 from rest_framework import (
+    exceptions,
     permissions,
     viewsets,
-    exceptions,
 )
+from rest_framework.filters import DjangoObjectPermissionsFilter
 from rest_framework.response import Response
+
+from outpost.api.permissions import ExtendedDjangoModelPermissions
+from outpost.campusonline import models as co
 
 from . import (
     models,
     serializers,
 )
-from ..campusonline import models as co
 
 
 class TerminalViewSet(viewsets.ModelViewSet):
     queryset = models.Terminal.objects.all()
     serializer_class = serializers.TerminalSerializer
     permission_classes = (
-        permissions.IsAuthenticated,
-        permissions.DjangoModelPermissions,
-    )
-
-
-class HoldingViewSet(viewsets.ModelViewSet):
-    queryset = models.Holding.objects.all()
-    serializer_class = serializers.HoldingSerializer
-    permission_classes = (
-        permissions.IsAuthenticated,
-        permissions.DjangoModelPermissions,
-    )
-
-
-class EntryViewSet(viewsets.ModelViewSet):
-    queryset = models.Entry.objects.all()
-    serializer_class = serializers.EntrySerializer
-    permission_classes = (
-        permissions.IsAuthenticated,
-        permissions.DjangoModelPermissions,
+        ExtendedDjangoModelPermissions,
     )
 
 
@@ -70,39 +55,38 @@ class ClockViewSet(viewsets.ViewSet):
                     pass
         if not student:
             raise exceptions.NotFound('Unknown student identification')
-        room = terminal.room
-        # TODO: Get holding if available
-        try:
-            holding = models.Holding.objects.get(
-                room=terminal.room,
-                state='running'
-            )
-        except models.Holding.DoesNotExist:
-            holding = None
-        try:
-            entry = models.Entry.objects.get(
-                Q(student=student),
-                Q(holding=holding),
-                Q(room=terminal.room),
-                Q(state='registered') | Q(state='assigned')
-            )
-            if entry.state == 'registered':
-                entry.cancel()
-            if entry.state == 'assigned':
-                entry.leave()
-            entry.save()
-            status = 'OUT'
-        except models.Entry.DoesNotExist:
-            status = 'IN'
-            entry = models.Entry.objects.create(
-                student=student,
-                holding=holding,
-                room=terminal.room
-            )
+        entry = models.Entry.objects.create(
+            student=student,
+            terminal=terminal
+        )
         return Response({
-            'status': status,
+            'status': entry.status,
             'name': str(student),
-            'holding': holding and str(holding) or None,
             'entry': entry.pk,
         })
 
+
+class CampusOnlineHoldingViewSet(viewsets.ModelViewSet):
+    queryset = models.CampusOnlineHolding.objects.all()
+    serializer_class = serializers.CampusOnlineHoldingSerializer
+    permission_classes = (
+        ExtendedDjangoModelPermissions,
+    )
+
+
+class StatisticsViewSet(viewsets.ModelViewSet):
+    queryset = models.Statistics.objects.all()
+    serializer_class = serializers.StatisticsSerializer
+    permission_classes = (
+        ExtendedDjangoModelPermissions,
+    )
+    filter_backends = (
+        DjangoObjectPermissionsFilter,
+    )
+
+    #def get_queryset(self):
+    #    return get_objects_for_user(
+    #        self.request.user,
+    #        'attendance.view_statistics',
+    #        klass=self.queryset.model
+    #    )
