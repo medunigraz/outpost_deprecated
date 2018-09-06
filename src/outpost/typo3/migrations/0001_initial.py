@@ -118,6 +118,7 @@ class Migration(migrations.Migration):
             starttime integer,
             endtime integer,
             sorting integer,
+            fe_group varchar,
             title text,
             teaser text,
             bodytext text,

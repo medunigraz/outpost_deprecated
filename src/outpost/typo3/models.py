@@ -19,6 +19,24 @@ class Language(models.Model):
         return self.title
 
 
+class Group(models.Model):
+    id = models.IntegerField(
+        primary_key=True
+    )
+    title = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True
+    )
+
+    class Meta:
+        managed = False
+        db_table = 'typo3_group'
+
+    def __str__(self):
+        return self.title
+
+
 class Category(models.Model):
     id = models.IntegerField(primary_key=True)
     language = models.ForeignKey(
@@ -243,6 +261,12 @@ class News(models.Model):
     categories = models.ManyToManyField(
         'Category',
         through='NewsCategory'
+    )
+    groups = models.ManyToManyField(
+        'Group',
+        db_table='typo3_news_group',
+        db_constraint=False,
+        related_name='+'
     )
 
     class Meta:

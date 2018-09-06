@@ -18,6 +18,13 @@ class LanguageSerializer(ModelSerializer):
         fields = '__all__'
 
 
+class GroupSerializer(ModelSerializer):
+
+    class Meta:
+        model = models.Group
+        fields = '__all__'
+
+
 class CategorySerializer(ModelSerializer):
     class Meta:
         model = models.Category
@@ -78,6 +85,7 @@ class NewsSerializer(ModelSerializer):
     categories = PrimaryKeyRelatedField(many=True, read_only=True)
     media = NewsMediaSerializer(many=True, read_only=True)
     breadcrumb = ReadOnlyField()
+    groups = GroupSerializer(many=True, read_only=True)
 
     class Meta:
         model = models.News
