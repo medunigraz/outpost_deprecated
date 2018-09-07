@@ -73,8 +73,7 @@ class Migration(migrations.Migration):
             tx_mugcal_www AS url,
             tx_mugcal_dfppoints AS dfp_points,
             tx_mugcal_contact AS contact,
-            tx_mugcal_contact_email AS email,
-            tx_mugcal_target AS target
+            tx_mugcal_contact_email AS email
         FROM "typo3"."event"
         WHERE
             start_date != '0' AND

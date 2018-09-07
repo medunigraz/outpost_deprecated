@@ -132,7 +132,6 @@ class Event(models.Model):
     dfp_points = models.IntegerField(blank=True, null=True)
     contact = models.CharField(max_length=256, blank=True, null=True)
     email = models.CharField(max_length=256, blank=True, null=True)
-    target = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = False
