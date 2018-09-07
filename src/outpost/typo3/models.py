@@ -92,11 +92,11 @@ class Category(models.Model):
         blank=True,
         related_name='+'
     )
-    start = models.DateTimeField(blank=True, null=True)
-    end = models.DateTimeField(blank=True, null=True)
     title = models.TextField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     marker = models.IntegerField(blank=True, null=True)
+    start = models.DateTimeField(blank=True, null=True)
+    end = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         managed = False
