@@ -272,7 +272,7 @@ class Event(models.Model):
         r = fetch(url.as_string())
         if r.status_code != 200:
             return []
-        return filter(lambda b: b.get('pid', None) is not None, r.json())
+        return list(filter(lambda b: b.get('pid', None) is not None, r.json()))
 
     def __str__(self):
         return self.title
@@ -431,7 +431,7 @@ class News(models.Model):
         r = fetch(url.as_string())
         if r.status_code != 200:
             return []
-        return filter(lambda b: b.get('pid', None), r.json())
+        return list(filter(lambda b: b.get('pid', None) is not None, r.json()))
 
     def __str__(self):
         return self.title
