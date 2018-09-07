@@ -21,6 +21,7 @@ class Migration(migrations.Migration):
         '''
         CREATE MATERIALIZED VIEW "public"."typo3_event" AS SELECT
             uid AS id,
+            pid AS page,
             to_date(start_date, 'YYYYMMDD') + CASE
                 allday
             WHEN
@@ -115,6 +116,24 @@ class Migration(migrations.Migration):
             html_unescape(title) AS title,
             html_unescape(teaser) AS teaser,
             html_unescape(bodytext) AS body,
+            CASE
+                starttime
+            WHEN
+                0
+            THEN
+                NULL
+            ELSE
+                to_timestamp(starttime)
+            END AS start,
+            CASE
+                endtime
+            WHEN
+                0
+            THEN
+                NULL
+            ELSE
+                to_timestamp(endtime)
+            END AS end,
             author,
             author_email AS email,
             keywords,

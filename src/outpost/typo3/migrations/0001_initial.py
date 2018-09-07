@@ -72,6 +72,7 @@ class Migration(migrations.Migration):
         '''
         CREATE FOREIGN TABLE "typo3"."event" (
             uid integer,
+            pid integer,
             tstamp integer,
             crdate integer,
             deleted integer,

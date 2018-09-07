@@ -46,11 +46,14 @@ class EventMediaSerializer(ModelSerializer):
 
 class EventSerializer(ModelSerializer):
     media = EventMediaSerializer(many=True, read_only=True)
+    breadcrumb = ReadOnlyField()
     url = URLField(read_only=True, allow_null=True)
 
     class Meta:
         model = models.Event
-        fields = '__all__'
+        exclude = (
+            'page',
+        )
 
 
 class EventSearchSerializer(HaystackSerializerMixin, EventSerializer):
@@ -89,7 +92,10 @@ class NewsSerializer(ModelSerializer):
 
     class Meta:
         model = models.News
-        fields = '__all__'
+        exclude = (
+            'page',
+            'tags',
+        )
 
 
 class NewsSearchSerializer(HaystackSerializerMixin, NewsSerializer):

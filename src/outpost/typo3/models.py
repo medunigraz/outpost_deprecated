@@ -1,8 +1,17 @@
+import logging
+
 import requests
 from django.conf import settings
 from django.contrib.gis.db import models
 from memoize import memoize
 from purl import URL
+
+logger = logging.getLogger(__name__)
+
+
+@memoize(timeout=600)
+def fetch(url):
+    return requests.get(url, allow_redirects=False)
 
 
 class Language(models.Model):
@@ -83,6 +92,7 @@ class Calendar(models.Model):
 
 class Event(models.Model):
     id = models.IntegerField(primary_key=True)
+    page = models.IntegerField()
     start = models.DateTimeField(blank=True, null=True)
     end = models.DateTimeField(blank=True, null=True)
     allday = models.BooleanField()
@@ -139,12 +149,24 @@ class Event(models.Model):
         url = url.query_param('tx_mugapi_endpoint[recordType]', 'Event')
         url = url.query_param('tx_mugapi_endpoint[recordUid]', self.pk)
         url = url.query_param('tx_mugapi_endpoint[redirect]', 1)
-        r = requests.get(url.as_string(), allow_redirects=False)
+        logger.debug(f'Fetching TYPO3 event URL: {url.as_string()}')
+        r = fetch(url.as_string())
         if r.status_code != 302:
             return None
         realurl = URL(r.headers['location'])
         realurl = realurl.fragment('sl-content')
         return realurl.as_string()
+
+    @memoize(timeout=86400)
+    def breadcrumb(self):
+        url = URL(settings.OUTPOST['typo3_api'])
+        url = url.query_param('tx_mugapi_endpoint[recordType]', 'RootLine')
+        url = url.query_param('tx_mugapi_endpoint[pageUid]', self.page)
+        logger.debug(f'Fetching TYPO3 event breadcrumb: {url.as_string()}')
+        r = fetch(url.as_string())
+        if r.status_code != 200:
+            return []
+        return filter(lambda b: b.get('pid', None) is not None, r.json())
 
     def __str__(self):
         return self.title
@@ -253,6 +275,8 @@ class News(models.Model):
     title = models.TextField(blank=True, null=True)
     teaser = models.TextField(blank=True, null=True)
     body = models.TextField(blank=True, null=True)
+    start = models.DateTimeField(blank=True, null=True)
+    end = models.DateTimeField(blank=True, null=True)
     author = models.TextField(blank=True, null=True)
     email = models.TextField(blank=True, null=True)
     keywords = models.TextField(blank=True, null=True)
@@ -284,22 +308,24 @@ class News(models.Model):
         url = url.query_param('tx_mugapi_endpoint[recordUid]', self.pk)
         url = url.query_param('tx_mugapi_endpoint[redirect]', 1)
         url = url.fragment('sl-content')
-        r = requests.get(url.as_string(), allow_redirects=False)
+        logger.debug(f'Fetching TYPO3 news URL: {url.as_string()}')
+        r = fetch(url.as_string())
         if r.status_code != 302:
             return None
         realurl = URL(r.headers['location'])
         realurl = realurl.fragment('sl-content')
         return realurl.as_string()
 
-    #@memoize(timeout=86400)
+    @memoize(timeout=86400)
     def breadcrumb(self):
         url = URL(settings.OUTPOST['typo3_api'])
         url = url.query_param('tx_mugapi_endpoint[recordType]', 'RootLine')
         url = url.query_param('tx_mugapi_endpoint[pageUid]', self.page)
-        r = requests.get(url.as_string(), allow_redirects=False)
+        logger.debug(f'Fetching TYPO3 news breadcrumb: {url.as_string()}')
+        r = fetch(url.as_string())
         if r.status_code != 200:
             return []
-        return r.json()
+        return filter(lambda b: b.get('pid', None), r.json())
 
     def __str__(self):
         return self.title
