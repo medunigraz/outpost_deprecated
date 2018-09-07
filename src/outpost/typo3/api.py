@@ -3,6 +3,8 @@ from drf_haystack.viewsets import HaystackViewSet
 from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
+from outpost.base.decorators import docstring_format
+
 # from rest_framework_extensions.mixins import (
 #     CacheResponseAndETAGMixin,
 # )
@@ -15,7 +17,13 @@ from . import (
 )
 
 
+@docstring_format(model=models.Language.__doc__)
 class LanguageViewSet(ReadOnlyModelViewSet):
+    '''
+    List languages from TYPO3.
+
+    {model}
+    '''
     queryset = models.Language.objects.all()
     serializer_class = serializers.LanguageSerializer
     permission_classes = (
@@ -26,7 +34,13 @@ class LanguageViewSet(ReadOnlyModelViewSet):
     )
 
 
+@docstring_format(model=models.Category.__doc__)
 class CategoryViewSet(ReadOnlyModelViewSet):
+    '''
+    List categories from TYPO3.
+
+    {model}
+    '''
     queryset = models.Category.objects.all()
     serializer_class = serializers.CategorySerializer
     permission_classes = (
@@ -39,7 +53,13 @@ class CategoryViewSet(ReadOnlyModelViewSet):
     )
 
 
+@docstring_format(model=models.Calendar.__doc__)
 class CalendarViewSet(ReadOnlyModelViewSet):
+    '''
+    List calendars from TYPO3.
+
+    {model}
+    '''
     queryset = models.Calendar.objects.all()
     serializer_class = serializers.CalendarSerializer
     permission_classes = (
@@ -50,7 +70,13 @@ class CalendarViewSet(ReadOnlyModelViewSet):
     )
 
 
+@docstring_format(model=models.Event.__doc__)
 class EventViewSet(ReadOnlyModelViewSet):
+    '''
+    List events from TYPO3.
+
+    {model}
+    '''
     queryset = models.Event.objects.filter(end__gte=timezone.now())
     serializer_class = serializers.EventSerializer
     permission_classes = (

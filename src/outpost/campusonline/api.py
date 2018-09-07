@@ -63,11 +63,15 @@ class BuildingViewSet(ReadOnlyModelViewSet):
     )
 
 
-@docstring_format(filter=filters.FunctionFilter.__doc__)
+@docstring_format(
+    filter=filters.FunctionFilter.__doc__,
+    model=models.Function.__doc__
+)
 class FunctionViewSet(ReadOnlyModelViewSet):
     '''
     List organizational functions from CAMPUSonline.
 
+    {model}
     {filter}
     '''
     queryset = models.Function.objects.all()
@@ -81,11 +85,15 @@ class FunctionViewSet(ReadOnlyModelViewSet):
     )
 
 
-@docstring_format(filter=filters.OrganizationFilter.__doc__)
+@docstring_format(
+    filter=filters.OrganizationFilter.__doc__,
+    model=models.Organization.__doc__
+)
 class OrganizationViewSet(ReadOnlyModelViewSet):
     '''
-    List staff accounts from CAMPUSonline.
+    List organizations from CAMPUSonline.
 
+    {model}
     {filter}
     '''
     queryset = models.Organization.objects.all()
@@ -99,11 +107,15 @@ class OrganizationViewSet(ReadOnlyModelViewSet):
     )
 
 
-@docstring_format(filter=filters.PersonFilter.__doc__)
+@docstring_format(
+    filter=filters.PersonFilter.__doc__,
+    model=models.Person.__doc__
+)
 class PersonViewSet(ReadOnlyModelViewSet):
     '''
     List staff accounts from CAMPUSonline.
 
+    {model}
     {filter}
     '''
     queryset = models.Person.objects.all()
@@ -176,7 +188,17 @@ class CourseGroupTermViewSet(ReadOnlyModelViewSet):
     )
 
 
+@docstring_format(
+    filter=filters.BulletinFilter.__doc__,
+    model=models.Bulletin.__doc__
+)
 class BulletinViewSet(ReadOnlyModelViewSet):
+    '''
+    List official bulletins from CAMPUSonline.
+
+    {model}
+    {filter}
+    '''
     queryset = models.Bulletin.objects.all()
     serializer_class = serializers.BulletinSerializer
     filter_backends = (

@@ -14,8 +14,7 @@ from .models import (
 
 class FunctionFilter(django_filters.FilterSet):
     '''
-    Filters
-    -------
+    ## Filters
 
     To filter for exact value matches:
 
@@ -61,8 +60,7 @@ class FunctionFilter(django_filters.FilterSet):
 
 class OrganizationFilter(django_filters.FilterSet):
     '''
-    Filters
-    -------
+    ## Filters
 
     To filter for exact value matches:
 
@@ -175,8 +173,7 @@ class OrganizationFilter(django_filters.FilterSet):
 
 class PersonFilter(django_filters.FilterSet):
     '''
-    Filters
-    -------
+    ## Filters
 
     To filter for exact value matches:
 
@@ -260,8 +257,7 @@ class PersonFilter(django_filters.FilterSet):
 
 class PersonOrganizationFunctionFilter(django_filters.FilterSet):
     '''
-    Filters
-    -------
+    ## Filters
 
     To filter for exact value matches:
 
@@ -279,8 +275,7 @@ class PersonOrganizationFunctionFilter(django_filters.FilterSet):
 
 class DistributionListFilter(django_filters.FilterSet):
     '''
-    Filters
-    -------
+    ## Filters
 
     To filter for exact value matches:
 
@@ -355,6 +350,21 @@ class CourseGroupTermFilter(django_filters.FilterSet):
 
 
 class BulletinFilter(django_filters.FilterSet):
+    '''
+    ## Filters
+
+    To filter for exact value matches:
+
+        ?<fieldname>=<value>
+
+    For advanced filtering use lookups:
+
+        ?<fieldname>__<lookup>=<value>
+
+    Possible lookups:
+
+      - `published`: `gte`, `gt`, `lte`, `lt`
+    '''
     issue = django_filters.CharFilter(
         field_name='issue',
         lookup_expr='exact'

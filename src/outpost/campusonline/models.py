@@ -159,6 +159,27 @@ class Building(models.Model):
 
 
 class Function(models.Model):
+    '''
+    ## Fields
+
+    ### `id` (`integer`)
+    Primary key.
+
+    ### `name` (`string`)
+    Name of function.
+
+    ### `category` (`string`)
+    Type of function with possible values:
+
+     * `fachliche` (Technical)
+     * `rechtliche` (Legal)
+
+    ### `leader` (`boolean`)
+    Indicate if function is associated with leadership.
+
+    ### `persons` (`[integer]`)
+    List of foreign keys to [CAMPUSonline persons](../person) associated with this function.
+    '''
 
     CATEGORY_CHOICES = (
         ('fachliche', _('Technical')),
@@ -200,6 +221,51 @@ class Function(models.Model):
 
 
 class Organization(AL_Node):
+    '''
+    ## Fields
+
+    ### `id` (`integer`)
+    Primary key.
+
+    ### `name` (`string`)
+    Name of organization.
+
+    ### `short` (`string`)
+    Short name of organization.
+
+    ### `parent` (`integer`)
+    Foreign key to parent [CAMPUSonline organization](../organization). A value
+    of `null` inidcated the root organization.
+
+    Only required when assembling the organizational
+    [AL tree](https://en.wikipedia.org/wiki/Adjacency_list).
+
+    ### `sib_order` (`integer`)
+    Value to sort by.
+
+    Only required when assembling the organizational
+    [AL tree](https://en.wikipedia.org/wiki/Adjacency_list).
+
+    ### `category` (`string`)
+    Type of organization with possible values:
+
+     * `OE` (Organizational Unit)
+     * `FE` (Research Unit)
+     * `TE` (Teaching Unit)
+     * `V` (Virtual)
+
+    ### `address` (`string`)
+    Official post address of organization.
+
+    ### `email` (`string`)
+    Official email address of organization.
+
+    ### `phone` (`string`)
+    Official email address of organization.
+
+    ### `url` (`string`)
+    Official website URL of organization.
+    '''
 
     CATEGORY_CHOICES = (
         ('OE', _('Organizational Unit')),
@@ -269,6 +335,42 @@ class Organization(AL_Node):
 
 
 class Person(models.Model):
+    '''
+    ## Fields
+
+    ### `id` (`integer`)
+    Primary key.
+
+    ### `first_name` (`string`)
+    First name of person.
+
+    ### `last_name` (`string`)
+    Last name of person.
+
+    ### `title` (`string`)
+    Titles bestowed onto the person.
+
+    ### `room` (`integer`)
+    Foreign key to [CAMPUSonline room](../room) where this person has their primary workplace.
+
+    ### `sex` (`string`)
+    Sex of person:
+
+     * `W` (Female)
+     * `M` (Male)
+
+    ### `consultation` (`string`)
+    Consultation hours as free form text. Content may contain other information.
+
+    ### `appendix` (`string`)
+    Miscellaneous information about person as free form text.
+
+    ### `avatar` (`string`)
+    URL to user avatar picture. May point to an empty image.
+
+    ### `functions` (`[integer]`)
+    List of foreign keys to [CAMPUSonline functions](../function) this person carries.
+    '''
 
     GENDER_CHOICES = (
         ('W', _('Female')),
@@ -597,6 +699,30 @@ class Event(OrderedModel):
 
 
 class Bulletin(models.Model):
+    '''
+    ## Fields
+
+    ### `id` (`integer`)
+    Primary key.
+
+    ### `academic_year` (`string`)
+    The [academic year](https://en.wikipedia.org/wiki/Academic_year) in the
+    format of `<winter semester year as 4 digits/summer semster year with two
+    digits>`.
+
+    ### `issue` (`string`)
+    Issue of bulletin. May contain alphabetical characters.
+
+    ### `published` (`datetime`)
+    Date & time when this bulletin was published.
+
+    ### `teaser` (`string`)
+    Short teaser for bulletin content.
+
+    ### `url` (`string`)
+    URL to [PDF](https://en.wikipedia.org/wiki/PDF) download of bulletin.
+    '''
+
     id = models.IntegerField(
         primary_key=True
     )

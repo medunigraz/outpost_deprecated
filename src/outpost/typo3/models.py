@@ -15,6 +15,21 @@ def fetch(url):
 
 
 class Language(models.Model):
+    '''
+    ## Fields
+
+    ### `id` (`integer`)
+    Primary key.
+
+    ### `title` (`string`)
+    Titel of language.
+
+    ### `flag` (`string`)
+    Flag code to be used with icon sets.
+
+    ### `isocode` (`string`)
+    [ISO 3361](https://www.iso.org/iso-3166-country-codes.html) code.
+    '''
     id = models.IntegerField(primary_key=True)
     title = models.CharField(max_length=256, blank=True, null=True)
     flag = models.CharField(max_length=2, blank=True, null=True)
@@ -47,6 +62,27 @@ class Group(models.Model):
 
 
 class Category(models.Model):
+    '''
+    ## Fields
+
+    ### `id` (`integer`)
+    Primary key.
+
+    ### `language` (`integer`)
+    Foreign key to [TYPO3 language](../language).
+
+    ### `title` (`string`)
+    Titel of category.
+
+    ### `description` (`string`)
+    Full description of category.
+
+    ### `start` (`datetime`)
+    Start of period of validity.
+
+    ### `end` (`datetime`)
+    End of period of validity.
+    '''
     id = models.IntegerField(primary_key=True)
     language = models.ForeignKey(
         'Language',
@@ -71,6 +107,19 @@ class Category(models.Model):
 
 
 class Calendar(models.Model):
+    '''
+    ## Fields
+
+    ### `id` (`integer`)
+    Primary key.
+
+    ### `title` (`string`)
+    Titel of event.
+
+    ### `language` (`integer`)
+    Foreign key to [TYPO3 language](../language).
+
+    '''
     id = models.IntegerField(primary_key=True)
     title = models.TextField(blank=True, null=True)
     language = models.ForeignKey(
@@ -91,6 +140,64 @@ class Calendar(models.Model):
 
 
 class Event(models.Model):
+    '''
+    ## Fields
+
+    ### `id` (`integer`)
+    Primary key.
+
+    ### `start` (`timestamp`)
+    Begin of event.
+
+    ### `end` (`timestamp`)
+    End of event.
+
+    ### `allday` (`boolean`)
+    All-day event.
+
+    ### `title` (`string`)
+    Titel of event.
+
+    ### `calendar` (`integer`)
+    Foreign key to [TYPO3 calendar](../calendar).
+
+    ### `organizer` (`string`)
+    Name of person responsible for event.
+
+    ### `location` (`string`)
+    Description of location where event will take place.
+
+    ### `teaser` (`string`)
+    Short summary of event description without HTML.
+
+    ### `description` (`string`)
+    Full description of event with embedded HTML.
+
+    ### `language` (`integer`)
+    Foreign key to [TYPO3 language](../language).
+
+    ### `register` (`boolean`)
+    Registration required for event attendance.
+
+    ### `registration_end` (`timestamp`)
+    Deadline for event registration.
+
+    ### `attending_fees` (`boolean`)
+    Event attendance requires a fee.
+
+    ### `url` (`string`)
+    URL where event can be viewed in the frontend CMS.
+
+    ### `dfp_points` (`integer`)
+    The amount of [DFP points](https://www.meindfp.at/) credited for
+    attendance.
+
+    ### `contact` (`string`)
+    The name of a person or party to contact in regards to this event.
+
+    ### `email` (`string`)
+    The email address of a person or party to contact in regards to this event.
+    '''
     id = models.IntegerField(primary_key=True)
     page = models.IntegerField()
     start = models.DateTimeField(blank=True, null=True)
