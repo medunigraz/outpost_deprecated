@@ -242,6 +242,11 @@ v1.register(
     base_name='video-publish-dash-video'
 )
 v1.register(
+    r'campusonline/room',
+    campusonline.RoomViewSet,
+    base_name='campusonline-room'
+)
+v1.register(
     r'campusonline/function',
     campusonline.FunctionViewSet,
     base_name='campusonline-function'
