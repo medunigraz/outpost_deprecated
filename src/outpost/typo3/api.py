@@ -91,7 +91,6 @@ class EventViewSet(ReadOnlyModelViewSet):
         'registration_end',
         'attending_fees',
         'dfp_points',
-        'target',
         'calendar',
         'category',
         'language',
