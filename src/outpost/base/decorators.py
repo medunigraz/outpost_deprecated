@@ -58,6 +58,7 @@ def signal_skip(func):
 
 def docstring_format(*args, **kwargs):
     def _decorator(obj):
-        obj.__doc__ = obj.__doc__.format(*args, **kwargs)
+        if getattr(obj, '__doc__', None):
+            obj.__doc__ = obj.__doc__.format(*args, **kwargs)
         return obj
     return _decorator
