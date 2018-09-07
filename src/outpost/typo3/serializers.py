@@ -28,7 +28,9 @@ class GroupSerializer(ModelSerializer):
 class CategorySerializer(ModelSerializer):
     class Meta:
         model = models.Category
-        fields = '__all__'
+        exclude = (
+            'marker',
+        )
 
 
 class CalendarSerializer(ModelSerializer):
