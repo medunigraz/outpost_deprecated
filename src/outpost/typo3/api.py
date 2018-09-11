@@ -70,6 +70,24 @@ class CalendarViewSet(ReadOnlyModelViewSet):
     )
 
 
+@docstring_format(model=models.EventCategory.__doc__)
+class EventCategoryViewSet(ReadOnlyModelViewSet):
+    '''
+    List event categories from TYPO3.
+
+    {model}
+    '''
+    queryset = models.EventCategory.objects.all()
+    serializer_class = serializers.EventCategorySerializer
+    permission_classes = (
+        AllowAny,
+    )
+    filter_fields = (
+        'calendar',
+        'language',
+    )
+
+
 @docstring_format(model=models.Event.__doc__)
 class EventViewSet(ReadOnlyModelViewSet):
     '''
@@ -92,7 +110,6 @@ class EventViewSet(ReadOnlyModelViewSet):
         'attending_fees',
         'dfp_points',
         'calendar',
-        'category',
         'language',
     )
 

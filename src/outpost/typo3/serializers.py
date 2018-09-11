@@ -46,6 +46,13 @@ class EventMediaSerializer(ModelSerializer):
         fields = '__all__'
 
 
+class EventCategorySerializer(ModelSerializer):
+
+    class Meta:
+        model = models.EventCategory
+        fields = '__all__'
+
+
 class EventSerializer(ModelSerializer):
     media = EventMediaSerializer(many=True, read_only=True)
     breadcrumb = ReadOnlyField()

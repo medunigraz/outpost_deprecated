@@ -167,6 +167,11 @@ v1.register(
     base_name='typo3-calendar'
 )
 v1.register(
+    r'typo3/eventcategory',
+    typo3.EventCategoryViewSet,
+    base_name='typo3-eventcategory'
+)
+v1.register(
     r'typo3/event',
     typo3.EventViewSet,
     base_name='typo3-event'

@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib.gis.db import models
 from memoize import memoize
 from purl import URL
+from treebeard.al_tree import AL_Node
 
 logger = logging.getLogger(__name__)
 
@@ -139,6 +140,74 @@ class Calendar(models.Model):
         return self.title
 
 
+class EventCategory(AL_Node):
+    '''
+    ## Fields
+
+    ### `id` (`integer`)
+    Primary key.
+
+    ### `title` (`string`)
+    Titel of event.
+
+    ### `calendar` (`integer`)
+    Foreign key to [TYPO3 calendar](../calendar) if this category is only valid
+    for a single calendar. A value of `null` indicates a global category.
+
+    ### `parent` (`integer`)
+    Foreign key to parent [TYPO3 event category](../eventcategory). A value
+    of `null` indicates a root calendar category.
+
+    Only required when assembling the full category
+    [AL tree](https://en.wikipedia.org/wiki/Adjacency_list).
+
+    ### `sib_order` (`integer`)
+    Value to sort by.
+
+    Only required when assembling the full category
+    [AL tree](https://en.wikipedia.org/wiki/Adjacency_list).
+
+    ### `language` (`integer`)
+    Foreign key to [TYPO3 language](../language).
+
+    '''
+    id = models.IntegerField(primary_key=True)
+    title = models.TextField(blank=True, null=True)
+    calendar = models.ForeignKey(
+        'Calendar',
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        related_name='+'
+    )
+    parent = models.ForeignKey(
+        'self',
+        models.SET_NULL,
+        related_name='children_set',
+        db_constraint=False,
+        db_index=False,
+        null=True,
+        blank=True
+    )
+    sib_order = models.PositiveIntegerField()
+    language = models.ForeignKey(
+        'Language',
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        related_name='+'
+    )
+
+    class Meta:
+        managed = False
+        db_table = 'typo3_eventcategory'
+
+    def __str__(self):
+        return self.title
+
+
 class Event(models.Model):
     '''
     ## Fields
@@ -212,12 +281,10 @@ class Event(models.Model):
         blank=True,
         related_name='+'
     )
-    category = models.ForeignKey(
-        'Category',
-        models.SET_NULL,
+    categories = models.ManyToManyField(
+        'EventCategory',
+        db_table='typo3_event_eventcategory',
         db_constraint=False,
-        null=True,
-        blank=True,
         related_name='+'
     )
     organizer = models.CharField(max_length=256, blank=True, null=True)
