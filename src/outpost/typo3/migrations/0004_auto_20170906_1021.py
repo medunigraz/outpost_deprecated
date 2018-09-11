@@ -3,6 +3,7 @@
 from __future__ import unicode_literals
 
 from django.db import migrations
+from django.conf import settings
 
 
 class Migration(migrations.Migration):
@@ -53,7 +54,7 @@ class Migration(migrations.Migration):
             organizer,
             location,
             html_unescape(teaser) AS teaser,
-            html_unescape(description) AS description,
+            replace(html_unescape(description), 'img src="fileadmin', 'img src="{typo3_fileadmin}') AS description,
             CASE WHEN
                 sys_language_uid > 0
             THEN
@@ -91,7 +92,7 @@ class Migration(migrations.Migration):
             deleted = 0 AND
             hidden = 0
         WITH DATA;
-        ''',
+        '''.format(typo3_fileadmin=settings.OUTPOST.get('typo3_fileadmin')),
         '''
         CREATE MATERIALIZED VIEW "public"."typo3_news" AS SELECT
             uid AS id,
@@ -114,7 +115,7 @@ class Migration(migrations.Migration):
             END AS datetime,
             html_unescape(title) AS title,
             html_unescape(teaser) AS teaser,
-            html_unescape(bodytext) AS body,
+            replace(html_unescape(bodytext), 'img src="fileadmin', 'img src="{typo3_fileadmin}') AS body,
             CASE
                 starttime
             WHEN
@@ -145,7 +146,7 @@ class Migration(migrations.Migration):
             deleted = 0 AND
             hidden = 0
         WITH DATA;
-        ''',
+        '''.format(typo3_fileadmin=settings.OUTPOST.get('typo3_fileadmin')),
     ]
 
     reverse = [
