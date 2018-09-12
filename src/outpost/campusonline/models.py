@@ -166,7 +166,13 @@ class Function(models.Model):
     Primary key.
 
     ### `name` (`string`)
-    Name of function.
+    Gender neutral name of function.
+
+    ### `name_female` (`string`)
+    Female name of function.
+
+    ### `name_male` (`string`)
+    Male name of function.
 
     ### `category` (`string`)
     Type of function with possible values:
@@ -190,6 +196,16 @@ class Function(models.Model):
         primary_key=True
     )
     name = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True
+    )
+    name_female = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True
+    )
+    name_male = models.CharField(
         max_length=256,
         blank=True,
         null=True

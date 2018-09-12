@@ -20,7 +20,9 @@ class Migration(migrations.Migration):
             FUNK_NR numeric,
             FUNK_BEZ varchar,
             FUNK_GRUPPE varchar,
-            FUNK_LEITER varchar
+            FUNK_LEITER varchar,
+            FUNK_NAME_W varchar,
+            FUNK_NAME_M varchar
         )
         SERVER sqlalchemy OPTIONS (
             tablename 'FUNKTIONEN_V',
@@ -32,7 +34,9 @@ class Migration(migrations.Migration):
             funk_nr::integer AS id,
             funk_bez AS name,
             funk_gruppe AS category,
-            (CASE upper(funk_leiter) WHEN 'X' THEN TRUE ELSE FALSE END)::boolean AS leader
+            (CASE upper(funk_leiter) WHEN 'X' THEN TRUE ELSE FALSE END)::boolean AS leader,
+            funk_name_w AS name_female,
+            funk_name_m AS name_male
         FROM "campusonline"."funktionen"
         WITH DATA;
         """,
