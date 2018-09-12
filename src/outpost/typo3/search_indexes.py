@@ -38,9 +38,6 @@ class EventIndex(CelerySearchIndex, indexes.Indexable):
     language = indexes.FacetCharField(
         model_attr='language__title'
     )
-    category = indexes.FacetCharField(
-        model_attr='category__title'
-    )
     start = indexes.DateTimeField(
         model_attr='start',
         null=True
