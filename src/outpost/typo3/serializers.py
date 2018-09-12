@@ -73,7 +73,6 @@ class EventSearchSerializer(HaystackSerializerMixin, EventSerializer):
         search_fields = (
             'text',
         )
-        fields = '__all__'
 
 
 class NewsCategorySerializer(ModelSerializer):
@@ -115,4 +114,3 @@ class NewsSearchSerializer(HaystackSerializerMixin, NewsSerializer):
         search_fields = (
             'text',
         )
-        fields = '__all__'
