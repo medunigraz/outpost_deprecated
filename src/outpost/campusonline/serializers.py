@@ -1,4 +1,7 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import (
+    ModelSerializer,
+    PrimaryKeyRelatedField,
+)
 
 from . import models
 
@@ -43,6 +46,8 @@ class FunctionSerializer(ModelSerializer):
 
 
 class OrganizationSerializer(ModelSerializer):
+    persons = PrimaryKeyRelatedField(many=True, read_only=True)
+
     class Meta:
         model = models.Organization
         fields = '__all__'

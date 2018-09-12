@@ -281,6 +281,10 @@ class Organization(AL_Node):
 
     ### `url` (`string`)
     Official website URL of organization.
+
+    ### `persons` (`[integer]`)
+    List of foreign keys to [CAMPUSonline persons](../person) that are
+    associated with this organization.
     '''
 
     CATEGORY_CHOICES = (
@@ -386,6 +390,9 @@ class Person(models.Model):
 
     ### `functions` (`[integer]`)
     List of foreign keys to [CAMPUSonline functions](../function) this person carries.
+
+    ### `organizations` (`[integer]`)
+    List of foreign keys to [CAMPUSonline organizations](../organization) this person belongs to.
     '''
 
     GENDER_CHOICES = (
@@ -445,6 +452,12 @@ class Person(models.Model):
     functions = models.ManyToManyField(
         'Function',
         through='PersonOrganizationFunction'
+    )
+    organizations = models.ManyToManyField(
+        'Organization',
+        db_table='campusonline_person_organization',
+        db_constraint=False,
+        related_name='persons'
     )
 
     class Meta:
