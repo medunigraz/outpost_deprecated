@@ -139,6 +139,9 @@ DATABASES = {
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.dummy.DummyCache'
+    },
+    'meduniverse': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache'
     }
 }
 
