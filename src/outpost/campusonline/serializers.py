@@ -1,6 +1,7 @@
 from rest_framework.serializers import (
     ModelSerializer,
     PrimaryKeyRelatedField,
+    SerializerMethodField,
 )
 
 from . import models
@@ -60,7 +61,29 @@ class PersonSerializer(ModelSerializer):
         model = models.Person
         exclude = (
             'username',
+            'avatar_private',
+            'hash',
         )
+
+
+class AuthenticatedPersonSerializer(ModelSerializer):
+    room = RoomSerializer()
+    avatar = SerializerMethodField()
+
+    class Meta:
+        model = models.Person
+        exclude = (
+            'username',
+            'hash',
+            'avatar_private',
+        )
+
+    def get_avatar(self, obj):
+        request = self.context.get('request')
+        path = obj.avatar_private_url()
+        if request:
+            return request.build_absolute_uri(path)
+        return path
 
 
 class PersonOrganizationFunctionSerializer(ModelSerializer):

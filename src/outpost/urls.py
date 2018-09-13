@@ -52,6 +52,10 @@ urlpatterns.extend([
         include('outpost.attendance.urls', namespace='attendance')
     ),
     url(
+        r'^campusonline/',
+        include('outpost.campusonline.urls', namespace='campusonline')
+    ),
+    url(
         r'^video/',
         include('outpost.video.urls', namespace='video')
     ),
