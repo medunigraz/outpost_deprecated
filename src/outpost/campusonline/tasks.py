@@ -1,4 +1,3 @@
-import json
 import logging
 from datetime import timedelta
 
@@ -22,9 +21,9 @@ class UsernameSyncTask(PeriodicTask):
             return
         persons = Person.objects.all()
         id_to_username = {p.pk: p.username for p in persons}
-        cache.set('id_to_username', json.dumps(id_to_username))
+        cache.set('id_to_username', id_to_username)
         username_to_id = {p.username: p.pk for p in persons}
-        cache.set('id_to_username', json.dumps(username_to_id))
+        cache.set('username_to_id', username_to_id)
         for p in persons:
             cache.set(f'username:{p.username}', p.pk)
             cache.set(f'id:{p.pk}', p.username)
