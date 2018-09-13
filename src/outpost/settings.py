@@ -334,6 +334,7 @@ RUNSERVERPLUS_SERVER_ADDRESS_PORT = '0.0.0.0:8088'
 OUTPOST = {
     'epiphan_provisioning': False,
     'typo3_api': 'https://localhost/api/',
+    'typo3_fileadmin': 'https://localhost/fileadmin',
 }
 
 LOGGING = {
