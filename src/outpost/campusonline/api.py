@@ -1,6 +1,7 @@
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_haystack.viewsets import HaystackViewSet
+from rest_flex_fields.views import FlexFieldsMixin
 from rest_framework.filters import DjangoObjectPermissionsFilter
 from rest_framework.permissions import (
     AllowAny,
@@ -87,14 +88,16 @@ class FunctionViewSet(ReadOnlyModelViewSet):
 
 @docstring_format(
     filter=filters.OrganizationFilter.__doc__,
-    model=models.Organization.__doc__
+    model=models.Organization.__doc__,
+    serializer=serializers.OrganizationSerializer.__doc__
 )
-class OrganizationViewSet(ReadOnlyModelViewSet):
+class OrganizationViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     '''
     List organizations from CAMPUSonline.
 
     {model}
     {filter}
+    {serializer}
     '''
     queryset = models.Organization.objects.all()
     serializer_class = serializers.OrganizationSerializer
@@ -105,18 +108,23 @@ class OrganizationViewSet(ReadOnlyModelViewSet):
     permission_classes = (
         AllowAny,
     )
+    permit_list_expands = (
+        'persons',
+    )
 
 
 @docstring_format(
     filter=filters.PersonFilter.__doc__,
-    model=models.Person.__doc__
+    model=models.Person.__doc__,
+    serializer=serializers.PersonSerializer.__doc__
 )
-class PersonViewSet(ReadOnlyModelViewSet):
+class PersonViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     '''
     List staff accounts from CAMPUSonline.
 
     {model}
     {filter}
+    {serializer}
     '''
     queryset = models.Person.objects.all()
     serializer_class = serializers.PersonSerializer
@@ -126,6 +134,10 @@ class PersonViewSet(ReadOnlyModelViewSet):
     filter_class = filters.PersonFilter
     permission_classes = (
         AllowAny,
+    )
+    permit_list_expands = (
+        'functions',
+        'organizations',
     )
 
     def get_serializer_class(self):

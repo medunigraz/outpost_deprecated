@@ -1,3 +1,4 @@
+from rest_flex_fields import FlexFieldsModelSerializer
 from rest_framework.serializers import (
     ModelSerializer,
     PrimaryKeyRelatedField,
@@ -46,16 +47,70 @@ class FunctionSerializer(ModelSerializer):
         fields = '__all__'
 
 
-class OrganizationSerializer(ModelSerializer):
+class OrganizationSerializer(FlexFieldsModelSerializer):
+    '''
+    Expansions
+    ==========
+
+    To activate relation expansion add the desired fields as a comma separated
+    list to the `expand` query parameter like this:
+
+        ?expand=<field>,<field>,<field>,...
+
+    The following relational fields can be expanded:
+
+     * `persons`
+
+    '''
     persons = PrimaryKeyRelatedField(many=True, read_only=True)
+    expandable_fields = {
+        'persons': (
+            'outpost.campusonline.serializers.PersonSerializer',
+            {
+                'source': 'persons',
+                'many': True
+            }
+        ),
+    }
 
     class Meta:
         model = models.Organization
         fields = '__all__'
 
 
-class PersonSerializer(ModelSerializer):
+class PersonSerializer(FlexFieldsModelSerializer):
+    '''
+    Expansions
+    ==========
+
+    To activate relation expansion add the desired fields as a comma separated
+    list to the `expand` query parameter like this:
+
+        ?expand=<field>,<field>,<field>,...
+
+    The following relational fields can be expanded:
+
+     * `functions`
+     * `organizations`
+
+    '''
     room = RoomSerializer()
+    expandable_fields = {
+        'functions': (
+            'outpost.campusonline.serializers.FunctionSerializer',
+            {
+                'source': 'functions',
+                'many': True
+            }
+        ),
+        'organizations': (
+            'outpost.campusonline.serializers.OrganizationSerializer',
+            {
+                'source': 'organizations',
+                'many': True
+            }
+        ),
+    }
 
     class Meta:
         model = models.Person
@@ -66,17 +121,8 @@ class PersonSerializer(ModelSerializer):
         )
 
 
-class AuthenticatedPersonSerializer(ModelSerializer):
-    room = RoomSerializer()
+class AuthenticatedPersonSerializer(PersonSerializer):
     avatar = SerializerMethodField()
-
-    class Meta:
-        model = models.Person
-        exclude = (
-            'username',
-            'hash',
-            'avatar_private',
-        )
 
     def get_avatar(self, obj):
         request = self.context.get('request')
