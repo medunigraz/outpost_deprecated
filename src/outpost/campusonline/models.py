@@ -1,5 +1,4 @@
 from django.contrib.gis.db import models
-from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from memoize import memoize
 from ordered_model.models import OrderedModel
@@ -472,15 +471,6 @@ class Person(models.Model):
         ordering = (
             'last_name',
             'first_name',
-        )
-
-    @memoize(timeout=3600)
-    def avatar_private_url(self):
-        return reverse(
-            'campusonline:avatar-private',
-            kwargs={
-                'hash': self.hash
-            }
         )
 
     def __str__(self):

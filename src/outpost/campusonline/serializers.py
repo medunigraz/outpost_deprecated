@@ -1,3 +1,4 @@
+from django.urls import reverse
 from rest_flex_fields import FlexFieldsModelSerializer
 from rest_framework.serializers import (
     ModelSerializer,
@@ -149,8 +150,15 @@ class AuthenticatedPersonSerializer(PersonSerializer):
     avatar = SerializerMethodField()
 
     def get_avatar(self, obj):
+        if not obj.avatar_private:
+            return None
+        path = reverse(
+            'campusonline:avatar-private',
+            kwargs={
+                'hash': obj.hash
+            }
+        )
         request = self.context.get('request')
-        path = obj.avatar_private_url()
         if request:
             return request.build_absolute_uri(path)
         return path

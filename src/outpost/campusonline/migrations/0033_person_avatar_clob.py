@@ -35,11 +35,20 @@ class Migration(migrations.Migration):
             p.pers_profilbild AS avatar,
             p.raum_nr::integer AS room_id,
             ppd.content AS avatar_private,
-            encode(digest(format('%s-%s-', p.pers_nr, p.pers_benutzername)::bytea || ppd.content, 'sha1'), 'hex') AS hash
+            CASE
+                ppd.content
+            WHEN
+                NULL
+            THEN
+                NULL
+            ELSE
+                encode(digest(format('%s-%s-', p.pers_nr, p.pers_benutzername)::bytea || ppd.content, 'sha1'), 'hex')
+            END AS hash
         FROM
-            "campusonline"."personen" p,
+            "campusonline"."personen" p
+        LEFT JOIN
             "campusonline"."personen_profilbilder_daten" ppd
-        WHERE
+        ON
             p.pers_nr::integer = ppd.person_nr::integer
         WITH DATA;
         """,
