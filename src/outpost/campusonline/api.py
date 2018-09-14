@@ -66,14 +66,16 @@ class BuildingViewSet(ReadOnlyModelViewSet):
 
 @docstring_format(
     filter=filters.FunctionFilter.__doc__,
-    model=models.Function.__doc__
+    model=models.Function.__doc__,
+    serializer=serializers.FunctionSerializer.__doc__
 )
-class FunctionViewSet(ReadOnlyModelViewSet):
+class FunctionViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     '''
     List organizational functions from CAMPUSonline.
 
     {model}
     {filter}
+    {serializer}
     '''
     queryset = models.Function.objects.all()
     serializer_class = serializers.FunctionSerializer
@@ -83,6 +85,9 @@ class FunctionViewSet(ReadOnlyModelViewSet):
     filter_class = filters.FunctionFilter
     permission_classes = (
         IsAuthenticated,
+    )
+    permit_list_expands = (
+        'persons',
     )
 
 

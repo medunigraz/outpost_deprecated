@@ -41,7 +41,31 @@ class RoomSerializer(ModelSerializer):
         )
 
 
-class FunctionSerializer(ModelSerializer):
+class FunctionSerializer(FlexFieldsModelSerializer):
+    '''
+    Expansions
+    ==========
+
+    To activate relation expansion add the desired fields as a comma separated
+    list to the `expand` query parameter like this:
+
+        ?expand=<field>,<field>,<field>,...
+
+    The following relational fields can be expanded:
+
+     * `persons`
+
+    '''
+    expandable_fields = {
+        'persons': (
+            'outpost.campusonline.serializers.PersonSerializer',
+            {
+                'source': 'persons',
+                'many': True
+            }
+        ),
+    }
+
     class Meta:
         model = models.Function
         fields = '__all__'
