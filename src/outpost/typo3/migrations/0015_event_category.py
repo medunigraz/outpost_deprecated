@@ -47,7 +47,7 @@ class Migration(migrations.Migration):
             sorting AS sib_order,
             calendar_id,
             title,
-            sys_language_uid AS language_id
+            CASE WHEN sys_language_uid <=0 THEN NULL ELSE sys_language_uid END AS language_id
         FROM "typo3"."cal_category"
         WHERE
             hidden = 0 AND
