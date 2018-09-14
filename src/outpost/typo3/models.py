@@ -434,6 +434,55 @@ class NewsCategory(models.Model):
 
 
 class News(models.Model):
+    '''
+    ## Fields
+
+    ### `id` (`integer`)
+    Primary key.
+
+    ### `language` (`integer`)
+    Foreign key to [TYPO3 language](../language).
+
+    ### `datetime` (`timestamp`)
+    Date & time of creation.
+
+    ### `title` (`string`)
+    Title of news.
+
+    ### `teaser` (`string`)
+    Short summary of news description without HTML.
+
+    ### `body` (`string`)
+    Full description of news with embedded HTML.
+
+    ### `start` (`datetime`)
+    Begin of validity.
+
+    ### `end` (`datetime`)
+    End of validity.
+
+    ### `author` (`string`)
+    Full name fo author.
+
+    ### `email` (`string`)
+    Email of author.
+
+    ### `keywords` (`string`)
+    Comma separated list of keywords.
+
+    ### `tags` (`string`)
+    Comma separated list of tags.
+
+    ### `topnews` (`boolean`)
+    News are considered top news to be shown on frontpage.
+
+    ### `categories` (`[integer]`)
+    List of foreign keys to [TYPO3 categories](../category).
+
+    ### `groups` (`[object]`)
+    List of TYPO3 group objects that have been assigned to this news.
+
+    '''
     id = models.IntegerField(primary_key=True)
     page = models.IntegerField(blank=True, null=True)
     language = models.ForeignKey(

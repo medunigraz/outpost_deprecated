@@ -1,5 +1,6 @@
 from django.utils import timezone
 from drf_haystack.viewsets import HaystackViewSet
+from rest_flex_fields.views import FlexFieldsMixin
 from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
@@ -34,12 +35,16 @@ class LanguageViewSet(ReadOnlyModelViewSet):
     )
 
 
-@docstring_format(model=models.Category.__doc__)
-class CategoryViewSet(ReadOnlyModelViewSet):
+@docstring_format(
+    model=models.Category.__doc__,
+    serializer=serializers.CategorySerializer.__doc__
+)
+class CategoryViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     '''
     List categories from TYPO3.
 
     {model}
+    {serializer}
     '''
     queryset = models.Category.objects.all()
     serializer_class = serializers.CategorySerializer
@@ -51,14 +56,21 @@ class CategoryViewSet(ReadOnlyModelViewSet):
         'start',
         'end',
     )
+    permit_list_expands = (
+        'language',
+    )
 
 
-@docstring_format(model=models.Calendar.__doc__)
-class CalendarViewSet(ReadOnlyModelViewSet):
+@docstring_format(
+    model=models.Calendar.__doc__,
+    serializer=serializers.CalendarSerializer.__doc__
+)
+class CalendarViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     '''
     List calendars from TYPO3.
 
     {model}
+    {serializer}
     '''
     queryset = models.Calendar.objects.all()
     serializer_class = serializers.CalendarSerializer
@@ -68,14 +80,21 @@ class CalendarViewSet(ReadOnlyModelViewSet):
     filter_fields = (
         'language',
     )
+    permit_list_expands = (
+        'language',
+    )
 
 
-@docstring_format(model=models.EventCategory.__doc__)
-class EventCategoryViewSet(ReadOnlyModelViewSet):
+@docstring_format(
+    model=models.EventCategory.__doc__,
+    serializer=serializers.EventCategorySerializer.__doc__
+)
+class EventCategoryViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     '''
     List event categories from TYPO3.
 
     {model}
+    {serializer}
     '''
     queryset = models.EventCategory.objects.all()
     serializer_class = serializers.EventCategorySerializer
@@ -86,14 +105,22 @@ class EventCategoryViewSet(ReadOnlyModelViewSet):
         'calendar',
         'language',
     )
+    permit_list_expands = (
+        'calendar',
+        'language',
+    )
 
 
-@docstring_format(model=models.Event.__doc__)
-class EventViewSet(ReadOnlyModelViewSet):
+@docstring_format(
+    model=models.Event.__doc__,
+    serializer=serializers.EventSerializer.__doc__
+)
+class EventViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     '''
     List events from TYPO3.
 
     {model}
+    {serializer}
     '''
     queryset = models.Event.objects.filter(end__gte=timezone.now())
     serializer_class = serializers.EventSerializer
@@ -112,6 +139,10 @@ class EventViewSet(ReadOnlyModelViewSet):
         'calendar',
         'language',
     )
+    permit_list_expands = (
+        'calendar',
+        'language',
+    )
 
 
 class EventSearchViewSet(HaystackViewSet):
@@ -122,7 +153,17 @@ class EventSearchViewSet(HaystackViewSet):
     )
 
 
+@docstring_format(
+    model=models.News.__doc__,
+    serializer=serializers.NewsSerializer.__doc__
+)
 class NewsViewSet(ReadOnlyModelViewSet):
+    '''
+    List news from TYPO3.
+
+    {model}
+    {serializer}
+    '''
     queryset = models.News.objects.all()
     serializer_class = serializers.NewsSerializer
     permission_classes = (
@@ -132,6 +173,10 @@ class NewsViewSet(ReadOnlyModelViewSet):
         'page',
         'topnews',
         'email',
+        'language',
+    )
+    permit_list_expands = (
+        'categories',
         'language',
     )
 
