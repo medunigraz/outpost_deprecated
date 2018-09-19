@@ -1,4 +1,5 @@
 import logging
+import re
 
 from bs4 import BeautifulSoup
 from django.conf import settings
@@ -26,6 +27,12 @@ class RichTextField(Field):
 
     fileadmin = URL(settings.OUTPOST.get('typo3_fileadmin'))
 
+    regex = (
+        (
+            r'<a href="\1" target="\2" title="\3">\4</a>',
+            re.compile(r'<link\s(.+?)\s(.*?)?\s?(\".*?\")?>(.+?)<\/link>'),
+        ),
+    )
     handlers = {
         'img': (
             'images_data',
@@ -62,13 +69,14 @@ class RichTextField(Field):
 
     @memoize(timeout=3600)
     def to_representation(self, html):
+        for (replacement, pattern) in self.regex:
+            html = pattern.sub(replacement, html)
         parsed = BeautifulSoup(html, 'html.parser')
         for query, handlers in self.handlers.items():
             for elem in parsed.find_all(query):
                 for handler in handlers:
                     func = getattr(self, f'handle_{handler}', None)
                     if func:
-                        logger.debug(f'Calling {query} handler {handler}')
                         func(elem)
         return str(parsed)
 
