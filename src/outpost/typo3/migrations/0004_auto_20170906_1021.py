@@ -54,7 +54,7 @@ class Migration(migrations.Migration):
             organizer,
             location,
             html_unescape(teaser) AS teaser,
-            replace(html_unescape(description), 'img src="fileadmin', 'img src="{typo3_fileadmin}') AS description,
+            html_unescape(description) AS description,
             CASE WHEN
                 sys_language_uid > 0
             THEN
@@ -115,7 +115,7 @@ class Migration(migrations.Migration):
             END AS datetime,
             html_unescape(title) AS title,
             html_unescape(teaser) AS teaser,
-            replace(html_unescape(bodytext), 'img src="fileadmin', 'img src="{typo3_fileadmin}') AS body,
+            html_unescape(bodytext) AS body,
             CASE
                 starttime
             WHEN

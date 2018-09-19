@@ -1,6 +1,13 @@
+import logging
+
+from bs4 import BeautifulSoup
+from django.conf import settings
 from drf_haystack.serializers import HaystackSerializerMixin
+from memoize import memoize
+from purl import URL
 from rest_flex_fields import FlexFieldsModelSerializer
 from rest_framework.serializers import (
+    Field,
     ModelSerializer,
     PrimaryKeyRelatedField,
     ReadOnlyField,
@@ -11,6 +18,59 @@ from . import (
     models,
     search_indexes,
 )
+
+logger = logging.getLogger(__name__)
+
+
+class RichTextField(Field):
+
+    fileadmin = URL(settings.OUTPOST.get('typo3_fileadmin'))
+
+    handlers = {
+        'img': (
+            'images_data',
+            'images_src',
+            'clean_attrs_data',
+        ),
+        None: (
+            'clean_attrs_empty',
+        ),
+    }
+
+    def handle_images_data(self, elem):
+        if elem.attrs.get('data-htmlarea-file-table') != 'sys_file':
+            return
+        if 'data-htmlarea-file-uid' not in elem.attrs:
+            return
+        try:
+            pk = elem.attrs.get('data-htmlarea-file-uid')
+            media = models.Media.objects.get(pk=pk)
+            elem.attrs['src'] = media.url
+        except models.Media.DoesNotExist:
+            return
+
+    def handle_images_src(self, elem):
+        url = URL(elem.attrs.get('src'))
+        if url.path().startswith('fileadmin'):
+            elem.attrs['src'] = self.fileadmin.path(url.path()).as_string()
+
+    def handle_clean_attrs_data(self, elem):
+        elem.attrs = {k: v for k, v in elem.attrs.items() if not k.startswith('data-')}
+
+    def handle_clean_attrs_empty(self, elem):
+        elem.attrs = {k: v for k, v in elem.attrs.items() if v}
+
+    @memoize(timeout=3600)
+    def to_representation(self, html):
+        parsed = BeautifulSoup(html, 'html.parser')
+        for query, handlers in self.handlers.items():
+            for elem in parsed.find_all(query):
+                for handler in handlers:
+                    func = getattr(self, f'handle_{handler}', None)
+                    if func:
+                        logger.debug(f'Calling {query} handler {handler}')
+                        func(elem)
+        return str(parsed)
 
 
 class LanguageSerializer(ModelSerializer):
@@ -190,6 +250,7 @@ class EventSerializer(FlexFieldsModelSerializer):
     media = EventMediaSerializer(many=True, read_only=True)
     breadcrumb = ReadOnlyField()
     url = URLField(read_only=True, allow_null=True)
+    description = RichTextField(read_only=True)
 
     class Meta:
         model = models.Event
@@ -275,6 +336,7 @@ class NewsSerializer(FlexFieldsModelSerializer):
     breadcrumb = ReadOnlyField()
     categories = PrimaryKeyRelatedField(many=True, read_only=True)
     groups = GroupSerializer(many=True, read_only=True)
+    body = RichTextField()
 
     class Meta:
         model = models.News
