@@ -84,6 +84,13 @@ class CalendarSerializer(FlexFieldsModelSerializer):
         fields = '__all__'
 
 
+class MediaSerializer(FlexFieldsModelSerializer):
+
+    class Meta:
+        model = models.Media
+        fields = '__all__'
+
+
 class EventMediaSerializer(FlexFieldsModelSerializer):
     '''
     ## Expansions
@@ -98,6 +105,7 @@ class EventMediaSerializer(FlexFieldsModelSerializer):
      * `language`
 
     '''
+    media = MediaSerializer(read_only=True)
     expandable_fields = {
         'language': (
             'outpost.typo3.serializers.LanguageSerializer',
@@ -109,7 +117,10 @@ class EventMediaSerializer(FlexFieldsModelSerializer):
 
     class Meta:
         model = models.EventMedia
-        fields = '__all__'
+        exclude = (
+            'order',
+            'event',
+        )
 
 
 class EventCategorySerializer(FlexFieldsModelSerializer):
@@ -211,6 +222,7 @@ class NewsMediaSerializer(FlexFieldsModelSerializer):
      * `language`
 
     '''
+    media = MediaSerializer(read_only=True)
     expandable_fields = {
         'language': (
             'outpost.typo3.serializers.LanguageSerializer',
@@ -222,7 +234,10 @@ class NewsMediaSerializer(FlexFieldsModelSerializer):
 
     class Meta:
         model = models.NewsMedia
-        fields = '__all__'
+        exclude = (
+            'order',
+            'news',
+        )
 
 
 class NewsSerializer(FlexFieldsModelSerializer):

@@ -140,6 +140,32 @@ class Calendar(models.Model):
         return self.title
 
 
+class Media(models.Model):
+    id = models.IntegerField(primary_key=True)
+    url = models.URLField()
+    mimetype = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True
+    )
+    filename = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True
+    )
+    size = models.PositiveIntegerField(
+        blank=True,
+        null=True
+    )
+
+    class Meta:
+        managed = False
+        db_table = 'typo3_media'
+
+    def __str__(self):
+        return self.filename
+
+
 class EventCategory(AL_Node):
     '''
     ## Fields
@@ -350,6 +376,14 @@ class Event(models.Model):
 
 class EventMedia(models.Model):
     id = models.IntegerField(primary_key=True)
+    media = models.ForeignKey(
+        'Media',
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        related_name='+'
+    )
     event = models.ForeignKey(
         'Event',
         models.SET_NULL,
@@ -379,18 +413,7 @@ class EventMedia(models.Model):
         blank=True,
         related_name='+'
     )
-    url = models.URLField()
-    mimetype = models.CharField(
-        max_length=256,
-        blank=True,
-        null=True
-    )
-    filename = models.CharField(
-        max_length=256,
-        blank=True,
-        null=True
-    )
-    size = models.PositiveIntegerField(
+    order = models.PositiveIntegerField(
         blank=True,
         null=True
     )
@@ -398,9 +421,12 @@ class EventMedia(models.Model):
     class Meta:
         managed = False
         db_table = 'typo3_eventmedia'
+        ordering = (
+            'order',
+        )
 
     def __str__(s):
-        return f'{s.event}: {s.filename}'
+        return f'{s.event}: {s.media}'
 
 
 class NewsCategory(models.Model):
@@ -558,6 +584,14 @@ class News(models.Model):
 
 class NewsMedia(models.Model):
     id = models.IntegerField(primary_key=True)
+    media = models.ForeignKey(
+        'Media',
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        related_name='+'
+    )
     news = models.ForeignKey(
         'News',
         models.SET_NULL,
@@ -587,18 +621,7 @@ class NewsMedia(models.Model):
         blank=True,
         related_name='+'
     )
-    url = models.URLField()
-    mimetype = models.CharField(
-        max_length=256,
-        blank=True,
-        null=True
-    )
-    filename = models.CharField(
-        max_length=256,
-        blank=True,
-        null=True
-    )
-    size = models.PositiveIntegerField(
+    order = models.PositiveIntegerField(
         blank=True,
         null=True
     )
@@ -606,6 +629,9 @@ class NewsMedia(models.Model):
     class Meta:
         managed = False
         db_table = 'typo3_newsmedia'
+        ordering = (
+            'order',
+        )
 
     def __str__(s):
-        return f'{s.news}: {s.filename}'
+        return f'{s.news}: {s.media}'

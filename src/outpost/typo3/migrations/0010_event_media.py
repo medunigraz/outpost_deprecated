@@ -21,7 +21,8 @@ class Migration(migrations.Migration):
             format('{base}%s', f.identifier) AS url,
             f.mime_type AS mimetype,
             f.name AS filename,
-            f.size AS size
+            f.size AS size,
+            r.sorting AS order
         FROM
             typo3.event e,
             typo3.file_reference r,
