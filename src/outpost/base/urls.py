@@ -19,6 +19,11 @@ urlpatterns = [
             name='task'
         ),
         url(
+            r'^error/(?P<code>\d+)?$',
+            views.ErrorView.as_view(),
+            name='error'
+        ),
+        url(
             r'^$',
             views.IndexView.as_view(),
             name='index'

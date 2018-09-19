@@ -56,9 +56,8 @@ class ImageConvertView(TemplateView):
         return response
 
 
-class Template404View(TemplateView):
-    template_name = 'outpost/404.html'
+class ErrorView(TemplateView):
 
-
-class Template500View(TemplateView):
-    template_name = 'outpost/500.html'
+    def get_template_names(self):
+        code = self.kwargs.get('code', 500)
+        return [f'outpost/error/{code}.html', 'outpost/error.html']
