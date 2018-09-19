@@ -29,15 +29,27 @@ class RichTextField(Field):
 
     regex = (
         (
-            r'<a href="\g<resource>" target="\g<target>" title="\g<title>">\g<content></a>',
-            re.compile(r'<link\s(?P<resource>https?:\/\/.+?)(?:\s(?P<target>.*?)?(?:\s\"(?P<title>.*?)\")?)?>(?P<content>.+?)<\/link>'),
+            r'<a href="mailto:\g<mail>">\g<content></a>',
+            re.compile(r'<link\s(?P<mail>[\w\.\+\-]+\@(?:[\w]+\.)+[a-z]+)>(?P<content>.+?)<\/link>'),
         ),
         (
-            r'<a href="mailto:\g<mail>">\g<content></a>',
-            re.compile(r'<link\s(?P<mail>[\w\.\+\-]+\@[\w]+\.[a-z]+)>(?P<content>.+?)<\/link>'),
+            r'<a file="\g<id>" target="\g<target>" title="\g<title>">\g<content></a>',
+            re.compile(r'<link\sfile:(?P<id>\d+)(?:\s(?P<target>.*?)?(?:\s\"(?P<title>.*?)\")?)?>(?P<content>.+?)<\/link>'),
+        ),
+        (
+            r'<a href="\g<url>" target="\g<target>" title="\g<title>">\g<content></a>',
+            re.compile(r'<link\s(?P<url>https?:\/\/.+?)(?:\s(?P<target>.*?)?(?:\s\"(?P<title>.*?)\")?)?>(?P<content>.+?)<\/link>'),
+        ),
+        (
+            r'<a path="\g<path>" target="\g<target>" title="\g<title>">\g<content></a>',
+            re.compile(r'<link\s(?P<path>(?!file:|https?:).+?)(?:\s(?P<target>.*?)?(?:\s\"(?P<title>.*?)\")?)?>(?P<content>.+?)<\/link>'),
         ),
     )
     handlers = {
+        'a': (
+            'link_file',
+            'link_path',
+        ),
         'img': (
             'images_data',
             'images_src',
@@ -47,6 +59,22 @@ class RichTextField(Field):
             'clean_attrs_empty',
         ),
     }
+
+    def handle_link_file(self, elem):
+        pk = elem.attrs.pop('file', None)
+        if not pk:
+            return
+        try:
+            media = models.Media.objects.get(pk=int(pk))
+            elem.attrs['href'] = media.url
+        except models.Media.DoesNotExist:
+            return
+
+    def handle_link_path(self, elem):
+        path = elem.attrs.pop('path', None)
+        if not path:
+            return
+        elem.attrs['href'] = self.fileadmin.path(path).as_string()
 
     def handle_images_data(self, elem):
         if elem.attrs.get('data-htmlarea-file-table') != 'sys_file':
