@@ -260,6 +260,21 @@ class EpiphanProvisionTask(Task):
                 'preserve-channel-name': None,
             }
         )
+        now = timezone.now()
+        self.epiphan.session.post(
+            self.epiphan.url.path('admin/timesynccfg').as_string(),
+            data={
+                'fn': 'date',
+                'tz': 'Europe/Vienna',
+                'rdate': 'auto',
+                'rdate_proto': 'NTP',
+                'server': self.epiphan.ntp,
+                'ptp_domain': '_DFLT',
+                'rdate_secs': '900',
+                'date': now.strftime('%Y-%m-%d'),
+                'time': now.strftime('%H:%M:%S')
+            }
+        )
         self.epiphan.session.post(
             self.epiphan.url.path('admin/sshkeys.cgi').as_string(),
             files={
