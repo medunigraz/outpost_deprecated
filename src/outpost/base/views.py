@@ -1,4 +1,10 @@
+import io
+import os
+import subprocess
+from tempfile import mkstemp
+
 from celery.result import AsyncResult
+from django.conf import settings
 from django.http import (
     HttpResponse,
     JsonResponse,
@@ -10,6 +16,7 @@ from django.views.generic import (
     TemplateView,
     View,
 )
+from PIL import Image as PILImage
 from wand.image import Image
 
 from . import models
@@ -49,7 +56,48 @@ class ImageConvertView(TemplateView):
         if not format:
             format = 'PDF'
         response = HttpResponse()
-        with Image(file=request) as img:
+        filein = io.BytesIO(request.body)
+        img = PILImage.open(filein)
+        # Ugly kludge because OpenText fucks up TIFF/JPEG inlines.
+        if img.format == 'TIFF':
+            nconvert = settings.OUTPOST.get('nconvert')
+            if os.path.isfile(nconvert) and os.access(nconvert, os.X_OK):
+                inp_fd, inp = mkstemp()
+                outp_fd, outp = mkstemp()
+                # We do not need the filehandle for the resulting new TIFF file at
+                # this point
+                os.close(outp_fd)
+                filein.seek(0)
+                os.write(inp_fd, request.read())
+                os.close(inp_fd)
+                args = [
+                    nconvert,
+                    '-quiet',
+                    '-multi',
+                    '-o',
+                    outp,
+                    '-out',
+                    'tiff',
+                    '-in',
+                    'tiff',
+                    '-c',
+                    '8',
+                    '-no_auto_ext',
+                    '-overwrite',
+                    inp
+                ]
+                proc = subprocess.Popen(
+                    args,
+                    stdout=subprocess.DEVNULL
+                )
+                proc.wait()
+                with open(outp, 'rb') as outp_fh:
+                    filein = io.BytesIO(outp_fh.read())
+                os.remove(inp)
+                os.remove(outp)
+
+        filein.seek(0)
+        with Image(file=filein) as img:
             img.format = format.upper()
             img.save(response)
             response['Content-Type'] = img.mimetype

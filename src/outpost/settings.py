@@ -335,6 +335,7 @@ OUTPOST = {
     'epiphan_provisioning': False,
     'typo3_api': 'https://localhost/api/',
     'typo3_fileadmin': 'https://localhost/fileadmin',
+    'nconvert': '/usr/local/bin/nconvert',
 }
 
 LOGGING = {
