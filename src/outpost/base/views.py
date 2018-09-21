@@ -1,3 +1,4 @@
+import hashlib
 import io
 import os
 import subprocess
@@ -5,6 +6,7 @@ from tempfile import mkstemp
 
 from celery.result import AsyncResult
 from django.conf import settings
+from django.core.cache import cache
 from django.http import (
     HttpResponse,
     JsonResponse,
@@ -55,6 +57,12 @@ class ImageConvertView(TemplateView):
     def post(self, request, format):
         if not format:
             format = 'PDF'
+        digest = hashlib.sha1()
+        digest.update(request.body)
+        ckey = f'base-image-convert-{digest.hexdigest()}-{format}'
+        response = cache.get(ckey, None)
+        if response:
+            return response
         response = HttpResponse()
         filein = io.BytesIO(request.body)
         img = PILImage.open(filein)
@@ -101,6 +109,7 @@ class ImageConvertView(TemplateView):
             img.format = format.upper()
             img.save(response)
             response['Content-Type'] = img.mimetype
+        cache.set(ckey, response, 86400)
         return response
 
 
