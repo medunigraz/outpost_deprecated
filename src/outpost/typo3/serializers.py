@@ -45,7 +45,7 @@ class RichTextField(Field):
             re.compile(r'<link\s(?P<path>(?!file:|https?:).+?)(?:\s(?P<target>.*?)?(?:\s\"(?P<title>.*?)\")?)?>(?P<content>.+?)<\/link>'),
         ),
     )
-    handlers = {
+    parser = {
         'a': (
             'link_file',
             'link_path',
@@ -59,6 +59,14 @@ class RichTextField(Field):
             'clean_attrs_empty',
         ),
     }
+    functions = (
+        'paragraphs',
+    )
+
+    def function_paragraphs(self, html):
+        parts = re.split(r'\r?\n', html)
+        body = '</p><p>'.join(parts[1:])
+        return f'{parts[0]}<p>{body}</p>'
 
     def handle_link_file(self, elem):
         pk = elem.attrs.pop('file', None)
@@ -100,11 +108,16 @@ class RichTextField(Field):
         elem.attrs = {k: v for k, v in elem.attrs.items() if v}
 
     @memoize(timeout=3600)
-    def to_representation(self, html):
+    def to_representation(self, body):
+        html = body
+        for name in self.functions:
+            func = getattr(self, f'function_{name}', None)
+            if func:
+                html = func(html)
         for (replacement, pattern) in self.regex:
             html = pattern.sub(replacement, html)
         parsed = BeautifulSoup(html, 'html.parser')
-        for query, handlers in self.handlers.items():
+        for query, handlers in self.parser.items():
             for elem in parsed.find_all(query):
                 for handler in handlers:
                     func = getattr(self, f'handle_{handler}', None)
