@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class UsernameSyncTask(PeriodicTask):
-    run_every = timedelta(hours=1)
+    run_every = timedelta(minutes=5)
 
     def run(self, **kwargs):
         try:
