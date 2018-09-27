@@ -417,12 +417,14 @@ class EventMedia(models.Model):
         blank=True,
         null=True
     )
+    preview = models.BooleanField()
 
     class Meta:
         managed = False
         db_table = 'typo3_eventmedia'
         ordering = (
-            'order',
+            '-preview',
+            '-order',
         )
 
     def __str__(s):
@@ -625,12 +627,14 @@ class NewsMedia(models.Model):
         blank=True,
         null=True
     )
+    preview = models.BooleanField()
 
     class Meta:
         managed = False
         db_table = 'typo3_newsmedia'
         ordering = (
-            'order',
+            '-preview',
+            '-order',
         )
 
     def __str__(s):

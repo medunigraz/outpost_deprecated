@@ -31,7 +31,8 @@ class Migration(migrations.Migration):
             CASE trim(both ' ' from r.description) WHEN '' THEN NULL ELSE trim(both ' ' from r.description) END AS description,
             CASE trim(both ' ' from r.alternative) WHEN '' THEN NULL ELSE trim(both ' ' from r.alternative) END AS alternative,
             CASE WHEN r.sys_language_uid <= 0 THEN NULL ELSE r.sys_language_uid END AS language_id,
-            r.sorting AS order
+            r.sorting AS order,
+            r.showinpreview::boolean AS preview
         FROM
             typo3.news n,
             typo3.file_reference r
@@ -57,7 +58,8 @@ class Migration(migrations.Migration):
             CASE trim(both ' ' from r.description) WHEN '' THEN NULL ELSE trim(both ' ' from r.description) END AS description,
             CASE trim(both ' ' from r.alternative) WHEN '' THEN NULL ELSE trim(both ' ' from r.alternative) END AS alternative,
             CASE WHEN r.sys_language_uid <= 0 THEN NULL ELSE r.sys_language_uid END AS language_id,
-            r.sorting AS order
+            r.sorting AS order,
+            r.showinpreview::boolean AS preview
         FROM
             typo3.event e,
             typo3.file_reference r
