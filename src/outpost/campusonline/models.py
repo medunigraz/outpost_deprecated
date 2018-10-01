@@ -370,6 +370,9 @@ class Person(models.Model):
     ### `title` (`string`)
     Titles bestowed onto the person.
 
+    ### `email` (`string`) <i class="glyphicon glyphicon-lock"></i>
+    Email address (*only visible when authenticated*).
+
     ### `room` (`integer`)
     Foreign key to [CAMPUSonline room](../room) where this person has their primary workplace.
 
@@ -418,6 +421,7 @@ class Person(models.Model):
         blank=True,
         null=True
     )
+    email = models.EmailField()
     room = models.ForeignKey(
         'Room',
         models.SET_NULL,

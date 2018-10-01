@@ -57,15 +57,24 @@ class FunctionSerializer(FlexFieldsModelSerializer):
      * `persons`
 
     '''
-    expandable_fields = {
-        'persons': (
-            'outpost.campusonline.serializers.PersonSerializer',
-            {
-                'source': 'persons',
-                'many': True
-            }
-        ),
-    }
+
+    @property
+    def expandable_fields(self):
+        serializer = 'PersonSerializer'
+        request = getattr(self.context, 'request', None)
+        if request:
+            if request.user:
+                if request.user.is_authenticated():
+                    serializer = 'AuthenticatedPersonSerializer'
+        return {
+            'persons': (
+                f'outpost.campusonline.serializers.{serializer}',
+                {
+                    'source': 'persons',
+                    'many': True
+                }
+            ),
+        }
 
     class Meta:
         model = models.Function
@@ -88,15 +97,24 @@ class OrganizationSerializer(FlexFieldsModelSerializer):
 
     '''
     persons = PrimaryKeyRelatedField(many=True, read_only=True)
-    expandable_fields = {
-        'persons': (
-            'outpost.campusonline.serializers.PersonSerializer',
-            {
-                'source': 'persons',
-                'many': True
-            }
-        ),
-    }
+
+    @property
+    def expandable_fields(self):
+        serializer = 'PersonSerializer'
+        request = getattr(self.context, 'request', None)
+        if request:
+            if request.user:
+                if request.user.is_authenticated():
+                    serializer = 'AuthenticatedPersonSerializer'
+        return {
+            'persons': (
+                f'outpost.campusonline.serializers.{serializer}',
+                {
+                    'source': 'persons',
+                    'many': True
+                }
+            ),
+        }
 
     class Meta:
         model = models.Organization
@@ -120,6 +138,23 @@ class PersonSerializer(FlexFieldsModelSerializer):
 
     '''
     room = RoomSerializer()
+
+    class Meta:
+        model = models.Person
+        exclude = (
+            'username',
+            'avatar_private',
+            'hash',
+            'email',
+            'functions',
+            'organizations',
+            'sex',
+        )
+
+
+class AuthenticatedPersonSerializer(PersonSerializer):
+    avatar = SerializerMethodField()
+
     expandable_fields = {
         'functions': (
             'outpost.campusonline.serializers.FunctionSerializer',
@@ -137,17 +172,12 @@ class PersonSerializer(FlexFieldsModelSerializer):
         ),
     }
 
-    class Meta:
-        model = models.Person
+    class Meta(PersonSerializer.Meta):
         exclude = (
             'username',
             'avatar_private',
             'hash',
         )
-
-
-class AuthenticatedPersonSerializer(PersonSerializer):
-    avatar = SerializerMethodField()
 
     def get_avatar(self, obj):
         if not obj.avatar_private:
@@ -180,6 +210,7 @@ class PersonNameSerializer(ModelSerializer):
         model = models.Person
         exclude = (
             'username',
+            'email',
             'room',
         )
 
@@ -199,15 +230,23 @@ class DistributionListSerializer(FlexFieldsModelSerializer):
      * `persons`
 
     '''
-    expandable_fields = {
-        'persons': (
-            'outpost.campusonline.serializers.AuthenticatedPersonSerializer',
-            {
-                'source': 'persons',
-                'many': True
-            }
-        ),
-    }
+    @property
+    def expandable_fields(self):
+        serializer = 'PersonSerializer'
+        request = getattr(self.context, 'request', None)
+        if request:
+            if request.user:
+                if request.user.is_authenticated():
+                    serializer = 'AuthenticatedPersonSerializer'
+        return {
+            'persons': (
+                f'outpost.campusonline.serializers.{serializer}',
+                {
+                    'source': 'persons',
+                    'many': True
+                }
+            ),
+        }
 
     class Meta:
         model = models.DistributionList
