@@ -56,7 +56,7 @@ class RefreshMaterializedViewsTask(MaintainanceTaskMixin, PeriodicTask):
         tablename = '{}' AND
         indexdef LIKE 'CREATE UNIQUE INDEX %'
     '''
-    refresh = '''
+    refresh_default = '''
     REFRESH MATERIALIZED VIEW {};
     '''
     refresh_concurrent = '''
@@ -86,16 +86,30 @@ class RefreshMaterializedViewsTask(MaintainanceTaskMixin, PeriodicTask):
                         with connection.cursor() as indizes:
                             indizes.execute(self.indizes.format(rel))
                             (index,) = indizes.fetchone()
-                        with connection.cursor() as refresh:
-                            if index > 0:
-                                logger.debug(f'Concurrent refresh: {rel}')
-                                refresh.execute(self.refresh_concurrent.format(rel))
-                            else:
-                                refresh.execute(self.refresh.format(rel))
-
+                        self.refresh(rel, index > 0)
                     else:
                         logger.warn(f'Could not refresh materialized view: {rel}')
         connection.close()
+
+    def refresh(self, name, concurrent=False):
+        from django.db import (
+            connection,
+            IntegrityError,
+            ProgrammingError,
+            transaction
+        )
+        try:
+            with transaction.atomic():
+                with connection.cursor() as refresh:
+                    if concurrent:
+                        logger.debug(f'Concurrent refresh: {name}')
+                        refresh.execute(self.refresh_concurrent.format(name))
+                    else:
+                        logger.debug(f'Refresh: {name}')
+                        refresh.execute(self.refresh_default.format(name))
+        except (IntegrityError, ProgrammingError) as e:
+            logger.error(e)
+
 
 
 class RefreshNetworkedDeviceTask(MaintainanceTaskMixin, PeriodicTask):
