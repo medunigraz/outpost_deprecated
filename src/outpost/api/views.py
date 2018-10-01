@@ -1,6 +1,5 @@
 from drf_haystack.filters import HaystackAutocompleteFilter
 from drf_haystack.viewsets import HaystackViewSet
-from haystack.backends import SQ
 from rest_framework.permissions import AllowAny
 from xapian_backend import NGRAM_MAX_LENGTH
 

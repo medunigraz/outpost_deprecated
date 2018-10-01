@@ -1,9 +1,13 @@
-from django.core.files.base import ContentFile
 import re
+from base64 import (
+    b64decode,
+    urlsafe_b64encode,
+)
 from pathlib import PurePosixPath
-from base64 import b64decode, urlsafe_b64encode
-import six
 from uuid import uuid4
+
+import six
+from django.core.files.base import ContentFile
 from drf_haystack.serializers import HaystackSerializer
 from rest_framework.serializers import (
     FileField,
@@ -63,7 +67,6 @@ class Base64FileField(FileField):
             header = self.parser.match(raw)
             # Check if the base64 string is in the "data:" format
             if header:
-                mimetype = header.groupdict().get('mimetype')
                 try:
                     decoded_file = b64decode(self.parser.sub('', raw))
                 except TypeError:

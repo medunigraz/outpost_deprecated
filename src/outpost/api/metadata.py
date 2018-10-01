@@ -1,5 +1,5 @@
-from rest_framework.metadata import SimpleMetadata
 from django.contrib.auth.models import Permission
+from rest_framework.metadata import SimpleMetadata
 
 
 class ExtendedMetadata(SimpleMetadata):
@@ -12,10 +12,7 @@ class ExtendedMetadata(SimpleMetadata):
                 content_type__app_label=model._meta.app_label,
                 content_type__model=model._meta.model_name
             )
-            #import pudb; pu.db
             metadata.update({
                 'permissions': {p.codename: p.name for p in permissions}
             })
-
-
         return metadata
