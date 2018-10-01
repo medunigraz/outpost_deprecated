@@ -31,3 +31,12 @@ class UpdatedAtKeyBit(KeyBitBase):
         value = datetime.datetime.utcnow()
         logger.debug('Setting value for UpdatedAt key {0}: {1}'.format(key, value))
         cache.set(key, value=value)
+
+
+class AuthenticatedKeyBit(KeyBitBase):
+
+    def get_data(self, request, **kwargs):
+        user = getattr(request, 'user', None)
+        if user and user.is_authenticated:
+            return 'authenticated'
+        return 'anonymous'
