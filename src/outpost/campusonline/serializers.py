@@ -204,17 +204,6 @@ class PersonOrganizationFunctionSerializer(ModelSerializer):
         fields = '__all__'
 
 
-class PersonNameSerializer(ModelSerializer):
-
-    class Meta:
-        model = models.Person
-        exclude = (
-            'username',
-            'email',
-            'room',
-        )
-
-
 class DistributionListSerializer(FlexFieldsModelSerializer):
     '''
     Expansions
