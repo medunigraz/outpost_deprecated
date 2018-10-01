@@ -44,8 +44,7 @@ class RoomSerializer(ModelSerializer):
 
 class FunctionSerializer(FlexFieldsModelSerializer):
     '''
-    Expansions
-    ==========
+    ## Expansions
 
     To activate relation expansion add the desired fields as a comma separated
     list to the `expand` query parameter like this:
@@ -83,8 +82,7 @@ class FunctionSerializer(FlexFieldsModelSerializer):
 
 class OrganizationSerializer(FlexFieldsModelSerializer):
     '''
-    Expansions
-    ==========
+    ## Expansions
 
     To activate relation expansion add the desired fields as a comma separated
     list to the `expand` query parameter like this:
@@ -123,8 +121,7 @@ class OrganizationSerializer(FlexFieldsModelSerializer):
 
 class PersonSerializer(FlexFieldsModelSerializer):
     '''
-    Expansions
-    ==========
+    ## Expansions
 
     To activate relation expansion add the desired fields as a comma separated
     list to the `expand` query parameter like this:
@@ -206,8 +203,7 @@ class PersonOrganizationFunctionSerializer(ModelSerializer):
 
 class DistributionListSerializer(FlexFieldsModelSerializer):
     '''
-    Expansions
-    ==========
+    ## Expansions
 
     To activate relation expansion add the desired fields as a comma separated
     list to the `expand` query parameter like this:
