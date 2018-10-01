@@ -6,12 +6,14 @@ from rest_framework.permissions import (
     IsAuthenticated,
 )
 from rest_framework.viewsets import ReadOnlyModelViewSet
+from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
 from outpost.api.permissions import ExtendedDjangoModelPermissions
 from outpost.base.decorators import docstring_format
 
 from . import (
     filters,
+    key_constructors,
     models,
     serializers,
 )
@@ -24,9 +26,11 @@ from . import (
 # )
 
 
-class RoomCategoryViewSet(ReadOnlyModelViewSet):
+class RoomCategoryViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
     queryset = models.RoomCategory.objects.all()
     serializer_class = serializers.RoomCategorySerializer
+    object_cache_key_func = key_constructors.PersonKeyConstructor()
+    list_cache_key_func = key_constructors.PersonKeyConstructor()
     permission_classes = (
         AllowAny,
     )
@@ -169,7 +173,7 @@ class PersonOrganizationFunctionViewSet(ReadOnlyModelViewSet):
     filter=filters.DistributionListFilter.__doc__,
     serializer=serializers.DistributionListSerializer.__doc__
 )
-class DistributionListViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
+class DistributionListViewSet(CacheResponseMixin, FlexFieldsMixin, ReadOnlyModelViewSet):
     '''
     List distribution lists from CAMPUSonline.
 
@@ -178,6 +182,8 @@ class DistributionListViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     '''
     queryset = models.DistributionList.objects.all()
     serializer_class = serializers.DistributionListSerializer
+    object_cache_key_func = key_constructors.DistributionListKeyConstructor()
+    list_cache_key_func = key_constructors.DistributionListKeyConstructor()
     filter_backends = (
         DjangoFilterBackend,
     )
