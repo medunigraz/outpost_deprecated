@@ -458,7 +458,7 @@ class NewsCategory(models.Model):
         db_table = 'typo3_newscategory'
 
     def __str__(s):
-        return f'{s.news.title}: {f.category.title}'
+        return f'{s.news.title}: {s.category.title}'
 
 
 class News(models.Model):

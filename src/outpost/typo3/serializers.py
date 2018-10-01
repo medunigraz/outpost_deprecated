@@ -15,10 +15,7 @@ from rest_framework.serializers import (
     URLField,
 )
 
-from . import (
-    models,
-    search_indexes,
-)
+from . import models
 
 logger = logging.getLogger(__name__)
 
