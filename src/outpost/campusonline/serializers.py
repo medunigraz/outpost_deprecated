@@ -60,7 +60,7 @@ class FunctionSerializer(FlexFieldsModelSerializer):
     @property
     def expandable_fields(self):
         serializer = 'PersonSerializer'
-        request = getattr(self.context, 'request', None)
+        request = self.context.get('request', None)
         if request:
             if request.user:
                 if request.user.is_authenticated():
@@ -99,7 +99,7 @@ class OrganizationSerializer(FlexFieldsModelSerializer):
     @property
     def expandable_fields(self):
         serializer = 'PersonSerializer'
-        request = getattr(self.context, 'request', None)
+        request = self.context.get('request', None)
         if request:
             if request.user:
                 if request.user.is_authenticated():
@@ -218,7 +218,7 @@ class DistributionListSerializer(FlexFieldsModelSerializer):
     @property
     def expandable_fields(self):
         serializer = 'PersonSerializer'
-        request = getattr(self.context, 'request', None)
+        request = self.context.get('request', None)
         if request:
             if request.user:
                 if request.user.is_authenticated():
