@@ -1,12 +1,8 @@
 import asyncio
 import logging
-import os
 import re
 import sys
-from datetime import (
-    datetime,
-    timedelta,
-)
+from datetime import datetime
 from functools import (
     partial,
     wraps,
@@ -14,14 +10,10 @@ from functools import (
 from pathlib import Path
 
 import asyncssh
-import pytz
 import sdnotify
 from celery import chain
 from django.core.files.base import ContentFile
-from django.core.management.base import (
-    BaseCommand,
-    CommandError,
-)
+from django.core.management.base import BaseCommand
 from django.utils import timezone
 
 from ...models import (
