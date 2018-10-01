@@ -2,8 +2,6 @@ import logging
 
 from django.conf import settings
 from django.contrib.gis.db import models
-from django.contrib.gis.geos import Point
-from netfields import MACAddressField
 
 logger = logging.getLogger(__name__)
 

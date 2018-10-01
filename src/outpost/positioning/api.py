@@ -1,4 +1,3 @@
-import json
 import re
 
 from django.contrib.gis.geos import GEOSGeometry
@@ -21,14 +20,12 @@ from . import (
     serializers,
 )
 
-
 # from rest_framework_extensions.mixins import (
 #     CacheResponseAndETAGMixin,
 # )
 # from rest_framework_extensions.cache.mixins import (
 #     CacheResponseMixin,
 # )
-
 
 
 class BeaconViewSet(GeoModelViewSet):
