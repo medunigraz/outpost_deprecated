@@ -18,10 +18,10 @@ class UpdatedAtKeyBit(KeyBitBase):
         model = kwargs['view_instance'].get_queryset().model
         key = self.key.format(m=model._meta)
         value = cache.get(key, None)
-        logger.debug('Current value for UpdatedAt key {0}: {1}'.format(key, value))
+        logger.debug(f'Current value for UpdatedAt key {key}: {value}')
         if not value:
             value = datetime.datetime.utcnow()
-            logger.debug('Setting value for UpdatedAt key {0}: {1}'.format(key, value))
+            logger.debug(f'Setting value for UpdatedAt key {key}: {value}')
             cache.set(key, value=value)
         return force_text(value)
 
@@ -29,7 +29,7 @@ class UpdatedAtKeyBit(KeyBitBase):
     def update(cls, instance):
         key = cls.key.format(m=instance._meta)
         value = datetime.datetime.utcnow()
-        logger.debug('Setting value for UpdatedAt key {0}: {1}'.format(key, value))
+        logger.debug(f'Setting value for UpdatedAt key {key}: {value}')
         cache.set(key, value=value)
 
 
