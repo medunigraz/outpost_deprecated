@@ -10,6 +10,7 @@ from django.utils.encoding import force_text
 # Taken from:
 # https://stackoverflow.com/questions/31426010/better-arrayfield-admin-widget
 
+
 class ChoiceArrayField(ArrayField):
     """
     A field that allows us to store an array of choices.

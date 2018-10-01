@@ -30,8 +30,8 @@ class EntryThrottleValidator(object):
             self.search: attrs.get(self.search),
         }
         try:
-            l = self.queryset.filter(**kwargs).latest(self.field)
-            if getattr(l, self.field) + self.delta > timezone.now():
+            latest = self.queryset.filter(**kwargs).latest(self.field)
+            if getattr(latest, self.field) + self.delta > timezone.now():
                 raise ValidationError(_('Requests coming in too fast'))
         except self.queryset.model.DoesNotExist:
             return

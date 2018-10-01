@@ -111,7 +111,6 @@ class RefreshMaterializedViewsTask(MaintainanceTaskMixin, PeriodicTask):
             logger.error(e)
 
 
-
 class RefreshNetworkedDeviceTask(MaintainanceTaskMixin, PeriodicTask):
     run_every = timedelta(minutes=2)
 
