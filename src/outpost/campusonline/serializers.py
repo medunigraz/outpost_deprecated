@@ -133,8 +133,8 @@ class PersonSerializer(FlexFieldsModelSerializer):
 
     The following relational fields can be expanded:
 
-     * `functions`
-     * `organizations`
+     * `functions` <i class="glyphicon glyphicon-lock"></i>
+     * `organizations` <i class="glyphicon glyphicon-lock"></i>
 
     '''
     room = RoomSerializer()

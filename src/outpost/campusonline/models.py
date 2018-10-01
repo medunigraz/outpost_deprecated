@@ -391,10 +391,10 @@ class Person(models.Model):
     ### `avatar` (`string`)
     URL to user avatar picture. May point to an empty image.
 
-    ### `functions` (`[integer]`)
+    ### `functions` (`[integer]`) <i class="glyphicon glyphicon-lock"></i>
     List of foreign keys to [CAMPUSonline functions](../function) this person carries.
 
-    ### `organizations` (`[integer]`)
+    ### `organizations` (`[integer]`) <i class="glyphicon glyphicon-lock"></i>
     List of foreign keys to [CAMPUSonline organizations](../organization) this person belongs to.
     '''
 
