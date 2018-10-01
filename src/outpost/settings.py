@@ -6,7 +6,6 @@ import json
 import os
 
 import ldap
-import raven
 from corsheaders.defaults import default_methods
 from django.utils.translation import ugettext_lazy as _
 from django_auth_ldap.config import (
@@ -75,7 +74,6 @@ INSTALLED_APPS = [
     'rules.apps.AutodiscoverRulesConfig',
     'overextends',
     'netfields',
-    'raven.contrib.django.raven_compat',
     'imagekit',
     'taggit',
     'django_uwsgi',
@@ -87,8 +85,6 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django_prometheus.middleware.PrometheusBeforeMiddleware',
-    'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
-    'raven.contrib.django.raven_compat.middleware.Sentry404CatchMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -160,6 +156,7 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 SESSION_CACHE_ALIAS = 'default'
 SESSION_COOKIE_SECURE = True
 SESSION_COOKIE_HTTPONLY = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 CSRF_COOKIE_SECURE = True
 
