@@ -165,12 +165,16 @@ class PersonOrganizationFunctionViewSet(ReadOnlyModelViewSet):
     )
 
 
-@docstring_format(filter=filters.DistributionListFilter.__doc__)
-class DistributionListViewSet(ReadOnlyModelViewSet):
+@docstring_format(
+    filter=filters.DistributionListFilter.__doc__,
+    serializer=serializers.DistributionListSerializer.__doc__
+)
+class DistributionListViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     '''
     List distribution lists from CAMPUSonline.
 
     {filter}
+    {serializer}
     '''
     queryset = models.DistributionList.objects.all()
     serializer_class = serializers.DistributionListSerializer
@@ -180,6 +184,9 @@ class DistributionListViewSet(ReadOnlyModelViewSet):
     filter_class = filters.DistributionListFilter
     permission_classes = (
         IsAuthenticated,
+    )
+    permit_list_expands = (
+        'persons',
     )
 
 

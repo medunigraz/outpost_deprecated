@@ -184,7 +184,30 @@ class PersonNameSerializer(ModelSerializer):
         )
 
 
-class DistributionListSerializer(ModelSerializer):
+class DistributionListSerializer(FlexFieldsModelSerializer):
+    '''
+    Expansions
+    ==========
+
+    To activate relation expansion add the desired fields as a comma separated
+    list to the `expand` query parameter like this:
+
+        ?expand=<field>,<field>,<field>,...
+
+    The following relational fields can be expanded:
+
+     * `persons`
+
+    '''
+    expandable_fields = {
+        'persons': (
+            'outpost.campusonline.serializers.AuthenticatedPersonSerializer',
+            {
+                'source': 'persons',
+                'many': True
+            }
+        ),
+    }
 
     class Meta:
         model = models.DistributionList
