@@ -1,4 +1,3 @@
-from django.urls import reverse_lazy as reverse
 from drf_haystack.serializers import HaystackSerializer
 from rest_framework.serializers import (
     ModelSerializer,

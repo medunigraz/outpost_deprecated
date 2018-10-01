@@ -1,17 +1,11 @@
-import re
-
-from braces.views import CsrfExemptMixin
+from django_filters.rest_framework import DjangoFilterBackend
 from drf_haystack.viewsets import HaystackViewSet
 from oauth2_provider.contrib.rest_framework import IsAuthenticatedOrTokenHasScope
-from rest_framework import viewsets
-from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import (
     AllowAny,
     DjangoModelPermissions,
     DjangoModelPermissionsOrAnonReadOnly,
-    IsAuthenticatedOrReadOnly,
 )
-from rest_framework.response import Response
 from rest_framework.viewsets import (
     ModelViewSet,
     ReadOnlyModelViewSet,
@@ -32,9 +26,9 @@ from outpost.base.mixins import (
     MediatypeNegotiationMixin,
 )
 
+from . import filters
 from . import key_constructors as keys
 from . import (
-    filters,
     models,
     serializers,
 )
