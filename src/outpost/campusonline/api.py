@@ -1,18 +1,13 @@
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
-from drf_haystack.viewsets import HaystackViewSet
 from rest_flex_fields.views import FlexFieldsMixin
-from rest_framework.filters import DjangoObjectPermissionsFilter
 from rest_framework.permissions import (
     AllowAny,
     IsAuthenticated,
 )
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
-from outpost.api.permissions import (
-    ExtendedDjangoModelPermissions,
-    ExtendedDjangoObjectPermissions,
-)
+from outpost.api.permissions import ExtendedDjangoModelPermissions
 from outpost.base.decorators import docstring_format
 
 from . import (
