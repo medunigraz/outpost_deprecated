@@ -521,7 +521,7 @@ class PersonOrganizationFunction(models.Model):
         return '{s.person}, {s.organization}: {s.function}'.format(s=self)
 
 
-class DistributionList(models.Model):
+class AbstractDistributionList(models.Model):
     id = models.CharField(
         primary_key=True,
         max_length=128
@@ -531,6 +531,26 @@ class DistributionList(models.Model):
         blank=True,
         null=True
     )
+
+    class Meta:
+        ordering = (
+            'name',
+        )
+        abstract = True
+
+    def __str__(self):
+        return self.name
+
+
+class DistributionListInternal(AbstractDistributionList):
+    persons = models.ManyToManyField(
+        'Person',
+        db_constraint=False,
+        related_name='distribution_list_internal'
+    )
+
+
+class DistributionList(AbstractDistributionList):
     persons = models.ManyToManyField(
         'Person',
         db_table='campusonline_distributionlist_person',
@@ -538,15 +558,9 @@ class DistributionList(models.Model):
         related_name='+'
     )
 
-    class Meta:
+    class Meta(AbstractDistributionList.Meta):
         managed = False
         db_table = 'campusonline_distributionlist'
-        ordering = (
-            'name',
-        )
-
-    def __str__(self):
-        return self.name
 
 
 class Student(models.Model):
