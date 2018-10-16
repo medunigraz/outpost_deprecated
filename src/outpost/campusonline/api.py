@@ -64,8 +64,8 @@ class BuildingViewSet(ReadOnlyModelViewSet):
 
 
 @docstring_format(
-    filter=filters.FunctionFilter.__doc__,
     model=models.Function.__doc__,
+    filter=filters.FunctionFilter.__doc__,
     serializer=serializers.FunctionSerializer.__doc__
 )
 class FunctionViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
@@ -91,8 +91,8 @@ class FunctionViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
 
 
 @docstring_format(
-    filter=filters.OrganizationFilter.__doc__,
     model=models.Organization.__doc__,
+    filter=filters.OrganizationFilter.__doc__,
     serializer=serializers.OrganizationSerializer.__doc__
 )
 class OrganizationViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
@@ -118,8 +118,8 @@ class OrganizationViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
 
 
 @docstring_format(
-    filter=filters.PersonFilter.__doc__,
     model=models.Person.__doc__,
+    filter=filters.PersonFilter.__doc__,
     serializer=serializers.PersonSerializer.__doc__
 )
 class PersonViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
@@ -222,8 +222,8 @@ class CourseGroupTermViewSet(ReadOnlyModelViewSet):
 
 
 @docstring_format(
-    filter=filters.BulletinFilter.__doc__,
-    model=models.Bulletin.__doc__
+    model=models.Bulletin.__doc__,
+    filter=filters.BulletinFilter.__doc__
 )
 class BulletinViewSet(ReadOnlyModelViewSet):
     '''
