@@ -4,19 +4,15 @@ import os
 import re
 import shutil
 import subprocess
-import time
 import uuid
 from base64 import (
     b64encode,
     urlsafe_b64encode,
 )
 from datetime import timedelta
-from decimal import Decimal
 from functools import partial
 from hashlib import sha256
-from io import StringIO
 from pathlib import Path
-from statistics import mean
 from tempfile import (
     NamedTemporaryFile,
     TemporaryDirectory,
@@ -35,18 +31,11 @@ from django.contrib.postgres.fields import (
 from django.contrib.staticfiles import finders
 from django.core.cache import cache
 from django.core.files import File
-from django.core.files.base import ContentFile
-from django.core.files.images import ImageFile
 from django.core.files.storage import FileSystemStorage
 from django.core.validators import RegexValidator
 from django.db import models
-from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django_extensions.db.models import TimeStampedModel
-from django_fsm import (
-    FSMField,
-    transition,
-)
 from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFill
 from lxml import etree
@@ -57,12 +46,6 @@ from memoize import (
 from PIL import Image
 from polymorphic.models import PolymorphicModel
 from purl import URL
-from requests import (
-    Request,
-    Session,
-    codes,
-)
-from requests_toolbelt import MultipartEncoder
 from taggit.managers import TaggableManager
 
 from ..base.decorators import signal_connect
@@ -247,7 +230,7 @@ class EpiphanChannel(models.Model):
         validators=[
             RegexValidator(
                 regex=re.compile(
-                    '^\d+(?:[kmgtpe]i?b?)?$',
+                    r'^\d+(?:[kmgtpe]i?b?)?$',
                     re.IGNORECASE
                 ),
                 message=_('Size limit must be an integer followed by a SI unit'),
@@ -711,18 +694,18 @@ class Token(models.Model):
             self.value = v
 
 
-#class Series(models.Model):
-#    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-#    title = models.CharField(max_length=256)
-#    subject = models.CharField(max_length=256, blank=True)
-#    description = models.TextField(blank=True)
-#    license = models.ForeignKey('base.License')
-#    rights = models.TextField(blank=True)
-#    organizers = models.TextField(blank=True)
-#    contributors = models.TextField(blank=True)
-#    publishers = models.TextField(blank=True)
+# class Series(models.Model):
+#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+#     title = models.CharField(max_length=256)
+#     subject = models.CharField(max_length=256, blank=True)
+#     description = models.TextField(blank=True)
+#     license = models.ForeignKey('base.License')
+#     rights = models.TextField(blank=True)
+#     organizers = models.TextField(blank=True)
+#     contributors = models.TextField(blank=True)
+#     publishers = models.TextField(blank=True)
 #
-#    tags = TaggableManager()
+#     tags = TaggableManager()
 
 
 class Event(models.Model):

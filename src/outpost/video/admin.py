@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.utils.html import linebreaks
 
 from outpost.base.admin import NotificationInlineAdmin
 
@@ -86,20 +85,20 @@ class EpiphanAdmin(admin.ModelAdmin):
     private_key.allow_tags = True
 
 
-#class EventInlineAdmin(admin.TabularInline):
-#    model = models.Event
+# class EventInlineAdmin(admin.TabularInline):
+#     model = models.Event
 #
 #
-#@admin.register(models.Series)
-#class SeriesAdmin(admin.ModelAdmin):
-#    inlines = (
-#            EventInlineAdmin,
-#    )
+# @admin.register(models.Series)
+# class SeriesAdmin(admin.ModelAdmin):
+#     inlines = (
+#             EventInlineAdmin,
+#     )
 #
 #
-#@admin.register(models.Event)
-#class EventAdmin(admin.ModelAdmin):
-#    pass
+# @admin.register(models.Event)
+# class EventAdmin(admin.ModelAdmin):
+#     pass
 
 
 @admin.register(models.Recording)
@@ -119,5 +118,5 @@ class RecordingAdmin(admin.ModelAdmin):
 
 
 @admin.register(models.PanasonicCamera)
-class RecordingAdmin(admin.ModelAdmin):
+class PanasonicCameraAdmin(admin.ModelAdmin):
     pass

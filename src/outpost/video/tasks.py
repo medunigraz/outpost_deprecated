@@ -1,22 +1,11 @@
-import json
 import logging
-import os
 import re
 import shutil
 import socket
-import subprocess
-import time
-from concurrent import futures
-from datetime import (
-    date,
-    timedelta,
-)
+from datetime import timedelta
 from decimal import Decimal
 from difflib import SequenceMatcher
-from functools import reduce
 from itertools import chain
-from math import gcd
-from operator import truediv
 from pathlib import Path
 from tempfile import mkdtemp
 from urllib.parse import urljoin
@@ -31,15 +20,11 @@ from celery.task import (
 )
 from django.conf import settings
 from django.contrib.sites.models import Site
-from django.contrib.staticfiles import finders
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from enchant import Dict
-from guardian.shortcuts import get_users_with_perms
-from lxml import etree
-from lxml.builder import ElementMaker
 from pint import UnitRegistry
 
 from outpost.base.tasks import MaintainanceTaskMixin
@@ -55,7 +40,12 @@ from outpost.campusonline.serializers import (
     RoomSerializer,
 )
 
-from .models import (
+from .utils import (
+    FFMPEGCropHandler,
+    FFProbeProcess,
+)
+
+from .models import (  # EventAudio,; EventVideo,
     DASHAudio,
     DASHPublish,
     DASHVideo,
@@ -63,17 +53,11 @@ from .models import (
     Epiphan,
     EpiphanSource,
     Event,
-    EventAudio,
     EventMedia,
-    EventVideo,
     Export,
     PublishMediaScene,
     Recorder,
     Recording,
-)
-from .utils import (
-    FFMPEGCropHandler,
-    FFProbeProcess,
 )
 
 logger = logging.getLogger(__name__)
@@ -81,19 +65,29 @@ logger = logging.getLogger(__name__)
 ureg = UnitRegistry()
 
 # Metadata:
-# ffprobe -v quiet -print_format json -show_format -show_streams Recorder_Aug07_12-56-01.ts
+# ffprobe -v quiet -print_format json -show_format -show_streams \
+#       Recorder_Aug07_12-56-01.ts
 
 # Side-by-Side:
-# ffmpeg -i Recorder_Aug07_12-56-01.ts -filter_complex '[i:0x100][i:0x102]hstack=inputs=2[v];[i:0x101][i:0x103]amerge[a]' -map '[v]' -map '[a]' -ac 2 output.mp4'
+# ffmpeg -i Recorder_Aug07_12-56-01.ts -filter_complex \
+#       '[i:0x100][i:0x102]hstack=inputs=2[v];[i:0x101][i:0x103]amerge[a]' \
+#       -map '[v]' -map '[a]' -ac 2 output.mp4'
 
 # Split video in two:
-# ffmpeg -i output.mp4 -filter_complex '[0:v]crop=iw/2:ih:0:0[left];[0:v]crop=iw/2:ih:iw/2:0[right]' -map '[left]' left.mp4 -map '[right]' right.mp4
+# ffmpeg -i output.mp4 -filter_complex \
+#        '[0:v]crop=iw/2:ih:0:0[left];[0:v]crop=iw/2:ih:iw/2:0[right]' \
+#        -map '[left]' left.mp4 -map '[right]' right.mp4
 
 # OCR:
-# ffprobe -v quiet -print_format json -show_entries frame_tags:frame -f lavfi -i "movie=video-0x100.mp4,select='eq(pict_type,I)',hue=s=0,atadenoise,select='gt(scene,0.02)',ocr"))'
+# ffprobe -v quiet -print_format json -show_entries frame_tags:frame \
+#        -f lavfi -i "movie=video-0x100.mp4,select='eq(pict_type,I)',hue=s=0,"\
+#                    "atadenoise,select='gt(scene,0.02)',ocr"))'
 
 # Scene extraction
-# ffmpeg -i video-0x100.mp4 -filter:v "select='eq(pict_type,I)',atadenoise,select='eq(t,70)+eq(t,147)+eq(t,170)+eq(t,190)+eq(t,261)+eq(t,269)+eq(t,270)+eq(t,275)+eq(t,287)+eq(t,361)+eq(t,363)+eq(t,365)'" -vsync 0 frames/%05d.jpg'
+# ffmpeg -i video-0x100.mp4 -filter:v \
+#        "select='eq(pict_type,I)',atadenoise,select='eq(t,70)+eq(t,147)"\
+#         "+eq(t,170)+eq(t,190)+eq(t,261)+eq(t,269)+eq(t,270)+eq(t,275)"\
+#         "+eq(t,287)+eq(t,361)+eq(t,363)+eq(t,365)'" -vsync 0 frames/%05d.jpg'
 
 
 class VideoTaskMixin:
@@ -247,9 +241,9 @@ class EpiphanProvisionTask(Task):
                 'scpPort': None,
                 'scpuser': None,
                 'scppasswd': None,
-                'sftpServer': epiphan.server.hostname or socket.getfqdn(),
-                'sftpPort': epiphan.server.port,
-                'sftpuser': epiphan.pk,
+                'sftpServer': self.epiphan.server.hostname or socket.getfqdn(),
+                'sftpPort': self.epiphan.server.port,
+                'sftpuser': self.epiphan.pk,
                 'sftppasswd': None,
                 'sftptmpfile': None,
                 's3Region': None,
@@ -289,12 +283,12 @@ class EpiphanProvisionTask(Task):
         )
 
     def createRecorder(self, name):
-        response = self.epiphan.session.post(
+        self.epiphan.session.post(
             self.epiphan.url.path('api/recorders').as_string()
         )
 
     def renameRecorder(self, pk, name):
-        response = self.epiphan.session.post(
+        self.epiphan.session.post(
             self.epiphan.url.path('admin/ajax/rename_channel.cgi').as_string(),
             data={
                 'channel': pk,
@@ -304,7 +298,7 @@ class EpiphanProvisionTask(Task):
         )
 
     def setRecorderChannels(self, pk, use_all=True, channels=[]):
-        response = self.epiphan.session.post(
+        self.epiphan.session.post(
             self.epiphan.url.path(f'admin/recorder{pk}/archive').as_string(),
             data={
                 'pfd_form_id': 'recorder_channels',
@@ -315,7 +309,7 @@ class EpiphanProvisionTask(Task):
     def setRecorderSettings(self, pk, recorder):
         hours, remainder = divmod(recorder.timelimit.total_seconds(), 3600)
         minutes, seconds = map(lambda x: str(x).rjust(2, '0'), divmod(remainder, 60))
-        response = self.epiphan.session.post(
+        self.epiphan.session.post(
             self.epiphan.url.path(f'admin/recorder{pk}/archive').as_string(),
             data={
                 'afu_enabled': '',
@@ -331,8 +325,8 @@ class EpiphanProvisionTask(Task):
         )
 
     def setTime(self, pk, use_all=True, channels=[]):
-        now = datetime.now()
-        response = self.epiphan.session.post(
+        now = timezone.now()
+        self.epiphan.session.post(
             self.epiphan.url.path(f'admin/recorder{pk}/archive').as_string(),
             data={
                 'date': now.strftime('%Y-%m-%d'),
@@ -341,7 +335,7 @@ class EpiphanProvisionTask(Task):
                 'rdate': 'auto',
                 'rdate_proto': 'NTP',
                 'rdate_secs': 900,
-                'server': epiphan.ntp,
+                'server': self.epiphan.ntp,
                 'time': now.strftime('%H:%M:%S'),
                 'tz': 'Europe/Vienna'
             }
@@ -351,7 +345,7 @@ class EpiphanProvisionTask(Task):
 class EpiphanFirmwareTask(MaintainanceTaskMixin, PeriodicTask):
     run_every = timedelta(hours=12)
     ignore_result = False
-    regex = re.compile('^Current firmware version: "(?P<version>[\w\.]+)"')
+    regex = re.compile(r'^Current firmware version: "(?P<version>[\w\.]+)"')
 
     def run(self, pk, **kwargs):
         epiphan = Epiphan.objects.get(pk=pk)
@@ -507,7 +501,12 @@ class DASHPublishTask(VideoTaskMixin, Task):
         dv = DASHVideo.objects.create(eventmedia=slides)
         for variant in self.variants:
             suffix = '-{v}'.format(v=variant)
-            path = Path(mkdtemp(prefix='outpostpublish-slides-', suffix=suffix))
+            path = Path(
+                mkdtemp(
+                    prefix='outpostpublish-slides-',
+                    suffix=suffix
+                )
+            )
             for bitrate in self.bitrates:
                 self.video(path, slides.data.path, variant, bitrate, crop)
             self.fragment(path, 'video')
@@ -519,7 +518,7 @@ class DASHPublishTask(VideoTaskMixin, Task):
         path = Path(mkdtemp(prefix='outpostpublish-slides-', suffix='-scenes'))
         scenes = self.scenes(path, slides, crop)
         for ts, words in scenes:
-            scene = PublishMediaScene(media=pm)
+            scene = PublishMediaScene(media=slides)
             scene.timestamp = int(float(ts))
             scene.words = list(words)
             scene.save()
@@ -531,7 +530,12 @@ class DASHPublishTask(VideoTaskMixin, Task):
         dv = DASHVideo.objects.create(eventmedia=presenter)
         for variant in self.variants:
             suffix = '-{v}'.format(v=variant)
-            path = Path(mkdtemp(prefix='outpostpublish-presenter-', suffix=suffix))
+            path = Path(
+                mkdtemp(
+                    prefix='outpostpublish-presenter-',
+                    suffix=suffix
+                )
+            )
             for bitrate in self.bitrates:
                 self.video(path, presenter.data.path, variant, bitrate, crop)
             self.fragment(path, 'video')
@@ -583,7 +587,7 @@ class DASHPublishTask(VideoTaskMixin, Task):
             '-f',
             'lavfi',
             '-i',
-            'movie={},select=eq(pict_type\,PICT_TYPE_I),hue=s=0,atadenoise,select=gt(scene\,0.02),ocr'.format(video.data.path),
+            f'movie={video.data.path},select=eq(pict_type\,PICT_TYPE_I),hue=s=0,atadenoise,select=gt(scene\,0.02),ocr',
         )
         info = probe.run()
         scenes = list()
