@@ -164,8 +164,8 @@ class SFTPServer(asyncssh.SFTPServer):
         rec.save()
         logger.debug('Starting post-upload task chain')
         chain(
-            MetadataRecordingTask().si(rec.pk),
             ProcessRecordingTask().si(rec.pk),
+            MetadataRecordingTask().si(rec.pk),
             NotifyRecordingTask().si(rec.pk)
         ).delay()
         logger.debug('Done starting post-upload task chain')
