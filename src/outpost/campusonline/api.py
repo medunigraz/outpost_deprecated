@@ -170,6 +170,7 @@ class PersonOrganizationFunctionViewSet(ReadOnlyModelViewSet):
 
 
 @docstring_format(
+    model=models.DistributionList.__doc__,
     filter=filters.DistributionListFilter.__doc__,
     serializer=serializers.DistributionListSerializer.__doc__
 )
@@ -177,6 +178,7 @@ class DistributionListViewSet(CacheResponseMixin, FlexFieldsMixin, ReadOnlyModel
     '''
     List distribution lists from CAMPUSonline.
 
+    {model}
     {filter}
     {serializer}
     '''

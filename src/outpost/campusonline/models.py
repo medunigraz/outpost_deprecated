@@ -551,6 +551,18 @@ class DistributionListInternal(AbstractDistributionList):
 
 
 class DistributionList(AbstractDistributionList):
+    '''
+    ## Fields
+
+    ### `id` (`string`)
+    Primary key. May contain alphabetic characters.
+
+    ### `name` (`string`)
+    Name of distribtuion list.
+
+    ### `persons` (`[integer]`) <i class="glyphicon glyphicon-lock"></i>
+    List of foreign keys to [CAMPUSonline persons](../person) that belong to this distribution list.
+    '''
     persons = models.ManyToManyField(
         'Person',
         db_table='campusonline_distributionlist_person',
