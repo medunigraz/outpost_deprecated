@@ -99,38 +99,3 @@ class RecordingAssetSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.RecordingAsset
         fields = '__all__'
-
-
-class EventSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = models.Event
-        fields = '__all__'
-
-
-class DASHPublishSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = models.DASHPublish
-        fields = '__all__'
-
-
-class DASHAudioSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = models.DASHAudio
-        fields = '__all__'
-
-
-class DASHVideoSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = models.DASHVideo
-        fields = '__all__'
-
-
-class DASHVideoVariantSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = models.DASHVideoVariant
-        fields = '__all__'

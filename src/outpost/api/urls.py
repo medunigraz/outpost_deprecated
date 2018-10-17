@@ -227,26 +227,6 @@ v1.register(
     base_name='video-recordingasset'
 )
 v1.register(
-    r'video/event',
-    video.EventViewSet,
-    base_name='video-event'
-)
-v1.register(
-    r'video/publish/dash',
-    video.DASHPublishViewSet,
-    base_name='video-publish-dash'
-)
-v1.register(
-    r'video/publish/dash-audio',
-    video.DASHAudioViewSet,
-    base_name='video-publish-dash-audio'
-)
-v1.register(
-    r'video/publish/dash-video',
-    video.DASHVideoViewSet,
-    base_name='video-publish-dash-video'
-)
-v1.register(
     r'campusonline/room',
     campusonline.RoomViewSet,
     base_name='campusonline-room'

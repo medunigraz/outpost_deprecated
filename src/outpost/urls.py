@@ -56,10 +56,6 @@ urlpatterns.extend([
         include('outpost.campusonline.urls', namespace='campusonline')
     ),
     url(
-        r'^video/',
-        include('outpost.video.urls', namespace='video')
-    ),
-    url(
         r'^networktoken/',
         include('outpost.networktoken.urls', namespace='networktoken')
     ),

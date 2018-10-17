@@ -16,13 +16,9 @@ from rest_framework.viewsets import (
 
 from .permissions import EpiphanChannelPermissions
 from .serializers import (
-    DASHAudioSerializer,
-    DASHPublishSerializer,
-    DASHVideoSerializer,
     EpiphanChannelSerializer,
     EpiphanSerializer,
     EpiphanSourceSerializer,
-    EventSerializer,
     ExportClassSerializer,
     RecorderSerializer,
     RecordingAssetSerializer,
@@ -31,13 +27,9 @@ from .serializers import (
 from .tasks import ExportTask
 
 from .models import (  # Broadcast,; EventAudio,; EventMedia,; EventVideo,; Publish,; Stream,; Token,
-    DASHAudio,
-    DASHPublish,
-    DASHVideo,
     Epiphan,
     EpiphanChannel,
     EpiphanSource,
-    Event,
     Export,
     Recorder,
     Recording,
@@ -133,70 +125,6 @@ class RecordingAssetViewSet(ModelViewSet):
         return get_objects_for_user(
             self.request.user,
             'video.view_recordingasset',
-            klass=self.queryset.model
-        )
-
-
-class EventViewSet(ModelViewSet):
-    queryset = Event.objects.all()
-    serializer_class = EventSerializer
-    permission_classes = (
-        DjangoModelPermissions,
-    )
-    filter_fields = ()
-
-    def get_queryset(self):
-        return get_objects_for_user(
-            self.request.user,
-            'video.view_event',
-            klass=self.queryset.model
-        )
-
-
-class DASHPublishViewSet(ModelViewSet):
-    queryset = DASHPublish.objects.all()
-    serializer_class = DASHPublishSerializer
-    permission_classes = (
-        DjangoModelPermissions,
-    )
-    filter_fields = ()
-
-    def get_queryset(self):
-        return get_objects_for_user(
-            self.request.user,
-            'video.view_dash',
-            klass=self.queryset.model
-        )
-
-
-class DASHAudioViewSet(ModelViewSet):
-    queryset = DASHAudio.objects.all()
-    serializer_class = DASHAudioSerializer
-    permission_classes = (
-        DjangoModelPermissions,
-    )
-    filter_fields = ()
-
-    def get_queryset(self):
-        return get_objects_for_user(
-            self.request.user,
-            'video.view_dash_audio',
-            klass=self.queryset.model
-        )
-
-
-class DASHVideoViewSet(ModelViewSet):
-    queryset = DASHVideo.objects.all()
-    serializer_class = DASHVideoSerializer
-    permission_classes = (
-        DjangoModelPermissions,
-    )
-    filter_fields = ()
-
-    def get_queryset(self):
-        return get_objects_for_user(
-            self.request.user,
-            'video.view_dash_video',
             klass=self.queryset.model
         )
 

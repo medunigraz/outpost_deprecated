@@ -2,32 +2,21 @@ import io
 import logging
 import os
 import re
-import shutil
 import subprocess
-import uuid
-from base64 import (
-    b64encode,
-    urlsafe_b64encode,
-)
+from base64 import b64encode
 from datetime import timedelta
 from functools import partial
 from hashlib import sha256
-from pathlib import Path
 from tempfile import (
     NamedTemporaryFile,
     TemporaryDirectory,
 )
-from uuid import uuid4
 from zipfile import ZipFile
 
 import asyncssh
 import requests
-from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
-from django.contrib.postgres.fields import (
-    ArrayField,
-    JSONField,
-)
+from django.contrib.postgres.fields import JSONField
 from django.contrib.staticfiles import finders
 from django.core.cache import cache
 from django.core.files import File
@@ -38,7 +27,6 @@ from django.utils.translation import ugettext_lazy as _
 from django_extensions.db.models import TimeStampedModel
 from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFill
-from lxml import etree
 from memoize import (
     delete_memoized,
     memoize,
@@ -46,7 +34,6 @@ from memoize import (
 from PIL import Image
 from polymorphic.models import PolymorphicModel
 from purl import URL
-from taggit.managers import TaggableManager
 
 from ..base.decorators import signal_connect
 from ..base.models import NetworkedDeviceMixin
@@ -54,10 +41,7 @@ from ..base.utils import (
     Process,
     Uuid4Upload,
 )
-from .utils import (
-    FFMPEGProgressHandler,
-    FFProbeProcess,
-)
+from .utils import FFMPEGProgressHandler
 
 logger = logging.getLogger(__name__)
 
@@ -669,335 +653,3 @@ class ZipStreamExport(Export):
 
     def pre_delete(self, *args, **kwargs):
         self.data.delete(False)
-
-
-class Stream(models.Model):
-    name = models.CharField(max_length=128)
-    enabled = models.BooleanField(default=True)
-    active = models.ForeignKey('Broadcast', null=True, related_name='+')
-
-
-class Broadcast(models.Model):
-    stream = models.ForeignKey('Stream')
-    start = models.DateTimeField(auto_now_add=True)
-    end = models.DateTimeField(null=True, editable=False)
-
-
-@signal_connect
-class Token(models.Model):
-    stream = models.ForeignKey('Stream')
-    value = models.CharField(max_length=22)
-
-    def pre_save(self, *args, **kwargs):
-        if not self.value:
-            v = urlsafe_b64encode(uuid.uuid4().bytes).decode('ascii').rstrip('=')
-            self.value = v
-
-
-# class Series(models.Model):
-#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-#     title = models.CharField(max_length=256)
-#     subject = models.CharField(max_length=256, blank=True)
-#     description = models.TextField(blank=True)
-#     license = models.ForeignKey('base.License')
-#     rights = models.TextField(blank=True)
-#     organizers = models.TextField(blank=True)
-#     contributors = models.TextField(blank=True)
-#     publishers = models.TextField(blank=True)
-#
-#     tags = TaggableManager()
-
-
-class Event(models.Model):
-    id = models.UUIDField(
-        primary_key=True,
-        default=uuid.uuid4,
-        editable=False
-    )
-    title = models.CharField(max_length=256)
-    subject = models.CharField(max_length=256, blank=True)
-    description = models.TextField(blank=True)
-    license = models.ForeignKey('base.License')
-    rights = models.TextField(blank=True)
-    presenters = models.TextField(blank=True)
-    contributors = models.TextField(blank=True)
-    room = models.ForeignKey('geo.Room', null=True, blank=True)
-
-    tags = TaggableManager()
-
-
-@signal_connect
-class EventMedia(TimeStampedModel, PolymorphicModel):
-    id = models.UUIDField(
-        primary_key=True,
-        default=uuid.uuid4,
-        editable=False
-    )
-    event = models.ForeignKey(
-        'Event',
-        on_delete=models.CASCADE
-    )
-    name = models.CharField(
-        max_length=256,
-    )
-    data = models.FileField(
-        upload_to=Uuid4Upload
-    )
-    info = JSONField(null=True)
-
-    def pre_save(self, *args, **kwargs):
-        self.info = FFProbeProcess(
-            '-show_format',
-            '-show_streams',
-            self.data.path
-        ).run()
-
-    def post_save(self, *args, **kwargs):
-        delete_memoized(self.response)
-
-    def pre_delete(self, *args, **kwargs):
-        self.data.delete(False)
-
-    @memoize(timeout=3600)
-    def response(self):
-
-        data = {
-            'pk': self.pk,
-            'name': self.name,
-            'url': self.data.url,
-            'created': self.created,
-            'modified': self.modified,
-        }
-        if self.info:
-            data['container'] = {
-                'format': self.info['format']['format_long_name'],
-                'duration': float(self.info['format']['duration']),
-                'size': self.data.size,
-            }
-            data['streams'] = []
-            for s in self.info['streams']:
-                data['streams'].append(
-                    {
-                        'codec': s['codec_long_name'],
-                        'type': s['codec_type'],
-                        'height': s.get('height', None),
-                        'width': s.get('width', None),
-                        'profile': s.get('profile', None),
-                        'pixel': s.get('pix_fmt', None),
-
-                    }
-                )
-        return data
-
-    def __repr__(self):
-        return '{s.__class__.__name__}({s.pk})'.format(s=self)
-
-
-class EventAudio(EventMedia):
-    pass
-
-
-@signal_connect
-class EventVideo(EventMedia):
-    preview = ProcessedImageField(
-        upload_to=Uuid4Upload,
-        format='JPEG',
-        options={'quality': 60}
-    )
-
-    def pre_save(self, *args, **kwargs):
-        super().pre_save(*args, **kwargs)
-        skip = float(self.info['format']['duration']) * 0.1
-        with NamedTemporaryFile(suffix='.jpg', delete=True) as output:
-            Process(
-                'ffmpeg',
-                '-y',
-                '-ss',
-                '{0:.2f}'.format(skip),
-                '-i',
-                self.data.path,
-                '-vf',
-                'thumbnail',
-                '-frames:v',
-                '1',
-                output.name
-            ).run()
-            logger.info('Thumbnail: {}'.format(output.name))
-            self.preview.save('preview.jpg', File(output.file), False)
-
-    def response(self):
-        data = super().response()
-        data['preview'] = self.preview.url
-        return data
-
-
-class Publish(PolymorphicModel):
-    id = models.UUIDField(
-        primary_key=True,
-        default=uuid.uuid4,
-        editable=False
-    )
-    event = models.ForeignKey(
-        'Event',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL
-    )
-
-
-class PublishMedia(PolymorphicModel):
-    id = models.UUIDField(
-        primary_key=True,
-        default=uuid.uuid4,
-        editable=False
-    )
-    eventmedia = models.ForeignKey(
-        'EventMedia',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL
-    )
-
-
-class PublishMediaScene(models.Model):
-    id = models.UUIDField(
-        primary_key=True,
-        default=uuid.uuid4,
-        editable=False
-    )
-    media = models.ForeignKey(
-        'PublishMedia',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL
-    )
-    timestamp = models.PositiveIntegerField()
-    image = ProcessedImageField(
-        upload_to=Uuid4Upload,
-        format='JPEG',
-        options={'quality': 60}
-    )
-    words = ArrayField(
-        models.CharField(max_length=512, blank=True),
-        default=list
-    )
-
-    def pre_delete(self, *args, **kwargs):
-        self.image.delete(False)
-
-
-class DASHPublish(Publish):
-    presenter = models.ForeignKey(
-        'DASHVideo',
-        null=True,
-        blank=True,
-        related_name='+',
-        on_delete=models.SET_NULL
-    )
-    slides = models.ForeignKey(
-        'DASHVideo',
-        null=True,
-        blank=True,
-        related_name='+',
-        on_delete=models.SET_NULL
-    )
-    audio = models.ForeignKey(
-        'DASHAudio',
-        null=True,
-        blank=True,
-        related_name='+',
-        on_delete=models.SET_NULL
-    )
-
-    class Meta:
-        permissions = (
-            ('view_dash', _('View DASH')),
-        )
-
-
-class DASHIngest(models.Model):
-    path = models.TextField()
-
-    class Meta:
-        abstract = True
-
-    def ingest(self, path):
-        p = Path(path)
-        if not p.is_dir():
-            logger.warn('Ingest failed because of missing directory: {}'.format(path))
-            return
-        mpd = p.joinpath('dash.mpd')
-        with mpd.open() as f:
-            tree = etree.parse(f)
-        files = tree.xpath(
-            '//m:Initialization/@sourceURL|//m:SegmentURL/@media',
-            namespaces={
-                'm': 'urn:mpeg:dash:schema:mpd:2011'
-            }
-        )
-        if not files:
-            logger.warn('No files found while ingesting: {}'.format(mpd))
-            return
-        if self.path:
-            t = Path(self.path)
-            if t.is_dir():
-                for f in t.glob('*'):
-                    f.unlink()
-            else:
-                t.mkdir(parents=True)
-        else:
-            base = Path(settings.OUTPOST.get('private_store'))
-            c = Path(self.__module__, self._meta.object_name)
-            u = urlsafe_b64encode(uuid4().bytes).decode('ascii').rstrip('=')
-            t = base.joinpath(c).joinpath(u)
-            t.mkdir(parents=True)
-            self.path = str(t)
-        target = Path(self.path)
-        for f in map(lambda x: p.joinpath(x), files):
-            f.rename(target.joinpath(f.name))
-        mpd.rename(target.joinpath(mpd.name))
-
-    def pre_delete(self, *args, **kwargs):
-        shutil.rmtree(self.path)
-
-
-class DASHVideo(PublishMedia):
-    preview = ProcessedImageField(
-        upload_to=Uuid4Upload,
-        format='JPEG',
-        options={'quality': 60}
-    )
-
-    class Meta:
-        permissions = (
-            ('view_dash_video', _('View DASH Video')),
-        )
-
-
-@signal_connect
-class DASHVideoVariant(DASHIngest, models.Model):
-    id = models.UUIDField(
-        primary_key=True,
-        default=uuid.uuid4,
-        editable=False
-    )
-    video = models.ForeignKey(
-        'DASHVideo',
-        on_delete=models.CASCADE
-    )
-    height = models.PositiveIntegerField()
-
-    def pre_delete(self, *args, **kwargs):
-        super().pre_delete(*args, **kwargs)
-
-
-@signal_connect
-class DASHAudio(DASHIngest, PublishMedia):
-
-    class Meta:
-        permissions = (
-            ('view_dash_audio', _('View DASH Audio')),
-        )
-
-    def pre_delete(self, *args, **kwargs):
-        super().pre_delete(*args, **kwargs)
