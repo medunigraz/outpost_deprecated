@@ -40,6 +40,9 @@ class Language(models.Model):
         managed = False
         db_table = 'typo3_language'
 
+    class Refresh:
+        interval = 86400
+
     def __str__(self):
         return self.title
 
@@ -57,6 +60,9 @@ class Group(models.Model):
     class Meta:
         managed = False
         db_table = 'typo3_group'
+
+    class Refresh:
+        interval = 3600
 
     def __str__(self):
         return self.title
@@ -103,6 +109,9 @@ class Category(models.Model):
         managed = False
         db_table = 'typo3_category'
 
+    class Refresh:
+        interval = 3600
+
     def __str__(self):
         return self.title
 
@@ -136,6 +145,9 @@ class Calendar(models.Model):
         managed = False
         db_table = 'typo3_calendar'
 
+    class Refresh:
+        interval = 86400
+
     def __str__(self):
         return self.title
 
@@ -161,6 +173,9 @@ class Media(models.Model):
     class Meta:
         managed = False
         db_table = 'typo3_media'
+
+    class Refresh:
+        interval = 1800
 
     def __str__(self):
         return self.filename
@@ -229,6 +244,9 @@ class EventCategory(AL_Node):
     class Meta:
         managed = False
         db_table = 'typo3_eventcategory'
+
+    class Refresh:
+        interval = 86400
 
     def __str__(self):
         return self.title
@@ -342,6 +360,9 @@ class Event(models.Model):
         )
         get_latest_by = 'start'
 
+    class Refresh:
+        interval = 1800
+
     @memoize(timeout=3600)
     def url(self):
         url = URL(settings.OUTPOST['typo3_api'])
@@ -427,6 +448,9 @@ class EventMedia(models.Model):
             '-order',
         )
 
+    class Refresh:
+        interval = 1800
+
     def __str__(s):
         return f'{s.event}: {s.media}'
 
@@ -456,6 +480,9 @@ class NewsCategory(models.Model):
     class Meta:
         managed = False
         db_table = 'typo3_newscategory'
+
+    class Refresh:
+        interval = 86400
 
     def __str__(s):
         return f'{s.news.title}: {s.category.title}'
@@ -551,6 +578,9 @@ class News(models.Model):
         )
         get_latest_by = 'datetime'
 
+    class Refresh:
+        interval = 1800
+
     @memoize(timeout=3600)
     def url(self):
         url = URL(settings.OUTPOST['typo3_api'])
@@ -636,6 +666,9 @@ class NewsMedia(models.Model):
             '-preview',
             '-order',
         )
+
+    class Refresh:
+        interval = 1800
 
     def __str__(s):
         return f'{s.news}: {s.media}'

@@ -21,6 +21,9 @@ class RoomCategory(models.Model):
             'name',
         )
 
+    class Refresh:
+        interval = 86400
+
     def __str__(self):
         return self.name
 
@@ -97,6 +100,9 @@ class Room(models.Model):
             'title',
         )
 
+    class Refresh:
+        interval = 7200
+
     def __str__(self):
         return '{s.name_full}: {s.title}'.format(s=self)
 
@@ -122,6 +128,9 @@ class Floor(models.Model):
         ordering = (
             'name',
         )
+
+    class Refresh:
+        interval = 86400
 
     def __str__(self):
         return '{s.name} ({s.short})'.format(s=self)
@@ -153,6 +162,9 @@ class Building(models.Model):
         ordering = (
             'name',
         )
+
+    class Refresh:
+        interval = 86400
 
     def __str__(self):
         return '{s.name} ({s.short})'.format(s=self)
@@ -231,6 +243,9 @@ class Function(models.Model):
             'name',
             'category',
         )
+
+    class Refresh:
+        interval = 86400
 
     def __str__(s):
         return f'{s.name} ({s.category})'
@@ -349,6 +364,9 @@ class Organization(AL_Node):
         ordering = (
             'name',
         )
+
+    class Refresh:
+        interval = 7200
 
     def __str__(self):
         return self.name
@@ -476,6 +494,9 @@ class Person(models.Model):
             'first_name',
         )
 
+    class Refresh:
+        interval = 1800
+
     def __str__(self):
         return '{s.last_name}, {s.first_name}'.format(s=self)
 
@@ -516,6 +537,9 @@ class PersonOrganizationFunction(models.Model):
         ordering = (
             'id',
         )
+
+    class Refresh:
+        interval = 7200
 
     def __str__(self):
         return '{s.person}, {s.organization}: {s.function}'.format(s=self)
@@ -574,6 +598,9 @@ class DistributionList(AbstractDistributionList):
         managed = False
         db_table = 'campusonline_distributionlist'
 
+    class Refresh:
+        interval = 7200
+
 
 class Student(models.Model):
     id = models.IntegerField(
@@ -609,6 +636,9 @@ class Student(models.Model):
             'first_name',
         )
 
+    class Refresh:
+        interval = 7200
+
     def __str__(self):
         return '{s.last_name}, {s.first_name}'.format(s=self)
 
@@ -633,6 +663,9 @@ class Course(models.Model):
     class Meta:
         managed = False
         db_table = 'campusonline_course'
+
+    class Refresh:
+        interval = 86400
 
     def __str__(self):
         return '{s.name} ({s.semester}:{s.year})'.format(s=self)
@@ -660,6 +693,9 @@ class CourseGroup(models.Model):
     class Meta:
         managed = False
         db_table = 'campusonline_coursegroup'
+
+    class Refresh:
+        interval = 86400
 
     def __str__(self):
         return '{s.name} ({s.course})'.format(s=self)
@@ -709,6 +745,9 @@ class CourseGroupTerm(models.Model):
             ('view_coursegroupterm', _('Can view course group term')),
         )
 
+    class Refresh:
+        interval = 86400
+
     def __str__(s):
         return f'{s.coursegroup} ({s.person}): {s.room} {s.start}-{s.end}'
 
@@ -756,6 +795,9 @@ class Event(OrderedModel):
     class Meta:
         managed = False
         db_table = 'campusonline_event'
+
+    class Refresh:
+        interval = 3600
 
     def __str__(self):
         return '{s.category} {s.date}: {s.title} ({s.room})'.format(s=self)
@@ -805,6 +847,9 @@ class Bulletin(models.Model):
         ordering = (
             '-published',
         )
+
+    class Refresh:
+        interval = 3600
 
     def __str__(s):
         return f'{s.issue} {s.academic_year} ({s.published})'

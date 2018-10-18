@@ -1,11 +1,11 @@
+import logging
+import subprocess
 from base64 import urlsafe_b64encode
+from functools import partial
 from pathlib import PurePosixPath
 from uuid import uuid4
-import subprocess
-import logging
 
-from functools import partial
-
+from sqlalchemy.exc import DBAPIError
 
 logger = logging.getLogger(__name__)
 
@@ -87,3 +87,107 @@ class Process():
         retcode = pipe.returncode
         logger.debug(f'Done: {self.args} returns {retcode}')
         return retcode
+
+
+class MaterializedView:
+
+    def __init__(self, name):
+        from django.db import connection
+        self.name = name
+        self.connection = connection
+
+    def refresh(self):
+        from django.db import (
+            IntegrityError,
+            ProgrammingError,
+        )
+        query_default = f'''
+        REFRESH MATERIALIZED VIEW {self.name};
+        '''
+        query_concurrent = f'''
+        REFRESH MATERIALIZED VIEW CONCURRENTLY {self.name};
+        '''
+        try:
+            with self.connection.cursor() as cursor:
+                if self.has_unique_indizes():
+                    logger.debug(f'Concurrent refresh: {self.name}')
+                    cursor.execute(query_concurrent)
+                else:
+                    logger.debug(f'Refresh: {self.name}')
+                    cursor.execute(query_default)
+        except (IntegrityError, ProgrammingError) as e:
+            logger.error(e)
+            return False
+        return True
+
+    def has_unique_indizes(self):
+        query = f'''
+        SELECT
+            COUNT(1) AS count
+        FROM
+            pg_indexes
+        WHERE
+            tablename = '{self.name}' AND
+            indexdef LIKE 'CREATE UNIQUE INDEX %'
+        '''
+        with self.connection.cursor() as cursor:
+            cursor.execute(query)
+            (index,) = cursor.fetchone()
+        return index > 0
+
+    def has_online_sources(self):
+        from ..fdw import OutpostFdw
+        query = f'''
+        SELECT
+            cl_d.relname AS name,
+            ns.nspname AS schema,
+            ft.ftoptions AS options
+        FROM pg_rewrite AS r
+        JOIN pg_class AS cl_r ON r.ev_class = cl_r.oid
+        JOIN pg_depend AS d ON r.oid = d.objid
+        JOIN pg_class AS cl_d ON d.refobjid = cl_d.oid
+        JOIN pg_namespace AS ns ON cl_d.relnamespace = ns.oid
+        JOIN pg_foreign_table AS ft ON ft.ftrelid = cl_d.oid
+        JOIN pg_foreign_server AS fs ON fs.oid = ft.ftserver
+        WHERE
+            cl_d.relkind = 'f' AND
+            cl_r.relname = '{self.name}' AND
+            fs.srvname = 'sqlalchemy'
+        GROUP BY
+            cl_d.relname,
+            ns.nspname,
+            ft.ftoptions
+        ORDER BY
+            ns.nspname,
+            cl_d.relname;
+        '''
+        logger.debug(f'Is materialized view source online: {self.name}')
+        with self.connection.cursor() as cursor:
+            cursor.execute(query)
+            for (name, schema, options) in cursor:
+                if options:
+                    args = dict([o.split('=', 1) for o in options])
+                    try:
+                        OutpostFdw(args, {}).connection.connect()
+                    except DBAPIError as e:
+                        logger.warn(e)
+                        return False
+            return True
+
+    @property
+    def comment(self):
+        query = f'''
+        SELECT obj_description('{self.name}'::regclass);
+        '''
+        with self.connection.cursor() as cursor:
+            cursor.execute(query)
+            (data,) = cursor.fetchone()
+            return data
+
+    @comment.setter
+    def comment(self, value):
+        query = f'''
+        COMMENT ON MATERIALIZED VIEW "{self.name}" IS '{value}';
+        '''
+        with self.connection.cursor() as cursor:
+            cursor.execute(query)

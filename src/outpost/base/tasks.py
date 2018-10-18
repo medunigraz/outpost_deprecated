@@ -1,12 +1,21 @@
+import json
 import logging
-from datetime import timedelta
+from datetime import (
+    datetime,
+    timedelta,
+)
 
-from celery.task import PeriodicTask
+from celery.task import (
+    PeriodicTask,
+    Task,
+)
 from celery_haystack.tasks import CeleryHaystackUpdateIndex
+from django.apps import apps
+from django.utils import timezone
 from guardian.utils import clean_orphan_obj_perms
-from sqlalchemy.exc import DBAPIError
 
 from .models import NetworkedDeviceMixin
+from .utils import MaterializedView
 
 logger = logging.getLogger(__name__)
 
@@ -18,97 +27,57 @@ class MaintainanceTaskMixin:
     queue = 'maintainance'
 
 
-class RefreshMaterializedViewsTask(MaintainanceTaskMixin, PeriodicTask):
-    run_every = timedelta(hours=1)
+class RefreshMaterializedViewTask(MaintainanceTaskMixin, Task):
+
+    def run(self, name, **kwargs):
+        from django.db import (
+            transaction
+        )
+        logger.debug(f'Refresh materialized view: {name}')
+        mv = MaterializedView(name)
+        models = apps.get_models()
+        model = next((m for m in models if m._meta.db_table == name), None)
+        interval = None
+        if model:
+            refresh = getattr(model, 'Refresh', None)
+            if refresh:
+                interval = getattr(refresh, 'interval', None)
+        with transaction.atomic():
+            comment = mv.comment
+            try:
+                md = json.loads(comment)
+                last = md.get('last', None)
+                if interval and last:
+                    due = timezone.now() - timedelta(seconds=interval)
+                    now = timezone.now()
+                    if due < datetime.fromtimestamp(last, tz=now.tzinfo):
+                        return
+                if mv.refresh():
+                    md['last'] = timezone.now().timestamp()
+                    mv.comment = json.dumps(md)
+            except (json.decoder.JSONDecodeError, TypeError) as e:
+                logger.warn(e)
+                if mv.refresh():
+                    if comment is None:
+                        mv.comment = json.dumps({
+                            'last': timezone.now().timestamp()
+                        })
+
+
+class RefreshMaterializedViewDispatcherTask(MaintainanceTaskMixin, PeriodicTask):
+    run_every = timedelta(minutes=10)
     views = '''
     SELECT oid::regclass::text FROM pg_class WHERE relkind = 'm';
-    '''
-    wrappers = '''
-    SELECT
-        cl_d.relname AS name,
-        ns.nspname AS schema,
-        ft.ftoptions AS options
-    FROM pg_rewrite AS r
-    JOIN pg_class AS cl_r ON r.ev_class = cl_r.oid
-    JOIN pg_depend AS d ON r.oid = d.objid
-    JOIN pg_class AS cl_d ON d.refobjid = cl_d.oid
-    JOIN pg_namespace AS ns ON cl_d.relnamespace = ns.oid
-    JOIN pg_foreign_table AS ft ON ft.ftrelid = cl_d.oid
-    JOIN pg_foreign_server AS fs ON fs.oid = ft.ftserver
-    WHERE
-        cl_d.relkind = 'f' AND
-        cl_r.relname='{}' AND
-        fs.srvname = 'sqlalchemy'
-    GROUP BY
-        cl_d.relname,
-        ns.nspname,
-        ft.ftoptions
-    ORDER BY
-        ns.nspname,
-        cl_d.relname;
-    '''
-    indizes = '''
-    SELECT
-        COUNT(1) AS count
-    FROM
-        pg_indexes
-    WHERE
-        tablename = '{}' AND
-        indexdef LIKE 'CREATE UNIQUE INDEX %'
-    '''
-    refresh_default = '''
-    REFRESH MATERIALIZED VIEW {};
-    '''
-    refresh_concurrent = '''
-    REFRESH MATERIALIZED VIEW CONCURRENTLY {};
     '''
 
     def run(self, **kwargs):
         from django.db import connection
-        from ..fdw import OutpostFdw
-        logger.debug('Refreshing materialized views.')
+        logger.debug('Dispatching materialized view refresh tasks.')
         with connection.cursor() as relations:
             relations.execute(self.views)
             for (rel,) in relations:
-                logger.debug(f'Refresh materialized view: {rel}')
-                with connection.cursor() as check:
-                    check.execute(self.wrappers.format(rel))
-                    online = True
-                    for (name, schema, options) in check:
-                        if options:
-                            args = dict([o.split('=', 1) for o in options])
-                            try:
-                                OutpostFdw(args, {}).connection.connect()
-                            except DBAPIError as e:
-                                logger.warn(e)
-                                online = False
-                    if online:
-                        with connection.cursor() as indizes:
-                            indizes.execute(self.indizes.format(rel))
-                            (index,) = indizes.fetchone()
-                        self.refresh(rel, index > 0)
-                    else:
-                        logger.warn(f'Could not refresh materialized view: {rel}')
+                RefreshMaterializedViewTask().delay(rel)
         connection.close()
-
-    def refresh(self, name, concurrent=False):
-        from django.db import (
-            connection,
-            IntegrityError,
-            ProgrammingError,
-            transaction
-        )
-        try:
-            with transaction.atomic():
-                with connection.cursor() as refresh:
-                    if concurrent:
-                        logger.debug(f'Concurrent refresh: {name}')
-                        refresh.execute(self.refresh_concurrent.format(name))
-                    else:
-                        logger.debug(f'Refresh: {name}')
-                        refresh.execute(self.refresh_default.format(name))
-        except (IntegrityError, ProgrammingError) as e:
-            logger.error(e)
 
 
 class RefreshNetworkedDeviceTask(MaintainanceTaskMixin, PeriodicTask):
