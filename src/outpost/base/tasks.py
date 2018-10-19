@@ -71,6 +71,7 @@ class RefreshMaterializedViewTask(MaintainanceTaskMixin, Task):
                 name=name,
                 model=model
             )
+            logger.info(f'Refreshed materialized view: {name}')
 
 
 class RefreshMaterializedViewDispatcherTask(MaintainanceTaskMixin, PeriodicTask):
