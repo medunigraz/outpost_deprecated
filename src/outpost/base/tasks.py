@@ -42,6 +42,8 @@ class RefreshMaterializedViewTask(MaintainanceTaskMixin, Task):
             refresh = getattr(model, 'Refresh', None)
             if refresh:
                 interval = getattr(refresh, 'interval', None)
+        else:
+            logger.warn(f'Could not find model: {name}')
         with transaction.atomic():
             comment = mv.comment
             try:
@@ -51,12 +53,13 @@ class RefreshMaterializedViewTask(MaintainanceTaskMixin, Task):
                     due = timezone.now() - timedelta(seconds=interval)
                     now = timezone.now()
                     if due < datetime.fromtimestamp(last, tz=now.tzinfo):
+                        logger.debug(f'View is not due for refresh: {name}')
                         return
                 if mv.refresh():
                     md['last'] = timezone.now().timestamp()
                     mv.comment = json.dumps(md)
             except (json.decoder.JSONDecodeError, TypeError) as e:
-                logger.warn(e)
+                logger.warn(f'Failed to parse {name} comment: {e}')
                 if mv.refresh():
                     if comment is None:
                         mv.comment = json.dumps({

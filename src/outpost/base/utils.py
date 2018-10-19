@@ -133,7 +133,8 @@ class MaterializedView:
         with self.connection.cursor() as cursor:
             cursor.execute(query)
             (index,) = cursor.fetchone()
-        return index > 0
+            logger.debug(f'View {self.name} has {index} unique inidzes')
+            return index > 0
 
     def has_online_sources(self):
         from ..fdw import OutpostFdw
