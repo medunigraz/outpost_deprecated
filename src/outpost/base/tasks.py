@@ -15,6 +15,7 @@ from django.utils import timezone
 from guardian.utils import clean_orphan_obj_perms
 
 from .models import NetworkedDeviceMixin
+from .signals import materialized_view_refreshed
 from .utils import MaterializedView
 
 logger = logging.getLogger(__name__)
@@ -55,16 +56,21 @@ class RefreshMaterializedViewTask(MaintainanceTaskMixin, Task):
                     if due < datetime.fromtimestamp(last, tz=now.tzinfo):
                         logger.debug(f'View is not due for refresh: {name}')
                         return
-                if mv.refresh():
-                    md['last'] = timezone.now().timestamp()
-                    mv.comment = json.dumps(md)
             except (json.decoder.JSONDecodeError, TypeError) as e:
                 logger.warn(f'Failed to parse {name} comment: {e}')
-                if mv.refresh():
-                    if comment is None:
-                        mv.comment = json.dumps({
-                            'last': timezone.now().timestamp()
-                        })
+                md = None
+            if not mv.refresh():
+                return
+            if comment is None:
+                md = dict()
+            if md:
+                md['last'] = timezone.now().timestamp()
+                mv.comment = json.dumps(md)
+            materialized_view_refreshed.send(
+                sender=self.__class__,
+                name=name,
+                model=model
+            )
 
 
 class RefreshMaterializedViewDispatcherTask(MaintainanceTaskMixin, PeriodicTask):
