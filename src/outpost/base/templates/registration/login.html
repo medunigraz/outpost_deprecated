@@ -37,4 +37,10 @@
     <input type="hidden" name="next" value="{{ next }}" />
   </form>
 </div>
+<div class="signin well">
+    <a href="{% url 'saml2:saml2_login' %}" class="btn btn-lg btn-warning btn-block">
+      <i class="glyphicon glyphicon-flash"></i>
+      Single Sign On
+    </a>
+</div>
 {% endblock %}

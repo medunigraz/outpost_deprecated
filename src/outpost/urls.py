@@ -44,6 +44,10 @@ urlpatterns.extend([
         authtoken.obtain_auth_token
     ),
     url(
+        r'^saml2/',
+        include('djangosaml2.urls', namespace='saml2')
+    ),
+    url(
         r'^oauth2/',
         include('outpost.oauth2.urls', namespace='oauth2')
     ),
