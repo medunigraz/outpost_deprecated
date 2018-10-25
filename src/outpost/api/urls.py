@@ -11,6 +11,7 @@ from ..campusonline import api as campusonline
 from ..geo import api as geo
 from ..networktoken import api as networktoken
 from ..positioning import api as positioning
+from ..salt import api as salt
 from ..structure import api as structure
 from ..typo3 import api as typo3
 from ..video import api as video
@@ -270,6 +271,11 @@ v1.register(
     r'campusonline/course-group-term',
     campusonline.CourseGroupTermViewSet,
     base_name='campusonline-course-group-term'
+)
+v1.register(
+    r'salt/host',
+    salt.HostViewSet,
+    base_name='salt-host'
 )
 
 urlpatterns = [
