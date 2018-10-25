@@ -19,20 +19,20 @@ class Migration(migrations.Migration):
             WWW_HOMEPAGE varchar
         )
         SERVER sqlalchemy OPTIONS (
-            tablename 'ORGANISATIONEN_ADRESSEN_V',
+            tablename 'ORGANISATIONEN_V',
             db_url '{}'
         );
         """.format(settings.MULTICORN.get('campusonline')),
         """
         CREATE FOREIGN TABLE "campusonline"."personen" (
-            NR numeric,
-            VORNAME varchar,
-            FAMILIENNAME varchar,
-            TITEL varchar,
+            PERS_NR numeric,
+            PERS_VORNAME varchar,
+            PERS_FAMNAM varchar,
+            PERS_TITEL varchar,
             RAUM_NR numeric
         )
         SERVER sqlalchemy OPTIONS (
-            tablename 'PERSONEN_RAUM_V',
+            tablename 'PERSON_V',
             db_url '{}'
         );
         """.format(settings.MULTICORN.get('campusonline')),
@@ -49,10 +49,10 @@ class Migration(migrations.Migration):
         """,
         """
         CREATE MATERIALIZED VIEW "public"."campusonline_person" AS SELECT
-            nr ::integer AS id,
-            vorname AS first_name,
-            familienname AS last_name,
-            titel AS title,
+            pers_nr ::integer AS id,
+            pers_vorname AS first_name,
+            pers_famnam AS last_name,
+            pers_titel AS title,
             raum_nr ::integer AS room_id
         FROM "campusonline"."personen"
         WITH DATA;
