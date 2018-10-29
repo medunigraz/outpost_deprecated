@@ -7,6 +7,7 @@ import os
 
 import ldap
 import saml2
+import saml2.attributemaps
 import saml2.saml
 from corsheaders.defaults import default_methods
 from django.utils.translation import ugettext_lazy as _
@@ -194,6 +195,10 @@ LOGIN_URL = 'accounts:login'
 LOGIN_REDIRECT_URL = 'base:index'
 LOGOUT_REDIRECT_URL = '/'
 
+SAML_CREATE_UNKNOWN_USER = True
+SAML_ATTRIBUTE_MAPPING = {
+    'uid': ('username', ),
+}
 SAML_LOGOUT_REQUEST_PREFERRED_BINDING = saml2.BINDING_HTTP_POST
 SAML_CONFIG = {
     # full path to the xmlsec1 binary programm
@@ -203,7 +208,7 @@ SAML_CONFIG = {
     'entityid': 'http://localhost:8000/saml2/metadata/',
 
     # directory with attribute mapping
-    'attribute_map_dir': os.path.join(BASE_DIR, 'attribute-maps'),
+    'attribute_map_dir': os.path.dirname(saml2.attributemaps.__file__),
 
     # this block states what services we provide
     'service': {
