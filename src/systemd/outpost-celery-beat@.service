@@ -1,0 +1,12 @@
+[Unit]
+Description=%I - Celery Beat
+
+[Service]
+Type=simple
+Environment=DJANGO_LOCAL_CONFIGURATION=/etc/django/%i.py
+WorkingDirectory=/var/www/wsgi/%i/src
+User=www-data-api
+ExecStart=/usr/bin/python3 -m celery beat -A outpost.celery --loglevel=WARNING -s /var/lib/celery/%i/beat.state --pidfile /var/lib/celery/%i/beat.pid
+
+[Install]
+WantedBy=outpost-%i.target

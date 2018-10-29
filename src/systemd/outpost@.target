@@ -1,0 +1,7 @@
+[Unit]
+Description=Outpost Application %I
+Requires=local-fs.target remote-fs.target
+After=local-fs.target remote-fs.target
+
+[Install]
+WantedBy=multi-user.target
