@@ -97,13 +97,22 @@ class User(models.Model):
 
 
 class Group(models.Model):
+    id = models.IntegerField(
+        primary_key=True
+    )
     name = models.CharField(
-        max_length=31
+        max_length=31,
+        unique=True
     )
     systems = models.ManyToManyField(
         'System',
         blank=True
     )
+
+    class Meta:
+        ordering = (
+            'pk',
+        )
 
     def __str__(self):
         return f'{self.name} ({self.pk})'
