@@ -79,6 +79,11 @@ class User(models.Model):
         blank=True
     )
 
+    class Meta:
+        ordering = (
+            'pk',
+        )
+
     @property
     def username(self):
         return self.person.username
