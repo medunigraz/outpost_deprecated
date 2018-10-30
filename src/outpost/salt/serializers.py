@@ -17,7 +17,6 @@ class GroupSerializer(serializers.ModelSerializer):
 class SystemUserSerializer(serializers.ModelSerializer):
     uid = serializers.IntegerField(source='user.pk')
     username = serializers.CharField(source='user.person.username')
-    displayname = serializers.CharField(source='user.person')
     homedir = serializers.SerializerMethodField()
     groups = GroupSerializer(many=True)
 

@@ -89,6 +89,10 @@ class User(models.Model):
         return self.person.username
 
     @property
+    def displayname(self):
+        return f'{self.person.first_name} {self.person.last_name}'
+
+    @property
     def email(self):
         return self.person.email
 
