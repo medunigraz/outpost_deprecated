@@ -2,7 +2,7 @@
 outpost_group_{{ user.username }}:
   group.present:
     - name {{ user.username }}
-    - gid: {{ group.uid }}
+    - gid: {{ user.uid }}
 {%- endfor %}
 {%- for group in pillar.outpost.groups %}
 outpost_group_{{ group.name }}:
