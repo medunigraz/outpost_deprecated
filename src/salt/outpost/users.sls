@@ -5,7 +5,7 @@ outpost_user_{{ user.username }}:
     - uid: {{ user.uid }}
     - home: {{ user.homedir }}
     - createhome: true
-    - fullname: {{ user.displayname }}
+    - fullname: "{{ user.displayname }}"
     - gid_from_name: true
     {%- if user.groups is defined %}
     - groups:
