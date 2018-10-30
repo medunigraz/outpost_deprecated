@@ -32,6 +32,12 @@ class UserAdmin(admin.ModelAdmin):
     inlines = (
         SystemUserInline,
     )
+    list_display = (
+        'pk',
+        'username',
+        'person',
+        'email',
+    )
     list_filter = (
         'systems',
     )

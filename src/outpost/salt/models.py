@@ -79,6 +79,14 @@ class User(models.Model):
         blank=True
     )
 
+    @property
+    def username(self):
+        return self.person.username
+
+    @property
+    def email(self):
+        return self.person.email
+
     def __str__(self):
         return f'{self.person} ({self.pk})'
 
