@@ -64,6 +64,10 @@ urlpatterns.extend([
         include('outpost.networktoken.urls', namespace='networktoken')
     ),
     url(
+        r'^typo3/',
+        include('outpost.typo3.urls', namespace='typo3')
+    ),
+    url(
         r'^',
         include('outpost.api.urls', namespace='api')
     ),

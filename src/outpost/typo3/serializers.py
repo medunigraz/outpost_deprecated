@@ -3,6 +3,7 @@ import re
 
 from bs4 import BeautifulSoup
 from django.conf import settings
+from django.urls import reverse
 from drf_haystack.serializers import HaystackSerializerMixin
 from memoize import memoize
 from purl import URL
@@ -12,6 +13,7 @@ from rest_framework.serializers import (
     ModelSerializer,
     PrimaryKeyRelatedField,
     ReadOnlyField,
+    SerializerMethodField,
     URLField,
 )
 
@@ -195,10 +197,19 @@ class CalendarSerializer(FlexFieldsModelSerializer):
 
 
 class MediaSerializer(FlexFieldsModelSerializer):
+    url = SerializerMethodField()
+    original = URLField(source='url')
 
     class Meta:
         model = models.Media
         fields = '__all__'
+
+    def get_url(self, obj):
+        path = reverse('typo3:media', kwargs={'pk': obj.pk})
+        request = self.context.get('request')
+        if request:
+            return request.build_absolute_uri(path)
+        return path
 
 
 class EventMediaSerializer(FlexFieldsModelSerializer):
