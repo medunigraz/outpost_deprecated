@@ -97,7 +97,7 @@ class User(models.Model):
         return self.person.email
 
     def __str__(self):
-        return f'{self.person} ({self.pk})'
+        return f'{self.person} ({self.username}:{self.pk})'
 
 
 class Group(models.Model):
