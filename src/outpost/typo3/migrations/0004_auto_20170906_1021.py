@@ -74,7 +74,8 @@ class Migration(migrations.Migration):
             tx_mugcal_www AS url,
             tx_mugcal_dfppoints AS dfp_points,
             tx_mugcal_contact AS contact,
-            tx_mugcal_contact_email AS email
+            tx_mugcal_contact_email AS email,
+            to_timestamp(tstamp) AS last_modified
         FROM "typo3"."event"
         WHERE
             start_date != '0' AND
@@ -138,7 +139,8 @@ class Migration(migrations.Migration):
             author_email AS email,
             keywords,
             tags,
-            istopnews = 1 AS topnews
+            istopnews = 1 AS topnews,
+            to_timestamp(tstamp) AS last_modified
         FROM "typo3"."news"
         WHERE
             (starttime = 0 OR to_timestamp(starttime) < NOW()) AND

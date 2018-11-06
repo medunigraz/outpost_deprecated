@@ -310,6 +310,9 @@ class Event(models.Model):
 
     ### `email` (`string`)
     The email address of a person or party to contact in regards to this event.
+
+    ### `last_modified` (`datetime`)
+    Date and time of last modification to this event.
     '''
     id = models.IntegerField(primary_key=True)
     page = models.IntegerField()
@@ -350,6 +353,7 @@ class Event(models.Model):
     dfp_points = models.IntegerField(blank=True, null=True)
     contact = models.CharField(max_length=256, blank=True, null=True)
     email = models.CharField(max_length=256, blank=True, null=True)
+    last_modified = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -537,6 +541,8 @@ class News(models.Model):
     ### `groups` (`[object]`)
     List of TYPO3 group objects that have been assigned to this news.
 
+    ### `last_modified` (`datetime`)
+    Date and time of last modification to this event.
     '''
     id = models.IntegerField(primary_key=True)
     page = models.IntegerField(blank=True, null=True)
@@ -569,6 +575,7 @@ class News(models.Model):
         db_constraint=False,
         related_name='+'
     )
+    last_modified = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         managed = False
