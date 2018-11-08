@@ -1,4 +1,5 @@
 from django.utils import timezone
+from django_filters.rest_framework import DjangoFilterBackend
 from drf_haystack.viewsets import HaystackViewSet
 from rest_flex_fields.views import FlexFieldsMixin
 from rest_framework.permissions import AllowAny
@@ -13,6 +14,7 @@ from outpost.base.decorators import docstring_format
 #     CacheResponseMixin,
 # )
 from . import (
+    filters,
     models,
     serializers,
 )
@@ -113,6 +115,7 @@ class EventCategoryViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
 
 @docstring_format(
     model=models.Event.__doc__,
+    filter=filters.EventFilter.__doc__,
     serializer=serializers.EventSerializer.__doc__
 )
 class EventViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
@@ -120,6 +123,7 @@ class EventViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     List events from TYPO3.
 
     {model}
+    {filter}
     {serializer}
     '''
     queryset = models.Event.objects.filter(end__gte=timezone.now())
@@ -127,18 +131,10 @@ class EventViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     permission_classes = (
         AllowAny,
     )
-    filter_fields = (
-        'start',
-        'end',
-        'allday',
-        'location',
-        'register',
-        'registration_end',
-        'attending_fees',
-        'dfp_points',
-        'calendar',
-        'language',
+    filter_backends = (
+        DjangoFilterBackend,
     )
+    filter_class = filters.EventFilter
     permit_list_expands = (
         'calendar',
         'language',
@@ -155,6 +151,7 @@ class EventSearchViewSet(HaystackViewSet):
 
 @docstring_format(
     model=models.News.__doc__,
+    filter=filters.NewsFilter.__doc__,
     serializer=serializers.NewsSerializer.__doc__
 )
 class NewsViewSet(ReadOnlyModelViewSet):
@@ -162,6 +159,7 @@ class NewsViewSet(ReadOnlyModelViewSet):
     List news from TYPO3.
 
     {model}
+    {filter}
     {serializer}
     '''
     queryset = models.News.objects.all()
@@ -169,12 +167,10 @@ class NewsViewSet(ReadOnlyModelViewSet):
     permission_classes = (
         AllowAny,
     )
-    filter_fields = (
-        'page',
-        'topnews',
-        'email',
-        'language',
+    filter_backends = (
+        DjangoFilterBackend,
     )
+    filter_class = filters.NewsFilter
     permit_list_expands = (
         'categories',
         'language',
