@@ -2,7 +2,6 @@
 Django settings for Outpost project.
 '''
 
-import json
 import os
 
 import ldap
