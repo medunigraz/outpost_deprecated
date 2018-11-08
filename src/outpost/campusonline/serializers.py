@@ -285,6 +285,7 @@ class CourseGroupTermSerializer(ModelSerializer):
 class EventSerializer(ModelSerializer):
     building = BuildingSerializer()
     room = RoomSerializer()
+    course = CourseSerializer()
 
     class Meta:
         model = models.Event

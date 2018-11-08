@@ -1,18 +1,13 @@
-import django_filters
 from django.utils.translation import gettext_lazy as _
-
-from .models import (
-    Bulletin,
-    CourseGroupTerm,
-    DistributionList,
-    Function,
-    Organization,
-    Person,
-    PersonOrganizationFunction,
+from django_filters.rest_framework import (
+    filters,
+    filterset,
 )
 
+from . import models
 
-class FunctionFilter(django_filters.FilterSet):
+
+class FunctionFilter(filterset.FilterSet):
     '''
     ## Filters
 
@@ -28,17 +23,17 @@ class FunctionFilter(django_filters.FilterSet):
 
       - `name`: `iexact`, `contains`, `icontains`, `startswith`, `istartswith`, `endswith`, `iendswith`, `regex`, `iregex`
     '''
-    category = django_filters.ChoiceFilter(
+    category = filters.ChoiceFilter(
         label=_('Category'),
-        choices=Function.CATEGORY_CHOICES
+        choices=models.Function.CATEGORY_CHOICES
     )
-    persons = django_filters.ModelMultipleChoiceFilter(
+    persons = filters.ModelMultipleChoiceFilter(
         label=_('Person'),
-        queryset=Person.objects.all()
+        queryset=models.Person.objects.all()
     )
 
     class Meta:
-        model = Function
+        model = models.Function
         fields = {
             'name': (
                 'exact',
@@ -58,7 +53,7 @@ class FunctionFilter(django_filters.FilterSet):
         }
 
 
-class OrganizationFilter(django_filters.FilterSet):
+class OrganizationFilter(filterset.FilterSet):
     '''
     ## Filters
 
@@ -79,17 +74,17 @@ class OrganizationFilter(django_filters.FilterSet):
       - `phone`: `iexact`, `contains`, `icontains`, `startswith`, `istartswith`, `endswith`, `iendswith`, `isnull`, `regex`, `iregex`
       - `url`: `iexact`, `contains`, `icontains`, `startswith`, `istartswith`, `endswith`, `iendswith`, `isnull`, `regex`, `iregex`
     '''
-    category = django_filters.ChoiceFilter(
+    category = filters.ChoiceFilter(
         label=_('Category'),
-        choices=Organization.CATEGORY_CHOICES
+        choices=models.Organization.CATEGORY_CHOICES
     )
-    parent = django_filters.ModelChoiceFilter(
+    parent = filters.ModelChoiceFilter(
         label=_('Parent'),
-        queryset=Organization.objects.all()
+        queryset=models.Organization.objects.all()
     )
 
     class Meta:
-        model = Organization
+        model = models.Organization
         fields = {
             'name': (
                 'exact',
@@ -171,7 +166,7 @@ class OrganizationFilter(django_filters.FilterSet):
         }
 
 
-class PersonFilter(django_filters.FilterSet):
+class PersonFilter(filterset.FilterSet):
     '''
     ## Filters
 
@@ -191,17 +186,17 @@ class PersonFilter(django_filters.FilterSet):
       - `consultation`: `contains`, `icontains`, `isnull`, `regex`, `iregex`
       - `appendix`: `contains`, `icontains`, `isnull`, `regex`, `iregex`
     '''
-    sex = django_filters.ChoiceFilter(
+    sex = filters.ChoiceFilter(
         label=_('Sex'),
-        choices=Person.GENDER_CHOICES
+        choices=models.Person.GENDER_CHOICES
     )
-    functions = django_filters.ModelMultipleChoiceFilter(
+    functions = filters.ModelMultipleChoiceFilter(
         label=_('Function'),
-        queryset=Function.objects.all()
+        queryset=models.Function.objects.all()
     )
 
     class Meta:
-        model = Person
+        model = models.Person
         fields = {
             'first_name': (
                 'exact',
@@ -255,7 +250,7 @@ class PersonFilter(django_filters.FilterSet):
         }
 
 
-class PersonOrganizationFunctionFilter(django_filters.FilterSet):
+class PersonOrganizationFunctionFilter(filterset.FilterSet):
     '''
     ## Filters
 
@@ -265,7 +260,7 @@ class PersonOrganizationFunctionFilter(django_filters.FilterSet):
     '''
 
     class Meta:
-        model = PersonOrganizationFunction
+        model = models.PersonOrganizationFunction
         fields = (
             'person',
             'organization',
@@ -273,7 +268,7 @@ class PersonOrganizationFunctionFilter(django_filters.FilterSet):
         )
 
 
-class DistributionListFilter(django_filters.FilterSet):
+class DistributionListFilter(filterset.FilterSet):
     '''
     ## Filters
 
@@ -283,73 +278,14 @@ class DistributionListFilter(django_filters.FilterSet):
     '''
 
     class Meta:
-        model = DistributionList
+        model = models.DistributionList
         fields = (
             'name',
             'persons',
         )
 
 
-class CourseGroupTermFilter(django_filters.FilterSet):
-    person = django_filters.NumberFilter(
-        field_name='person__id',
-        lookup_expr='exact'
-    )
-    term = django_filters.NumberFilter(
-        field_name='term',
-        lookup_expr='exact'
-    )
-    room = django_filters.NumberFilter(
-        field_name='room',
-        lookup_expr='exact'
-    )
-    start__gte = django_filters.IsoDateTimeFilter(
-        field_name='start',
-        lookup_expr='gte'
-    )
-    start__gt = django_filters.IsoDateTimeFilter(
-        field_name='start',
-        lookup_expr='gt'
-    )
-    start__lte = django_filters.IsoDateTimeFilter(
-        field_name='start',
-        lookup_expr='lte'
-    )
-    start__lt = django_filters.IsoDateTimeFilter(
-        field_name='start',
-        lookup_expr='lt'
-    )
-    start__date = django_filters.DateFilter(
-        field_name='start',
-        lookup_expr='date'
-    )
-    end__gte = django_filters.IsoDateTimeFilter(
-        field_name='end',
-        lookup_expr='gte'
-    )
-    end__gt = django_filters.IsoDateTimeFilter(
-        field_name='end',
-        lookup_expr='gt'
-    )
-    end__lte = django_filters.IsoDateTimeFilter(
-        field_name='end',
-        lookup_expr='lte'
-    )
-    end__lt = django_filters.IsoDateTimeFilter(
-        field_name='end',
-        lookup_expr='lt'
-    )
-    end__date = django_filters.DateFilter(
-        field_name='end',
-        lookup_expr='date'
-    )
-
-    class Meta:
-        model = CourseGroupTerm
-        fields = tuple()
-
-
-class BulletinFilter(django_filters.FilterSet):
+class CourseGroupTermFilter(filterset.FilterSet):
     '''
     ## Filters
 
@@ -363,37 +299,179 @@ class BulletinFilter(django_filters.FilterSet):
 
     Possible lookups:
 
-      - `published`: `gte`, `gt`, `lte`, `lt`
+      - `start`: `exact`, `gt`, `gte`, `lt`, `lte`, `date`
+      - `end`: `exact`, `gt`, `gte`, `lt`, `lte`, `date`
     '''
-    issue = django_filters.CharFilter(
-        field_name='issue',
-        lookup_expr='exact'
-    )
-    academic_year = django_filters.CharFilter(
-        field_name='academic_year',
-        lookup_expr='contains'
-    )
-    room = django_filters.NumberFilter(
-        field_name='room',
-        lookup_expr='exact'
-    )
-    published__gte = django_filters.IsoDateTimeFilter(
-        field_name='published',
-        lookup_expr='gte'
-    )
-    published__gt = django_filters.IsoDateTimeFilter(
-        field_name='published',
-        lookup_expr='gt'
-    )
-    published__lte = django_filters.IsoDateTimeFilter(
-        field_name='published',
-        lookup_expr='lte'
-    )
-    published__lt = django_filters.IsoDateTimeFilter(
-        field_name='published',
-        lookup_expr='lt'
-    )
 
     class Meta:
-        model = Bulletin
-        fields = tuple()
+        model = models.CourseGroupTerm
+        fields = {
+            'person': (
+                'exact',
+            ),
+            'term': (
+                'exact',
+            ),
+            'room': (
+                'exact',
+            ),
+            'start': (
+                'exact',
+                'gt',
+                'lt',
+                'gte',
+                'lte',
+                'date',
+            ),
+            'end': (
+                'exact',
+                'gt',
+                'lt',
+                'gte',
+                'lte',
+                'date',
+            ),
+        }
+
+
+class EventFilter(filterset.FilterSet):
+    '''
+    ## Filters
+
+    To filter for exact value matches:
+
+        ?<fieldname>=<value>
+
+    For advanced filtering use lookups:
+
+        ?<fieldname>__<lookup>=<value>
+
+    Possible lookups:
+
+      - `building__short`: `exact`, `startswith`, `contains`
+      - `room__category__name`: `exact`
+      - `room__floor__name`: `exact`
+      - `room__building__name`: `exact`, `startswith`
+      - `room__building__short`: `exact`
+      - `room__building__address`: `exact`, `startswith`, `contains`
+      - `room__title`: `exact`, `startswith`, `contains`
+      - `room__name_full`: `exact`, `startswith`, `contains`
+      - `course__category`: `exact`
+      - `category`: `exact`
+      - `date`: `gt`, `gte`, `lt`, `lte`
+      - `start`: `gt`, `gte`, `lt`, `lte`
+      - `end`: `gt`, `gte`, `lt`, `lte`
+      - `show_end`: `gt`, `gte`, `lt`, `lte`
+    '''
+
+    class Meta:
+        model = models.Event
+        fields = {
+            'building__short': (
+                'exact',
+                'startswith',
+                'contains',
+            ),
+            'room__category__name': (
+                'exact',
+            ),
+            'room__floor__name': (
+                'exact',
+            ),
+            'room__building__name': (
+                'exact',
+                'startswith',
+            ),
+            'room__building__short': (
+                'exact',
+            ),
+            'room__building__address': (
+                'exact',
+                'contains',
+                'startswith',
+            ),
+            'room__title': (
+                'exact',
+                'contains',
+                'startswith',
+            ),
+            'room__name_full': (
+                'exact',
+                'contains',
+                'startswith',
+            ),
+            'course__category': (
+                'exact',
+            ),
+            'category': (
+                'exact',
+            ),
+            'date': (
+                'exact',
+                'gt',
+                'gte',
+                'lt',
+                'lte',
+            ),
+            'start': (
+                'exact',
+                'gt',
+                'gte',
+                'lt',
+                'lte',
+            ),
+            'end': (
+                'exact',
+                'gt',
+                'gte',
+                'lt',
+                'lte',
+            ),
+            'show_end': (
+                'exact',
+                'gt',
+                'gte',
+                'lt',
+                'lte',
+            ),
+        }
+
+
+class BulletinFilter(filterset.FilterSet):
+    '''
+    ## Filters
+
+    To filter for exact value matches:
+
+        ?<fieldname>=<value>
+
+    For advanced filtering use lookups:
+
+        ?<fieldname>__<lookup>=<value>
+
+    Possible lookups:
+
+      - `academic_year`: `contains`, `regex`
+      - `published`: `gte`, `gt`, `lte`, `lt`
+    '''
+
+    class Meta:
+        model = models.Bulletin
+        fields = {
+            'issue': (
+                'exact',
+            ),
+            'academic_year': (
+                'exact',
+                'contains',
+                'regex',
+            ),
+            'published': (
+                'exact',
+                'gt',
+                'lt',
+                'gte',
+                'lte',
+                'date',
+            ),
+        }

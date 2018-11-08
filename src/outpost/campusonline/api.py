@@ -198,9 +198,23 @@ class DistributionListViewSet(CacheResponseMixin, FlexFieldsMixin, ReadOnlyModel
     )
 
 
+@docstring_format(
+    model=models.Event.__doc__,
+    filter=filters.EventFilter.__doc__
+)
 class EventViewSet(ReadOnlyModelViewSet):
+    '''
+    List events from CAMPUSonline.
+
+    {model}
+    {filter}
+    '''
     queryset = models.Event.objects.all()
     serializer_class = serializers.EventSerializer
+    filter_backends = (
+        DjangoFilterBackend,
+    )
+    filter_class = filters.EventFilter
     permission_classes = (
         AllowAny,
     )

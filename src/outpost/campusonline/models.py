@@ -753,6 +753,40 @@ class CourseGroupTerm(models.Model):
 
 
 class Event(OrderedModel):
+    '''
+    ## Fields
+
+    ### `id` (`integer`)
+    Primary key.
+
+    ### `course` (`object`)
+    Course this event is associated with.
+
+    ### `category` (`string`)
+    Category for this event.
+
+    ### `title` (`string`)
+    Title of this event.
+
+    ### `date` (`datetime`)
+    Date of event.
+
+    ### `start` (`datetime`)
+    Start of event.
+
+    ### `end` (`datetime`)
+    End of event.
+
+    ### `building` (`object`)
+    Building this event takes place in.
+
+    ### `room` (`object`)
+    Building this event takes place in.
+
+    ### `show_end` (`datetime`)
+    When to stop showing this event.
+    '''
+
     id = models.CharField(
         primary_key=True,
         max_length=32
