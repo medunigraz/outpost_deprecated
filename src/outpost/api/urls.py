@@ -11,6 +11,7 @@ from ..campusonline import api as campusonline
 from ..geo import api as geo
 from ..networktoken import api as networktoken
 from ..positioning import api as positioning
+from ..research import api as research
 from ..restaurant import api as restaurant
 from ..salt import api as salt
 from ..structure import api as structure
@@ -293,6 +294,11 @@ v1.register(
     r'thesis/thesis',
     thesis.ThesisViewSet,
     base_name='thesis-thesis'
+)
+v1.register(
+    r'research/publication',
+    research.PublicationViewSet,
+    base_name='research-publication'
 )
 v1.register(
     r'restaurant/diet',

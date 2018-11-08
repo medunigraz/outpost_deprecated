@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'outpost.networktoken',
     'outpost.oauth2',
     'outpost.positioning',
+    'outpost.research',
     'outpost.restaurant',
     'outpost.salt',
     'outpost.structure',
