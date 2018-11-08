@@ -599,7 +599,7 @@ class DistributionList(AbstractDistributionList):
         db_table = 'campusonline_distributionlist'
 
     class Refresh:
-        interval = 7200
+        interval = 86400
 
 
 class Student(models.Model):
