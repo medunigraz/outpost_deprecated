@@ -13,6 +13,7 @@ from ..networktoken import api as networktoken
 from ..positioning import api as positioning
 from ..salt import api as salt
 from ..structure import api as structure
+from ..thesis import api as thesis
 from ..typo3 import api as typo3
 from ..video import api as video
 
@@ -276,6 +277,21 @@ v1.register(
     r'salt/host',
     salt.HostViewSet,
     base_name='salt-host'
+)
+v1.register(
+    r'thesis/doctoralschool',
+    thesis.DoctoralSchoolViewSet,
+    base_name='thesis-doctoralschool'
+)
+v1.register(
+    r'thesis/discipline',
+    thesis.DisciplineViewSet,
+    base_name='thesis-discipline'
+)
+v1.register(
+    r'thesis/thesis',
+    thesis.ThesisViewSet,
+    base_name='thesis-thesis'
 )
 
 urlpatterns = [
