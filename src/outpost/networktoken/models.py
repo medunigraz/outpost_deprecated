@@ -2,9 +2,11 @@ from datetime import timedelta
 from secrets import token_urlsafe
 
 from django.conf import settings
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import (
+    MaxValueValidator,
+    MinValueValidator,
+)
 from django.db import models
-from django.utils import timezone
 from django_extensions.db.models import TimeStampedModel
 
 

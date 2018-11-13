@@ -1,10 +1,20 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import (
+    DateTimeField,
+    ExpressionWrapper,
+    F,
+)
 from django.urls import reverse_lazy as reverse
 from django.utils import timezone
-from django.db.models import DateTimeField, ExpressionWrapper, F
-from django.views.generic import CreateView, DetailView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import (
+    CreateView,
+    DetailView,
+)
 
-from . import models, forms
+from . import (
+    forms,
+    models,
+)
 
 
 class TokenCreateView(LoginRequiredMixin, CreateView):
