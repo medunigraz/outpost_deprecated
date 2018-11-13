@@ -7,6 +7,7 @@ import requests
 from celery.task import PeriodicTask
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry
+from django.utils import timezone
 from geopy.geocoders import Nominatim
 from requests.exceptions import RequestException
 
@@ -19,6 +20,7 @@ class RestaurantSyncTask(PeriodicTask):
     run_every = timedelta(hours=2)
 
     def run(self, **kwargs):
+        today = timezone.localdate()
         url = settings.OUTPOST.get('restaurants')
         if not url:
             logger.debug('No URL for restaurant sync defined, skipping.')
@@ -84,12 +86,15 @@ class RestaurantSyncTask(PeriodicTask):
             if created:
                 logger.info(f'Created new restaurant: {rest}')
             for meal in data.get('meals', {}):
+                available = parsedate_to_datetime(meal.get('date'))
+                if today != available.date():
+                    continue
                 obj, created = models.Meal.objects.update_or_create(
                     foreign=int(meal.get('uid')),
                     defaults={
                         'foreign': int(meal.get('uid')),
                         'restaurant': rest,
-                        'available': parsedate_to_datetime(meal.get('date')),
+                        'available': available,
                         'description': meal.get('description'),
                         'price': Decimal(meal.get('price')),
                         'diet': diets.get(meal.get('diet')),
@@ -97,3 +102,5 @@ class RestaurantSyncTask(PeriodicTask):
                 )
                 if created:
                     logger.info(f'Created new meal: {obj}')
+        logger.debug(f'Removing meals not available today: {today}')
+        models.Meal.objects.exclude(available=today).delete()
