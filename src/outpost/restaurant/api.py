@@ -1,6 +1,7 @@
 from rest_flex_fields.views import FlexFieldsMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ReadOnlyModelViewSet
+from rest_framework_gis.filters import DistanceToPointFilter
 
 from outpost.base.decorators import docstring_format
 
@@ -53,6 +54,11 @@ class RestaurantViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     permission_classes = (
         IsAuthenticated,
     )
+    distance_filter_field = 'position'
+    filter_backends = (
+        DistanceToPointFilter,
+    )
+    bbox_filter_include_overlapping = True
     permit_list_expands = (
         'meals',
         'meals.diet',
