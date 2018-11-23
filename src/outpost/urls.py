@@ -7,17 +7,30 @@ from django.conf.urls import (
     include,
     url,
 )
-from django.conf.urls.static import static
 from django.contrib import admin
+from django.views.static import serve
 from rest_framework.authtoken import views as authtoken
 
 urlpatterns = []
 
 if settings.DEBUG:
     import debug_toolbar
-    urlpatterns.extend(
-        static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    )
+    urlpatterns.extend([
+        url(
+            r'^media/(?P<path>.*)$',
+            serve,
+            {
+                'document_root': settings.MEDIA_ROOT,
+            }
+        ),
+        url(
+            r'^static/(?P<path>.*)$',
+            serve,
+            {
+                'document_root': settings.STATIC_ROOT,
+            }
+        ),
+    ])
     urlpatterns.extend([
         url(r'^__debug__/', include(debug_toolbar.urls)),
     ])
