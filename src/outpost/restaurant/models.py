@@ -2,6 +2,7 @@ import logging
 
 from django.conf import settings
 from django.contrib.gis.db import models
+from polymorphic.models import PolymorphicModel
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +29,7 @@ class Diet(models.Model):
         return self.name
 
 
-class Restaurant(models.Model):
+class Restaurant(PolymorphicModel):
     '''
     ## Fields
 
@@ -62,9 +63,12 @@ class Restaurant(models.Model):
     name = models.CharField(
         max_length=128
     )
-    foreign = models.PositiveIntegerField(
+    foreign = models.CharField(
+        max_length=256,
         blank=True,
         null=True,
+        unique=True,
+        db_index=True
     )
     address = models.CharField(
         max_length=128
@@ -86,11 +90,36 @@ class Restaurant(models.Model):
     position = models.PointField(
         blank=True,
         null=True,
+        db_index=True,
         srid=settings.DEFAULT_SRID
     )
 
     def __str__(self):
         return self.name
+
+
+class BaseExtractor(PolymorphicModel):
+    name = models.CharField(
+        max_length=128
+    )
+    dateformat = models.CharField(
+        max_length=64
+    )
+
+    def extract(self, rest):
+        pass
+
+
+class XSLTExtractor(BaseExtractor):
+    xslt = models.TextField()
+
+    def extract(self, rest):
+        pass
+
+
+class XMLRestaurant(Restaurant):
+    source = models.URLField()
+    extractor = models.ForeignKey('BaseExtractor')
 
 
 class Meal(models.Model):
@@ -112,9 +141,10 @@ class Meal(models.Model):
     ### `diet` (`integer` or `Object`)
     Foreign key to [Diet](../diet) this meal is conformant with.
     '''
-    foreign = models.PositiveIntegerField(
-        null=True,
+    foreign = models.CharField(
+        max_length=256,
         blank=True,
+        null=True,
     )
     restaurant = models.ForeignKey(
         'Restaurant',
@@ -127,7 +157,9 @@ class Meal(models.Model):
         decimal_places=2
     )
     diet = models.ForeignKey(
-        'Diet'
+        'Diet',
+        blank=True,
+        null=True
     )
 
     def __str__(self):
