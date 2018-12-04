@@ -11,4 +11,4 @@ LimitNOFILE=500000
 LimitNPROC=500000
 
 [Install]
-WantedBy=outpost-%i.target
+WantedBy=outpost@%i.target

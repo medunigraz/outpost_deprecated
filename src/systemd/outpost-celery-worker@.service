@@ -9,4 +9,4 @@ User=www-data-api
 ExecStart=/usr/bin/python3 -m celery worker -E -A outpost.celery --loglevel=WARNING -n 'default@%i' --autoscale=10,3 -Q default
 
 [Install]
-WantedBy=outpost-%i.target
+WantedBy=outpost@%i.target

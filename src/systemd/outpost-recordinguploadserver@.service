@@ -9,4 +9,4 @@ User=www-data-api
 ExecStart=/usr/bin/django-admin recordinguploadserver --settings outpost.settings --pythonpath .
 
 [Install]
-WantedBy=outpost-%i.target
+WantedBy=outpost@%i.target

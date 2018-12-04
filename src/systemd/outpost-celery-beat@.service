@@ -9,4 +9,4 @@ User=www-data-api
 ExecStart=/usr/bin/python3 -m celery beat -A outpost.celery --loglevel=WARNING -s /var/lib/celery/%i/beat.state --pidfile /var/lib/celery/%i/beat.pid
 
 [Install]
-WantedBy=outpost-%i.target
+WantedBy=outpost@%i.target
