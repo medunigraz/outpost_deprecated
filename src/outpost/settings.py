@@ -69,7 +69,7 @@ INSTALLED_APPS = [
     'oauth2_provider',
     'corsheaders',
     'social.apps.django_app.default',
-    #'dynamic_scraper',
+    # 'dynamic_scraper',
     'haystack',
     'polymorphic',
     'push_notifications',
@@ -101,7 +101,7 @@ MIDDLEWARE = [
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.contrib.sites.middleware.CurrentSiteMiddleware',
-    #'django_downloadview.SmartDownloadMiddleware',
+    # 'django_downloadview.SmartDownloadMiddleware',
     'django_prometheus.middleware.PrometheusAfterMiddleware',
 ]
 
@@ -348,9 +348,15 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTH_LDAP_SERVER_URI = "ldap://ldap.example.com"
 AUTH_LDAP_BIND_DN = "cn=django-agent,dc=example,dc=com"
 AUTH_LDAP_BIND_PASSWORD = "phlebotinum"
-AUTH_LDAP_USER_SEARCH = LDAPSearch("ou=users,dc=example,dc=com", ldap.SCOPE_SUBTREE, "(uid=%(user)s)")
-AUTH_LDAP_GROUP_SEARCH = LDAPSearch("ou=django,ou=groups,dc=example,dc=com",
-    ldap.SCOPE_SUBTREE, "(objectClass=groupOfNames)"
+AUTH_LDAP_USER_SEARCH = LDAPSearch(
+    "ou=users,dc=example,dc=com",
+    ldap.SCOPE_SUBTREE,
+    "(uid=%(user)s)"
+)
+AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
+    "ou=django,ou=groups,dc=example,dc=com",
+    ldap.SCOPE_SUBTREE,
+    "(objectClass=groupOfNames)"
 )
 AUTH_LDAP_GROUP_TYPE = GroupOfNamesType(name_attr="cn")
 AUTH_LDAP_REQUIRE_GROUP = "cn=enabled,ou=django,ou=groups,dc=example,dc=com"
