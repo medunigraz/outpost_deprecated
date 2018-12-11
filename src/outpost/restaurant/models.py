@@ -2,6 +2,10 @@ import logging
 
 from django.conf import settings
 from django.contrib.gis.db import models
+from django.template import (
+    Context,
+    Template,
+)
 from polymorphic.models import PolymorphicModel
 
 logger = logging.getLogger(__name__)
@@ -93,6 +97,9 @@ class Restaurant(PolymorphicModel):
         db_index=True,
         srid=settings.DEFAULT_SRID
     )
+    enabled = models.BooleanField(
+        default=False
+    )
 
     def __str__(self):
         return self.name
@@ -109,6 +116,9 @@ class BaseExtractor(PolymorphicModel):
     def extract(self, rest):
         pass
 
+    def __str__(self):
+        return self.name
+
 
 class XSLTExtractor(BaseExtractor):
     xslt = models.TextField()
@@ -118,8 +128,15 @@ class XSLTExtractor(BaseExtractor):
 
 
 class XMLRestaurant(Restaurant):
-    source = models.URLField()
+    source_template = models.TextField()
     extractor = models.ForeignKey('BaseExtractor')
+
+    @property
+    def source(self):
+        context = Context({
+            'restaurant': self,
+        })
+        return Template(self.source_template).render(context)
 
 
 class Meal(models.Model):
@@ -143,23 +160,23 @@ class Meal(models.Model):
     '''
     foreign = models.CharField(
         max_length=256,
-        blank=True,
-        null=True,
     )
     restaurant = models.ForeignKey(
         'Restaurant',
-        related_name='meals'
+        related_name='meals',
     )
     available = models.DateField()
     description = models.TextField()
     price = models.DecimalField(
         max_digits=6,
-        decimal_places=2
+        decimal_places=2,
+        blank=True,
+        null=True,
     )
     diet = models.ForeignKey(
         'Diet',
         blank=True,
-        null=True
+        null=True,
     )
 
     def __str__(self):

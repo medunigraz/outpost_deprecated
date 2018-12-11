@@ -1,19 +1,25 @@
 import json
 import logging
 from collections import defaultdict
-from datetime import timedelta
+from datetime import (
+    datetime,
+    timedelta,
+)
 from decimal import (
     Decimal,
     InvalidOperation,
 )
 from email.utils import parsedate_to_datetime
 from hashlib import sha256
-from time import strptime
 
 import requests
 from celery.task import PeriodicTask
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry
+from django.template import (
+    Context,
+    Template,
+)
 from django.utils import timezone
 from geopy.geocoders import Nominatim
 from lxml import etree
@@ -31,6 +37,7 @@ class RestaurantSyncTask(PeriodicTask):
         today = timezone.localdate()
         self.json()
         self.xml()
+        logger.debug(f'Removing meals not available today: {today}')
         models.Meal.objects.exclude(available=today).delete()
 
     def json(self):
@@ -99,6 +106,8 @@ class RestaurantSyncTask(PeriodicTask):
             )
             if created:
                 logger.info(f'Created new restaurant: {rest}')
+            else:
+                logger.debug(f'Updated restaurant: {rest}')
             for meal in data.get('meals', {}):
                 available = parsedate_to_datetime(meal.get('date'))
                 if today != available.date():
@@ -116,14 +125,15 @@ class RestaurantSyncTask(PeriodicTask):
                 )
                 if created:
                     logger.info(f'Created new meal: {obj}')
-        logger.debug(f'Removing meals not available today: {today}')
+                else:
+                    logger.debug(f'Updated meal: {obj}')
 
     def xml(self):
         today = timezone.localdate()
         for xrest in models.XMLRestaurant.objects.filter(enabled=True):
             try:
                 req = requests.get(
-                    xrest.url,
+                    xrest.source,
                     headers={
                         'Accept': 'text/xml',
                     }
@@ -133,15 +143,19 @@ class RestaurantSyncTask(PeriodicTask):
                 logger.warn(f'Could not fetch restaurant data: {e}')
                 return
             doc = etree.XML(req.text)
-            transformer = etree.XSLT(etree.XML(xrest.extractor.xslt))
+            context = Context({
+                'restaurant': xrest,
+            })
+            xslt = Template(xrest.extractor.xslt).render(context)
+            transformer = etree.XSLT(etree.XML(xslt))
             data = transformer(doc)
             for meal in json.loads(str(data)):
                 values = defaultdict(lambda: None)
                 values.update(meal)
                 if 'available' in meal:
-                    values['available'] = strptime(
+                    values['available'] = datetime.strptime(
                         meal.get('available'),
-                        xrest.dateformat
+                        xrest.extractor.dateformat
                     ).date()
                     if values['available'] != today:
                         continue
@@ -150,7 +164,8 @@ class RestaurantSyncTask(PeriodicTask):
                 if 'foreign' not in meal:
                     logger.info(f'No foreign key data found: {meal}')
                     continue
-                values['foreign'] = sha256(meal.get('foreign')).hexdigest()
+                hashkey = meal.get('foreign').encode('utf-8')
+                values['foreign'] = sha256(hashkey).hexdigest()
                 if meal.get('price'):
                     try:
                         values['price'] = Decimal(meal.get('price'))
@@ -169,10 +184,11 @@ class RestaurantSyncTask(PeriodicTask):
                             logger.info(f'Diet not found: {diet_pk}')
                             values['diet'] = None
                 values['restaurant'] = xrest
-
                 obj, created = models.Meal.objects.update_or_create(
                     foreign=values['foreign'],
                     defaults=values
                 )
                 if created:
                     logger.info(f'Created new meal: {obj}')
+                else:
+                    logger.debug(f'Updated meal: {obj}')
