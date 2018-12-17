@@ -10,18 +10,18 @@ from decimal import (
     InvalidOperation,
 )
 from email.utils import parsedate_to_datetime
+from functools import reduce
 from hashlib import sha256
 
 import requests
 from celery.task import PeriodicTask
 from django.conf import settings
-from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.gis.geos import Point
 from django.template import (
     Context,
     Template,
 )
 from django.utils import timezone
-from geopy.geocoders import Nominatim
 from lxml import etree
 from requests.exceptions import RequestException
 
@@ -76,17 +76,25 @@ class RestaurantSyncTask(PeriodicTask):
             if created:
                 logger.info(f'Created new diet: {obj}')
             diets[int(foreign)] = obj
-        nom = Nominatim(user_agent=__name__)
+        geo = settings.GEORESOLVERS
         for data in menu.get('restaurants', {}):
-            position = nom.geocode(
-                {
-                    'street': data.get('address'),
-                    'city': data.get('city'),
-                    'country': 'Austria',  # TODO: No hardcoded country ... find a way to autolocate
-                    'postalcode': data.get('zip'),
-                },
-                geometry='wkt'
-            )
+            query = {
+                'street': data.get('address'),
+                'city': data.get('city'),
+                'country': 'Austria',  # TODO: No hardcoded country ... find a way to autolocate
+                'postalcode': data.get('zip'),
+            }
+            locate = reduce(lambda a, r: a or r.geocode(query), geo, None)
+            if locate:
+                logger.debug(f'Gelocated at {locate}')
+                position = Point(
+                    locate.longitude,
+                    locate.latitude,
+                    srid=4326
+                )
+            else:
+                logger.info(f'No geolocation for {query}')
+                position = None
             rest, created = models.Restaurant.objects.update_or_create(
                 foreign=int(data.get('uid')),
                 defaults={
@@ -98,10 +106,7 @@ class RestaurantSyncTask(PeriodicTask):
                     'phone': data.get('telephone'),
                     'email': data.get('email'),
                     'url': data.get('www') or None,
-                    'position': GEOSGeometry(
-                        position.raw.get('geotext'),
-                        srid=4326  # TODO: Setting for SRID
-                    ).centroid
+                    'position': position,
                 }
             )
             if created:
@@ -131,6 +136,7 @@ class RestaurantSyncTask(PeriodicTask):
     def xml(self):
         today = timezone.localdate()
         for xrest in models.XMLRestaurant.objects.filter(enabled=True):
+            logger.debug(f'Processing {xrest}')
             try:
                 req = requests.get(
                     xrest.source,

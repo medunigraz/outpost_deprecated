@@ -15,6 +15,7 @@ from django_auth_ldap.config import (
     LDAPSearch,
 )
 from docutils.core import publish_parts
+from geopy.geocoders import Nominatim
 
 BASE_DIR = os.path.abspath(os.path.join(__file__, '../../..'))
 
@@ -463,6 +464,10 @@ HOOK_DELIVERER = 'outpost.base.hooks.deliver_hook_wrapper'
 HOOK_EVENTS = {}
 
 RUNSERVERPLUS_SERVER_ADDRESS_PORT = '0.0.0.0:8088'
+
+GEORESOLVERS = (
+    Nominatim(user_agent=__package__),
+)
 
 OUTPOST = {
     'epiphan_provisioning': False,
