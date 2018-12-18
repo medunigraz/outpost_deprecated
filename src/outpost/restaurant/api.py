@@ -49,7 +49,7 @@ class RestaurantViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     {model}
     {serializer}
     '''
-    queryset = models.Restaurant.objects.all()
+    queryset = models.Restaurant.objects.filter(enabled=True)
     serializer_class = serializers.RestaurantSerializer
     permission_classes = (
         IsAuthenticated,

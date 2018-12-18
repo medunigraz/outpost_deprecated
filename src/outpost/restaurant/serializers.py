@@ -46,6 +46,7 @@ class RestaurantSerializer(FlexFieldsModelSerializer):
         model = models.Restaurant
         exclude = (
             'foreign',
+            'enabled',
         )
 
 
