@@ -1,11 +1,22 @@
 import os
-
 import django
-from channels.routing import ProtocolTypeRouter
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'outpost.settings')
+django.setup() # NOQA
 
-django.setup()
+from channels.auth import AuthMiddlewareStack
+from channels.routing import (
+    ProtocolTypeRouter,
+    URLRouter,
+)
+
+from outpost.base.routing import websocket_urlpatterns
+
+
 application = ProtocolTypeRouter({
-    # Empty for now (http->django views is added by default)
+    'websocket': AuthMiddlewareStack(
+        URLRouter(
+            websocket_urlpatterns
+        )
+    ),
 })
