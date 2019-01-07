@@ -82,7 +82,6 @@ INSTALLED_APPS = [
     'netfields',
     'imagekit',
     'taggit',
-    'django_uwsgi',
     'memoize',
     'django_filters',
     'rest_hooks',
