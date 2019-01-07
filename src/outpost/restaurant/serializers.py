@@ -47,6 +47,7 @@ class RestaurantSerializer(FlexFieldsModelSerializer):
         exclude = (
             'foreign',
             'enabled',
+            'polymorphic_ctype',
         )
 
 
