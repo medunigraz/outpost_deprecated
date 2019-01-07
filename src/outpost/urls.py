@@ -37,10 +37,6 @@ if settings.DEBUG:
 
 urlpatterns.extend([
     url(
-        r'^admin/uwsgi/',
-        include('django_uwsgi.urls')
-    ),
-    url(
         r'^admin/',
         admin.site.urls
     ),
