@@ -18,9 +18,6 @@ class BaseConfig(AppConfig):
             HeadersPanel.ENVIRON_FILTER.add('GEOIP_CONTINENT_CODE')
             HeadersPanel.ENVIRON_FILTER.add('GEOIP_COUNTRY_CODE')
             HeadersPanel.ENVIRON_FILTER.add('GEOIP_COUNTRY_NAME')
-            PANELS_DEFAULTS += [
-                'django_uwsgi.panels.UwsgiPanel'
-            ]
         for app in settings.INSTALLED_APPS:
             try:
                 plugin = import_module(f'{app}.plugins')
