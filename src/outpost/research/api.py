@@ -17,6 +17,42 @@ from . import (
 
 
 @docstring_format(
+    model=models.Category.__doc__,
+    serializer=serializers.CategorySerializer.__doc__
+)
+class CategoryViewSet(ReadOnlyModelViewSet):
+    '''
+    List publication categories.
+
+    {model}
+    {serializer}
+    '''
+    queryset = models.Category.objects.all()
+    serializer_class = serializers.CategorySerializer
+    permission_classes = (
+        AllowAny,
+    )
+
+
+@docstring_format(
+    model=models.Document.__doc__,
+    serializer=serializers.DocumentSerializer.__doc__
+)
+class DocumentViewSet(ReadOnlyModelViewSet):
+    '''
+    List publication documents.
+
+    {model}
+    {serializer}
+    '''
+    queryset = models.Document.objects.all()
+    serializer_class = serializers.DocumentSerializer
+    permission_classes = (
+        AllowAny,
+    )
+
+
+@docstring_format(
     model=models.Publication.__doc__,
     serializer=serializers.PublicationSerializer.__doc__
 )
@@ -32,9 +68,9 @@ class PublicationViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     permission_classes = (
         AllowAny,
     )
-    filter_fields = (
-        'person',
-    )
     permit_list_expands = (
-        'person',
+        'persons',
+        'organizations',
+        'category',
+        'document',
     )

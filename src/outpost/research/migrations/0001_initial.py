@@ -55,26 +55,6 @@ class Migration(migrations.Migration):
         );
         '''.format(settings.MULTICORN.get('research')),
         '''
-        CREATE FOREIGN TABLE "research"."pubmed_import" (
-            PUBMED_ID varchar,
-            ABSTRACTTEXT varchar
-        )
-        SERVER sqlalchemy OPTIONS (
-            tablename 'PUBMED_IMPORT',
-            db_url '{}'
-        );
-        '''.format(settings.MULTICORN.get('research')),
-        '''
-        CREATE FOREIGN TABLE "research"."publikation_sci_daten" (
-            SCI_ID varchar,
-            ABSTRACT varchar
-        )
-        SERVER sqlalchemy OPTIONS (
-            tablename 'PUBLIKATION_SCI_DATEN',
-            db_url '{}'
-        );
-        '''.format(settings.MULTICORN.get('research')),
-        '''
         CREATE FOREIGN TABLE "research"."publikation_typ" (
             PUBLIKATION_TYP_ID numeric,
             PUBLIKATION_TYP_DE varchar,
@@ -109,7 +89,7 @@ class Migration(migrations.Migration):
             PUBMED_ID varchar,
             DOI varchar,
             PMC_ID varchar,
-            MEDONLINE_PUB_ID numeric
+            ABSTRACT bytea
         )
         SERVER sqlalchemy OPTIONS (
             tablename 'PUBLIKATION',
@@ -117,7 +97,7 @@ class Migration(migrations.Migration):
         );
         '''.format(settings.MULTICORN.get('research')),
         '''
-        CREATE VIEW "public"."research_publication_person" AS SELECT
+        CREATE MATERIALIZED VIEW "public"."research_publication_person" AS SELECT
             pp.publikation_id::integer AS publication_id,
             pc.medonline_person_id::integer AS person_id
         FROM
@@ -127,17 +107,36 @@ class Migration(migrations.Migration):
             pc.person_id::integer = pp.person_id::integer;
         ''',
         '''
-        CREATE VIEW "public"."research_publication_organization" AS SELECT
+        CREATE UNIQUE INDEX research_publication_person_idx ON "public"."research_publication_person" ("publication_id", "person_id");
+        ''',
+        '''
+        CREATE INDEX research_publication_person_publication_id_idx ON "public"."research_publication_person" ("publication_id");
+        ''',
+        '''
+        CREATE INDEX research_publication_person_person_id_idx ON "public"."research_publication_person" ("person_id");
+        ''',
+        '''
+        CREATE MATERIALIZED VIEW "public"."research_publication_organization" AS SELECT DISTINCT
             op.publikation_id::integer AS publication_id,
             oc.orgeinheit_id_m::integer AS organization_id
         FROM
             "research"."orgeinheit_campusonline" AS oc,
             "research"."orgeinheit_publikation" AS op
         WHERE
-            oc.orgeinheit_id::integer = op.orgeinheit_id::integer;
+            oc.orgeinheit_id::integer = op.orgeinheit_id::integer
+        GROUP BY publication_id, organization_id;
         ''',
         '''
-        CREATE VIEW "public"."research_category" AS SELECT
+        CREATE UNIQUE INDEX research_publication_organization_idx ON "public"."research_publication_organization" ("publication_id", "organization_id");
+        ''',
+        '''
+        CREATE INDEX research_publication_organization_publication_id_idx ON "public"."research_publication_organization" ("publication_id");
+        ''',
+        '''
+        CREATE INDEX research_publication_organization_organization_id_idx ON "public"."research_publication_organization" ("organization_id");
+        ''',
+        '''
+        CREATE MATERIALIZED VIEW "public"."research_category" AS SELECT
             publikation_typ_id::integer AS id,
             hstore(
                 ARRAY['de', 'en'],
@@ -147,7 +146,10 @@ class Migration(migrations.Migration):
             "research"."publikation_typ";
         ''',
         '''
-        CREATE VIEW "public"."research_document" AS SELECT
+        CREATE UNIQUE INDEX research_category_id_idx ON "public"."research_category" ("id");
+        ''',
+        '''
+        CREATE MATERIALIZED VIEW "public"."research_document" AS SELECT
             publikation_dokumenttyp_id::integer AS id,
             hstore(
                 ARRAY['de', 'en'],
@@ -157,43 +159,94 @@ class Migration(migrations.Migration):
             "research"."publikation_dokumenttyp";
         ''',
         '''
-        CREATE VIEW "public"."research_publication" AS SELECT
-            p.publikation_id::integer AS id,
-            p.autor AS author,
-            p.jahr::integer AS year,
-            p.quelle AS source,
-            p.publikation_typ_id::integer AS category_id,
-            p.publikation_dokumenttyp_id::integer AS document_id,
-            p.sci_id AS sci,
-            p.pubmed_id AS pubmed,
-            p.doi AS doi,
-            p.pmc_id AS pmc,
-            COALESCE(pi.abstracttext, psd.abstract) AS abstract
+        CREATE UNIQUE INDEX research_document_id_idx ON "public"."research_document" ("id");
+        ''',
+        '''
+        CREATE MATERIALIZED VIEW "public"."research_publication" AS SELECT
+            publikation_id::integer AS id,
+            string_to_array(autor, '; ') AS authors,
+            jahr::integer AS year,
+            quelle AS source,
+            publikation_typ_id::integer AS category_id,
+            publikation_dokumenttyp_id::integer AS document_id,
+            sci_id AS sci,
+            pubmed_id AS pubmed,
+            doi AS doi,
+            pmc_id AS pmc,
+            abstract AS abstract_bytes
         FROM
-            "research"."publikation" AS p
-        INNER JOIN
-            "research"."pubmed_import" AS pi
-            ON p.pubmed_id = pi.pubmed_id
-        INNER JOIN
-            "research"."publikation_sci_daten" AS psd
-            ON p.sci_id = psd.sci_id
+            "research"."publikation"
+        ''',
+        '''
+        CREATE UNIQUE INDEX research_publication_id_idx ON "public"."research_publication" ("id");
+        ''',
+        '''
+        CREATE INDEX research_publication_year_idx ON "public"."research_publication" ("year");
+        ''',
+        '''
+        CREATE INDEX research_publication_category_id_idx ON "public"."research_publication" ("category_id");
+        ''',
+        '''
+        CREATE INDEX research_publication_document_id_idx ON "public"."research_publication" ("document_id");
         ''',
     ]
     reverse = [
         '''
-        DROP VIEW IF EXISTS "public"."research_publication";
+        DROP INDEX IF EXISTS research_publication_document_id_idx;
         ''',
         '''
-        DROP VIEW IF EXISTS "public"."research_document";
+        DROP INDEX IF EXISTS research_publication_category_id_idx;
         ''',
         '''
-        DROP VIEW IF EXISTS "public"."research_category";
+        DROP INDEX IF EXISTS research_publication_year_idx;
         ''',
         '''
-        DROP VIEW IF EXISTS "public"."research_publication_organization";
+        DROP INDEX IF EXISTS research_publication_id_idx;
         ''',
         '''
-        DROP VIEW IF EXISTS "public"."research_publication_person";
+        DROP INDEX IF EXISTS research_publication_id_idx;
+        ''',
+        '''
+        DROP INDEX IF EXISTS research_publication_id_idx;
+        ''',
+        '''
+        DROP MATERIALIZED VIEW IF EXISTS "public"."research_publication";
+        ''',
+        '''
+        DROP INDEX IF EXISTS research_document_id_idx;
+        ''',
+        '''
+        DROP MATERIALIZED VIEW IF EXISTS "public"."research_document";
+        ''',
+        '''
+        DROP INDEX IF EXISTS research_category_id_idx;
+        ''',
+        '''
+        DROP MATERIALIZED VIEW IF EXISTS "public"."research_category";
+        ''',
+        '''
+        DROP INDEX IF EXISTS research_publication_organization_organization_id_idx;
+        ''',
+        '''
+        DROP INDEX IF EXISTS research_publication_organization_publication_id_idx;
+        ''',
+        '''
+        DROP INDEX IF EXISTS research_publication_organization_idx;
+        ''',
+        '''
+        DROP MATERIALIZED VIEW IF EXISTS "public"."research_publication_organization";
+        ''',
+        '''
+        DROP INDEX IF EXISTS research_publication_person_person_id_idx;
+        ''',
+        '''
+        DROP INDEX IF EXISTS research_publication_person_publication_id_idx;
+        ''',
+        '''
+        DROP INDEX IF EXISTS research_publication_person_idx;
+        ''',
+        '''
+        DROP MATERIALIZED VIEW IF EXISTS "public"."research_publication_person";
         ''',
         '''
         DROP FOREIGN TABLE IF EXISTS "research"."publikation";
@@ -203,12 +256,6 @@ class Migration(migrations.Migration):
         ''',
         '''
         DROP FOREIGN TABLE IF EXISTS "research"."publikation_typ";
-        ''',
-        '''
-        DROP FOREIGN TABLE IF EXISTS "research"."publikation_sci_daten";
-        ''',
-        '''
-        DROP FOREIGN TABLE IF EXISTS "research"."pubmed_import";
         ''',
         '''
         DROP FOREIGN TABLE IF EXISTS "research"."orgeinheit_publikation";

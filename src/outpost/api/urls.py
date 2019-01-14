@@ -296,6 +296,16 @@ v1.register(
     base_name='thesis-thesis'
 )
 v1.register(
+    r'research/category',
+    research.CategoryViewSet,
+    base_name='research-category'
+)
+v1.register(
+    r'research/document',
+    research.DocumentViewSet,
+    base_name='research-document'
+)
+v1.register(
     r'research/publication',
     research.PublicationViewSet,
     base_name='research-publication'
