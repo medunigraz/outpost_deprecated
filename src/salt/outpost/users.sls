@@ -4,6 +4,7 @@ outpost_user_{{ user.username }}:
     - name: {{ user.username }}
     - uid: {{ user.uid }}
     - home: {{ user.homedir }}
+    - shell: {{ user.shell }}
     - createhome: true
     - fullname: "{{ user.displayname.decode('utf-8') }}"
     - gid_from_name: true
