@@ -80,6 +80,7 @@ class Migration(migrations.Migration):
         '''
         CREATE FOREIGN TABLE "research"."publikation" (
             PUBLIKATION_ID varchar,
+            TITEL varchar,
             AUTOR varchar,
             JAHR numeric,
             QUELLE varchar,
@@ -164,6 +165,7 @@ class Migration(migrations.Migration):
         '''
         CREATE MATERIALIZED VIEW "public"."research_publication" AS SELECT
             publikation_id::integer AS id,
+            titel AS title,
             string_to_array(autor, '; ') AS authors,
             jahr::integer AS year,
             quelle AS source,

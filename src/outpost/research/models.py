@@ -76,6 +76,11 @@ class Publication(models.Model):
     ### `emails` (`string[]`)
     Contact emails.
     '''
+    title = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True,
+    )
     authors = ArrayField(
         models.CharField(
             max_length=256,
