@@ -6,6 +6,7 @@ Type=simple
 Environment=DJANGO_SETTINGS_MODULE=outpost.settings
 Environment=DJANGO_LOCAL_CONFIGURATION=/etc/django/%i.py
 Environment=PYTHONPATH=/var/www/wsgi/%i/src
+EnvironmentFile=-/etc/django/%i.env
 WorkingDirectory=/var/www/wsgi/%i/src
 User=www-data-api
 RuntimeDirectory=gunicorn
