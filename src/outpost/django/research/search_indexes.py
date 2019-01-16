@@ -34,9 +34,6 @@ class ProjectIndex(CelerySearchIndex, indexes.Indexable):
         null=True
     )
 
-    presentation = indexes.CharField(use_template=True)
-    autocomplete = indexes.EdgeNgramField(use_template=True)
-
     def get_model(self):
         return Project
 
@@ -58,9 +55,6 @@ class PublicationIndex(CelerySearchIndex, indexes.Indexable):
         model_attr='sci',
         null=True
     )
-
-    presentation = indexes.CharField(use_template=True)
-    autocomplete = indexes.EdgeNgramField(use_template=True)
 
     def get_model(self):
         return Publication

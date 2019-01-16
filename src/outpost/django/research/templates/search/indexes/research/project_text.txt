@@ -1,0 +1,14 @@
+{{ object.title.de }}
+{% if object.title.de != object.title.en %}
+{{ object.title.en }}
+{% endif %}
+{{ object.short }}
+{{ object.organization }}
+{{ object.category }}
+{{ object.manager }}
+{{ object.contact }}
+{{ object.url }}
+{{ object.abstract }}
+{% for funder in object.funders.all %}
+{{ funder }}
+{% endfor %}
