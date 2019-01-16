@@ -1,3 +1,0 @@
-{{ object.campusonline.name }}
-
-{{ object.campusonline.address }}

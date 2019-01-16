@@ -1,0 +1,38 @@
+{% extends "outpost/base.html" %}
+
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="page-header">
+  <h1>
+    {% trans "Create new network token" %}
+  </h1>
+</div>
+<p>
+<div class="alert alert-info" role="alert">
+<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+{% blocktrans %}
+You can create a temporary Username and Password to connect to the WLAN named <code>mug-guest</code>. The lifetime for this account can be up to 24 hours.
+{% endblocktrans %}
+</div>
+</p>
+<form method="post" action="{% url 'networktoken:create' %}" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    {{ form|crispy }}
+
+    <div class="control-group {% if form.non_field_errors %}error{% endif %}">
+        {% for error in form.non_field_errors %}
+        <span class="help-inline">{{ error }}</span>
+        {% endfor %}
+    </div>
+
+    <div class="control-group">
+        <button type="submit" class="btn btn-primary">
+            <span class="glyphicon glyphicon-ok"></span>
+            Create
+        </button>
+    </div>
+</form>
+{% endblock %}

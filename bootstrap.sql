@@ -7,7 +7,7 @@ CREATE EXTENSION IF NOT EXISTS hstore;
 CREATE SERVER sqlalchemy
     FOREIGN DATA WRAPPER multicorn
     OPTIONS (
-        wrapper 'outpost.fdw.OutpostFdw'
+        wrapper 'outpost.multicorn.fdw.OutpostFdw'
     );
 
 GRANT USAGE ON FOREIGN SERVER sqlalchemy TO "api.medunigraz.at";

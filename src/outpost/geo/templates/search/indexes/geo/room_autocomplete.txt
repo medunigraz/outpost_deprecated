@@ -1,1 +1,0 @@
-{% if object.campusonline %}{{ object.campusonline.title }} {{ object.campusonline.name_full }}{% else %}{{ object.name }}{% endif %}

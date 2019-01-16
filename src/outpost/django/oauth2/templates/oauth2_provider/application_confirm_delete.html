@@ -1,0 +1,29 @@
+{% extends "outpost/base.html" %}
+
+{% load i18n %}
+
+{% block content %}
+<div class="page-header">
+  <h1>
+    {% trans 'Delete' %} {{ application.name }}
+  </h1>
+</div>
+<p class="lead">
+  {% trans "Are you sure to delete the application" %} {{ application.name }}?
+</p>
+<form method="post" action="{% url 'oauth2:delete' pk=application.pk %}">
+  {% csrf_token %}
+  <div class="control-group">
+    <div class="controls">
+      <a class="btn btn-default" href="{% url "oauth2:list" %}">
+        <span class="glyphicon glyphicon-chevron-left"></span>
+        {% trans "Cancel" %}
+      </a>
+      <button type="submit" class="btn btn-danger">
+        <span class="glyphicon glyphicon-trash"></span>
+        {% trans 'Delete' %}
+      </button>
+    </div>
+  </div>
+</form>
+{% endblock content %}

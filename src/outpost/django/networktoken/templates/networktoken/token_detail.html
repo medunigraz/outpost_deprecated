@@ -1,0 +1,28 @@
+{% extends "outpost/base.html" %}
+
+{% load i18n %}
+
+{% block content %}
+<div class="page-header">
+  <h1>
+    {% trans "Your new network token" %}
+  </h1>
+</div>
+<p>
+{% blocktrans %}
+TODO: Some description on how to use this.
+{% endblocktrans %}
+</p>
+<h3>{% trans "Username" %}</h3>
+<div class="well text-center">
+guest_{{ token.pk }}
+</div>
+<h3>{% trans "Password" %}</h3>
+<div class="well text-center">
+    <code>{{ token.value }}</code>
+</div>
+<h3>{% trans "Expiration" %}</h3>
+<div class="well text-center">
+{{ token.expires |date:"DATETIME_FORMAT" }}
+</div>
+{% endblock %}
