@@ -9,9 +9,10 @@ from celery.task import (
     PeriodicTask,
     Task,
 )
-from celery_haystack.tasks import CeleryHaystackUpdateIndex
+from celery_haystack.tasks import CeleryHaystackSignalHandler, CeleryHaystackUpdateIndex
 from django.apps import apps
 from django.utils import timezone
+from django.core.cache import cache
 from guardian.utils import clean_orphan_obj_perms
 
 from .models import NetworkedDeviceMixin
@@ -99,11 +100,23 @@ class RefreshNetworkedDeviceTask(MaintainanceTaskMixin, PeriodicTask):
                 obj.update()
 
 
-class UpdateHaystackTask(MaintainanceTaskMixin, PeriodicTask):
+class LockedCeleryHaystackSignalHandler(CeleryHaystackSignalHandler):
+
+    def run(self, action, identifier, **kwargs):
+        with cache.lock('haystack-writer'):
+            super().run(action, identifier, **kwargs)
+
+
+class UpdateHaystackTask(PeriodicTask):
     run_every = timedelta(hours=2)
+    options = {
+        'queue': 'haystack'
+    }
+    queue = 'haystack'
 
     def run(self):
-        CeleryHaystackUpdateIndex().run(remove=True)
+        with cache.lock('haystack-writer'):
+            CeleryHaystackUpdateIndex().run(remove=True)
 
 
 class CleanUpPermsTask(MaintainanceTaskMixin, PeriodicTask):

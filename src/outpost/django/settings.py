@@ -416,6 +416,8 @@ HAYSTACK_CONNECTIONS = {
 }
 
 HAYSTACK_SIGNAL_PROCESSOR = 'celery_haystack.signals.CelerySignalProcessor'
+CELERY_HAYSTACK_DEFAULT_TASK = 'outpost.django.base.tasks.LockedCeleryHaystackSignalHandler'
+CELERY_HAYSTACK_QUEUE = 'haystack'
 
 OAUTH2_PROVIDER = {
     'SCOPES': {
