@@ -296,14 +296,74 @@ v1.register(
     base_name='thesis-thesis'
 )
 v1.register(
-    r'research/category',
-    research.CategoryViewSet,
-    base_name='research-category'
+    r'research/country',
+    research.CountryViewSet,
+    base_name='research-country'
 )
 v1.register(
-    r'research/document',
-    research.DocumentViewSet,
-    base_name='research-document'
+    r'research/language',
+    research.LanguageViewSet,
+    base_name='research-language'
+)
+v1.register(
+    r'research/funder.category',
+    research.FunderCategoryViewSet,
+    base_name='research-funder-category'
+)
+v1.register(
+    r'research/funder',
+    research.FunderViewSet,
+    base_name='research-funder'
+)
+v1.register(
+    r'research/project.category',
+    research.ProjectCategoryViewSet,
+    base_name='research-project-category'
+)
+v1.register(
+    r'research/project.research',
+    research.ProjectResearchViewSet,
+    base_name='research-project-research'
+)
+v1.register(
+    r'research/project.partnerfunction',
+    research.ProjectPartnerFunctionViewSet,
+    base_name='research-project-partner-function'
+)
+v1.register(
+    r'research/project.study',
+    research.ProjectStudyViewSet,
+    base_name='research-project-study'
+)
+v1.register(
+    r'research/project.event',
+    research.ProjectEventViewSet,
+    base_name='research-project-event'
+)
+v1.register(
+    r'research/project.grant',
+    research.ProjectGrantViewSet,
+    base_name='research-project-grant'
+)
+v1.register(
+    r'research/project.status',
+    research.ProjectStatusViewSet,
+    base_name='research-project-status'
+)
+v1.register(
+    r'research/project',
+    research.ProjectViewSet,
+    base_name='research-project'
+)
+v1.register(
+    r'research/publication.category',
+    research.PublicationCategoryViewSet,
+    base_name='research-publication-category'
+)
+v1.register(
+    r'research/publication.document',
+    research.PublicationDocumentViewSet,
+    base_name='research-publication-document'
 )
 v1.register(
     r'research/publication',
