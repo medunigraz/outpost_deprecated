@@ -185,18 +185,8 @@ class Migration(migrations.Migration):
         );
         '''.format(settings.MULTICORN.get('research')),
         '''
-        CREATE FOREIGN TABLE "research"."person_campusonline" (
-            PERSON_ID numeric,
-            MEDONLINE_PERSON_ID numeric
-        )
-        SERVER sqlalchemy OPTIONS (
-            tablename 'PERSON_MEDONLINE',
-            db_url '{}'
-        );
-        '''.format(settings.MULTICORN.get('research')),
-        '''
         CREATE FOREIGN TABLE "research"."person_publikation" (
-            PERSON_ID numeric,
+            MEDONLINE_PERSON_ID numeric,
             PUBLIKATION_ID numeric
         )
         SERVER sqlalchemy OPTIONS (
@@ -205,19 +195,9 @@ class Migration(migrations.Migration):
         );
         '''.format(settings.MULTICORN.get('research')),
         '''
-        CREATE FOREIGN TABLE "research"."orgeinheit_campusonline" (
-            ORGEINHEIT_ID numeric,
-            ORGEINHEIT_ID_M numeric
-        )
-        SERVER sqlalchemy OPTIONS (
-            tablename 'ORGEINHEIT',
-            db_url '{}'
-        );
-        '''.format(settings.MULTICORN.get('research')),
-        '''
         CREATE FOREIGN TABLE "research"."orgeinheit_publikation" (
             PUBLIKATION_ID numeric,
-            ORGEINHEIT_ID numeric
+            MEDONLINE_ID numeric
         )
         SERVER sqlalchemy OPTIONS (
             tablename 'ORGEINHEIT_PUBLIKATION',
@@ -355,43 +335,34 @@ class Migration(migrations.Migration):
         ''',
         '''
         CREATE MATERIALIZED VIEW "public"."research_project" AS SELECT
-            p.PROJEKT_ID::integer AS id,
-            oc.ORGEINHEIT_ID_M::integer AS organization_id,
-            p.PROJEKT_TYP_ID::integer AS category_id,
-            p.KURZBEZEICHNUNG AS short,
+            PROJEKT_ID::integer AS id,
+            ORGEINHEIT_ID::integer AS organization_id,
+            PROJEKT_TYP_ID::integer AS category_id,
+            KURZBEZEICHNUNG AS short,
             hstore(
                 ARRAY['de', 'en'],
-                ARRAY[p.PROJEKTTITEL_DE, p.PROJEKTTITEL_EN]
+                ARRAY[PROJEKTTITEL_DE, PROJEKTTITEL_EN]
             ) AS title,
-            p.ORG_PARTNER_PROJEKTFUNKTION_ID::integer AS partner_function_id,
-            ppl.MEDONLINE_PERSON_ID::integer AS manager_id,
-            pkp.MEDONLINE_PERSON_ID::integer AS contact_id,
-            p.PROJEKT_STATUS_ID::integer AS status_id,
-            p.PROJEKT_URL AS url,
+            ORG_PARTNER_PROJEKTFUNKTION_ID::integer AS partner_function_id,
+            PROJEKTLEITER_ID::integer AS manager_id,
+            KONTAKTPERSON_ID::integer AS contact_id,
+            PROJEKT_STATUS_ID::integer AS status_id,
+            PROJEKT_URL AS url,
             hstore(
                 ARRAY['de', 'en'],
-                ARRAY[p.ABSTRACT_DE, p.ABSTRACT_EN]
+                ARRAY[ABSTRACT_DE, ABSTRACT_EN]
             ) AS abstract,
-            p.PROJEKTBEGINN_GEPLANT::timestamptz AS begin_planned,
-            p.PROJEKTBEGINN_EFFEKTIV::timestamptz AS begin_effective,
-            p.PROJEKTENDE_GEPLANT::timestamptz AS end_planned,
-            p.PROJEKTENDE_EFFEKTIV::timestamptz AS end_effective,
-            p.VERGABE_ART_ID::integer AS grant_id,
-            p.FORSCHUNG_ART_ID::integer AS research_id,
-            p.VERANSTALTUNG_ART_ID::integer AS event_id,
-            p.STUDIE_ART_ID::integer AS study_id,
-            p.SPRACHE_ID::integer AS language_id
+            PROJEKTBEGINN_GEPLANT::timestamptz AS begin_planned,
+            PROJEKTBEGINN_EFFEKTIV::timestamptz AS begin_effective,
+            PROJEKTENDE_GEPLANT::timestamptz AS end_planned,
+            PROJEKTENDE_EFFEKTIV::timestamptz AS end_effective,
+            VERGABE_ART_ID::integer AS grant_id,
+            FORSCHUNG_ART_ID::integer AS research_id,
+            VERANSTALTUNG_ART_ID::integer AS event_id,
+            STUDIE_ART_ID::integer AS study_id,
+            SPRACHE_ID::integer AS language_id
         FROM
-            "research"."projekt" AS p
-        LEFT OUTER JOIN
-            "research"."person_campusonline" AS ppl
-            ON p.PROJEKTLEITER_ID::integer = ppl.PERSON_ID::integer
-        LEFT OUTER JOIN
-            "research"."person_campusonline" AS pkp
-            ON p.KONTAKTPERSON_ID::integer = pkp.PERSON_ID::integer
-        LEFT OUTER JOIN
-            "research"."orgeinheit_campusonline" AS oc
-            ON p.ORGEINHEIT_ID::integer = oc.ORGEINHEIT_ID::integer
+            "research"."projekt"
         ''',
         '''
         CREATE UNIQUE INDEX research_project_id_idx ON "public"."research_project" ("id");
@@ -481,13 +452,10 @@ class Migration(migrations.Migration):
         ''',
         '''
         CREATE MATERIALIZED VIEW "public"."research_publication_person" AS SELECT
-            pp.publikation_id::integer AS publication_id,
-            pc.medonline_person_id::integer AS person_id
+            publikation_id::integer AS publication_id,
+            medonline_person_id::integer AS person_id
         FROM
-            "research"."person_campusonline" AS pc,
-            "research"."person_publikation" AS pp
-        WHERE
-            pc.person_id::integer = pp.person_id::integer;
+            "research"."person_publikation"
         ''',
         '''
         CREATE UNIQUE INDEX research_publication_person_idx ON "public"."research_publication_person" ("publication_id", "person_id");
@@ -500,14 +468,10 @@ class Migration(migrations.Migration):
         ''',
         '''
         CREATE MATERIALIZED VIEW "public"."research_publication_organization" AS SELECT DISTINCT
-            op.publikation_id::integer AS publication_id,
-            oc.orgeinheit_id_m::integer AS organization_id
+            publikation_id::integer AS publication_id,
+            medonline_id::integer AS organization_id
         FROM
-            "research"."orgeinheit_campusonline" AS oc,
-            "research"."orgeinheit_publikation" AS op
-        WHERE
-            oc.orgeinheit_id::integer = op.orgeinheit_id::integer
-        GROUP BY publication_id, organization_id;
+            "research"."orgeinheit_publikation"
         ''',
         '''
         CREATE UNIQUE INDEX research_publication_organization_idx ON "public"."research_publication_organization" ("publication_id", "organization_id");
@@ -732,13 +696,7 @@ class Migration(migrations.Migration):
         DROP FOREIGN TABLE IF EXISTS "research"."orgeinheit_publikation";
         ''',
         '''
-        DROP FOREIGN TABLE IF EXISTS "research"."orgeinheit_campusonline";
-        ''',
-        '''
         DROP FOREIGN TABLE IF EXISTS "research"."person_publikation";
-        ''',
-        '''
-        DROP FOREIGN TABLE IF EXISTS "research"."person_campusonline";
         ''',
         '''
         DROP FOREIGN TABLE IF EXISTS "research"."vergabe_art";

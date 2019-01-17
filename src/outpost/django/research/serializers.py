@@ -141,7 +141,7 @@ class ProjectSerializer(FlexFieldsModelSerializer):
                     person = 'AuthenticatedPersonSerializer'
         return {
             'organization': (
-                'outpost.django.campusonline.serializers.OrganzationSerializer',
+                'outpost.django.campusonline.serializers.OrganizationSerializer',
                 {
                     'source': 'organization',
                 }
@@ -268,7 +268,7 @@ class PublicationSerializer(FlexFieldsModelSerializer):
                 }
             ),
             'organizations': (
-                'outpost.django.campusonline.serializers.OrganzationSerializer',
+                'outpost.django.campusonline.serializers.OrganizationSerializer',
                 {
                     'source': 'organizations',
                     'many': True,
