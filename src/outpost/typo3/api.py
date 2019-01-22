@@ -140,6 +140,11 @@ class EventViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
         'language',
     )
 
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return self.queryset.exclude(source__private=True)
+        return self.queryset
+
 
 class EventSearchViewSet(HaystackViewSet):
     index_models = [models.Event]
@@ -175,6 +180,11 @@ class NewsViewSet(ReadOnlyModelViewSet):
         'categories',
         'language',
     )
+
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return self.queryset.exclude(source__private=True)
+        return self.queryset
 
 
 class NewsSearchViewSet(HaystackViewSet):

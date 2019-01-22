@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
         '''
         CREATE MATERIALIZED VIEW "public"."typo3_event" AS SELECT
             uid AS id,
-            pid AS page,
+            pid AS source_id,
             to_date(start_date, 'YYYYMMDD') + CASE
                 allday
             WHEN
@@ -97,7 +97,7 @@ class Migration(migrations.Migration):
         '''
         CREATE MATERIALIZED VIEW "public"."typo3_news" AS SELECT
             uid AS id,
-            pid AS page,
+            pid AS source_id,
             CASE WHEN
                 sys_language_uid > 0
             THEN

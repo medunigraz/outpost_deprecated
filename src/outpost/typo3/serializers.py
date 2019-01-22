@@ -316,7 +316,7 @@ class EventSerializer(FlexFieldsModelSerializer):
     class Meta:
         model = models.Event
         exclude = (
-            'page',
+            'source',
         )
 
 
@@ -402,7 +402,7 @@ class NewsSerializer(FlexFieldsModelSerializer):
     class Meta:
         model = models.News
         exclude = (
-            'page',
+            'source',
             'tags',
         )
 
