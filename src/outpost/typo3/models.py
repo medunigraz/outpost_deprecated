@@ -15,6 +15,41 @@ def fetch(url):
     return requests.get(url, allow_redirects=False)
 
 
+class Source(models.Model):
+    id = models.PositiveIntegerField(
+        primary_key=True
+    )
+    title = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True
+    )
+    private = models.BooleanField()
+
+    class Meta:
+        managed = False
+        db_table = 'typo3_source'
+
+    def __str__(self):
+        return f'{self.title} ({self.pk})'
+
+
+class DjangoSource(models.Model):
+    id = models.OneToOneField(
+        'Source',
+        models.DO_NOTHING,
+        db_constraint=False,
+        related_name='+',
+        primary_key=True
+    )
+    private = models.BooleanField(
+        default=True
+    )
+
+    def __str__(self):
+        return str(self.id)
+
+
 class Language(models.Model):
     '''
     ## Fields
@@ -315,7 +350,12 @@ class Event(models.Model):
     Date and time of last modification to this event.
     '''
     id = models.IntegerField(primary_key=True)
-    page = models.IntegerField()
+    source = models.ForeignKey(
+        'Source',
+        models.DO_NOTHING,
+        db_constraint=False,
+        related_name='+'
+    )
     start = models.DateTimeField(blank=True, null=True)
     end = models.DateTimeField(blank=True, null=True)
     allday = models.BooleanField()
@@ -385,7 +425,7 @@ class Event(models.Model):
     def breadcrumb(self):
         url = URL(settings.OUTPOST['typo3_api'])
         url = url.query_param('tx_mugapi_endpoint[recordType]', 'RootLine')
-        url = url.query_param('tx_mugapi_endpoint[pageUid]', self.page)
+        url = url.query_param('tx_mugapi_endpoint[pageUid]', self.source.pk)
         logger.debug(f'Fetching TYPO3 event breadcrumb: {url.as_string()}')
         r = fetch(url.as_string())
         if r.status_code != 200:
@@ -545,7 +585,12 @@ class News(models.Model):
     Date and time of last modification to this event.
     '''
     id = models.IntegerField(primary_key=True)
-    page = models.IntegerField(blank=True, null=True)
+    source = models.ForeignKey(
+        'Source',
+        models.DO_NOTHING,
+        db_constraint=False,
+        related_name='+'
+    )
     language = models.ForeignKey(
         'Language',
         models.SET_NULL,
@@ -607,7 +652,7 @@ class News(models.Model):
     def breadcrumb(self):
         url = URL(settings.OUTPOST['typo3_api'])
         url = url.query_param('tx_mugapi_endpoint[recordType]', 'RootLine')
-        url = url.query_param('tx_mugapi_endpoint[pageUid]', self.page)
+        url = url.query_param('tx_mugapi_endpoint[pageUid]', self.source.pk)
         logger.debug(f'Fetching TYPO3 news breadcrumb: {url.as_string()}')
         r = fetch(url.as_string())
         if r.status_code != 200:
