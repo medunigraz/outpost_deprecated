@@ -1,4 +1,5 @@
 import logging
+import re
 from textwrap import shorten
 
 from django.contrib.gis.db import models
@@ -24,7 +25,11 @@ class Country(models.Model):
     ### `iso` (`string`)
     ISO code of country.
     '''
-    name = HStoreField()
+    name = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True
+    )
     iso = models.CharField(
         max_length=2,
         blank=True,
@@ -55,7 +60,11 @@ class Language(models.Model):
     ### `iso` (`string`)
     ISO code of language.
     '''
-    name = HStoreField()
+    name = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True
+    )
     iso = models.CharField(
         max_length=2,
         blank=True,
@@ -86,7 +95,11 @@ class FunderCategory(models.Model):
     ### `short` (`string`)
     Short name of funder category.
     '''
-    name = HStoreField()
+    name = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True
+    )
     short = models.CharField(
         max_length=256,
         blank=True,
@@ -114,7 +127,11 @@ class Funder(models.Model):
     ### `name` (`object`)
     Names of funder, defined by language.
     '''
-    name = HStoreField()
+    name = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True
+    )
     street = models.CharField(
         max_length=256,
         blank=True,
@@ -171,7 +188,11 @@ class ProjectCategory(models.Model):
     ### `name` (`object`)
     Names of project Category, defined by language.
     '''
-    name = HStoreField()
+    name = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True
+    )
 
     class Meta:
         managed = False
@@ -194,7 +215,11 @@ class ProjectResearch(models.Model):
     ### `name` (`object`)
     Names of project research type, defined by language.
     '''
-    name = HStoreField()
+    name = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True
+    )
 
     class Meta:
         managed = False
@@ -217,7 +242,11 @@ class ProjectPartnerFunction(models.Model):
     ### `name` (`object`)
     Names of project partner function, defined by language.
     '''
-    name = HStoreField()
+    name = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True
+    )
 
     class Meta:
         managed = False
@@ -240,7 +269,11 @@ class ProjectStudy(models.Model):
     ### `name` (`object`)
     Names of project study, defined by language.
     '''
-    name = HStoreField()
+    name = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True
+    )
 
     class Meta:
         managed = False
@@ -263,7 +296,11 @@ class ProjectEvent(models.Model):
     ### `name` (`object`)
     Names of project event, defined by language.
     '''
-    name = HStoreField()
+    name = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True
+    )
 
     class Meta:
         managed = False
@@ -286,7 +323,11 @@ class ProjectGrant(models.Model):
     ### `name` (`object`)
     Names of project grant, defined by language.
     '''
-    name = HStoreField()
+    name = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True
+    )
 
     class Meta:
         managed = False

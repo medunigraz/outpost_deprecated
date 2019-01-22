@@ -1,9 +1,10 @@
 import logging
 
+from drf_haystack.serializers import HaystackSerializer
 from rest_flex_fields import FlexFieldsModelSerializer
 from rest_framework import serializers
 
-from . import models
+from . import models, search_indexes
 
 logger = logging.getLogger(__name__)
 
@@ -220,6 +221,14 @@ class ProjectSerializer(FlexFieldsModelSerializer):
         fields = '__all__'
 
 
+class ProjectSearchSerializer(HaystackSerializer):
+    class Meta:
+        index_classes = [search_indexes.ProjectIndex]
+        fields = (
+            'text',
+        )
+
+
 class PublicationCategorySerializer(FlexFieldsModelSerializer):
     class Meta:
         model = models.PublicationCategory
@@ -292,4 +301,12 @@ class PublicationSerializer(FlexFieldsModelSerializer):
         model = models.Publication
         exclude = (
             'abstract_bytes',
+        )
+
+
+class PublicationSearchSerializer(HaystackSerializer):
+    class Meta:
+        index_classes = [search_indexes.PublicationIndex]
+        fields = (
+            'text',
         )

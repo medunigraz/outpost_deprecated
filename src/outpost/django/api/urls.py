@@ -296,6 +296,11 @@ v1.register(
     base_name='thesis-thesis'
 )
 v1.register(
+    r'thesis/search/thesis',
+    thesis.ThesisSearchViewSet,
+    base_name='thesis-thesis-search'
+)
+v1.register(
     r'research/country',
     research.CountryViewSet,
     base_name='research-country'
@@ -356,6 +361,11 @@ v1.register(
     base_name='research-project'
 )
 v1.register(
+    r'research/search/project',
+    research.ProjectSearchViewSet,
+    base_name='research-project-search'
+)
+v1.register(
     r'research/publication.category',
     research.PublicationCategoryViewSet,
     base_name='research-publication-category'
@@ -369,6 +379,11 @@ v1.register(
     r'research/publication',
     research.PublicationViewSet,
     base_name='research-publication'
+)
+v1.register(
+    r'research/search/publication',
+    research.PublicationSearchViewSet,
+    base_name='research-publication-search'
 )
 v1.register(
     r'restaurant/diet',

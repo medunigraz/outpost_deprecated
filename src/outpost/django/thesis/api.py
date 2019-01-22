@@ -1,6 +1,10 @@
+from drf_haystack.viewsets import HaystackViewSet
 from rest_flex_fields.views import FlexFieldsMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ReadOnlyModelViewSet
+from rest_framework.permissions import (
+    AllowAny,
+)
 
 # from rest_framework_extensions.mixins import (
 #     CacheResponseAndETAGMixin,
@@ -74,4 +78,12 @@ class ThesisViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
         'doctoralschool',
         'discipline',
         'editors',
+    )
+
+
+class ThesisSearchViewSet(HaystackViewSet):
+    index_models = [models.Thesis]
+    serializer_class = serializers.ThesisSearchSerializer
+    permission_classes = (
+        IsAuthenticated,
     )

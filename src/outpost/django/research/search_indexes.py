@@ -47,12 +47,20 @@ class PublicationIndex(CelerySearchIndex, indexes.Indexable):
         model_attr='title',
         null=True
     )
-    source = indexes.CharField(
-        model_attr='source',
-        null=True
-    )
     sci = indexes.CharField(
         model_attr='sci',
+        null=True
+    )
+    pubmed = indexes.CharField(
+        model_attr='pubmed',
+        null=True
+    )
+    doi = indexes.CharField(
+        model_attr='doi',
+        null=True
+    )
+    pmc = indexes.CharField(
+        model_attr='pmc',
         null=True
     )
 

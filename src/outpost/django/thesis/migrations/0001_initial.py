@@ -108,23 +108,23 @@ class Migration(migrations.Migration):
             t.id AS id,
             t.created AS created,
             t.description AS description,
-            t.prerequisites AS prerequisites,
+            NULLIF(TRIM(t.prerequisites), '') AS prerequisites,
             t.processstart AS processstart,
-            t.goals AS goals,
-            t.hypothesis AS hypothesis,
-            t.methods AS methods,
-            array_remove(
-                array_remove(
+            NULLIF(TRIM(t.goals), '') AS goals,
+            NULLIF(TRIM(t.hypothesis), '') AS hypothesis,
+            NULLIF(TRIM(t.methods), '') AS methods,
+            ARRAY_REMOVE(
+                ARRAY_REMOVE(
                     ARRAY[
                         t.milestoneyear1,
                         t.milestoneyear2,
                         t.milestoneyear3
                     ],
-                    null
+                    NULL
                 ),
                 ''
             ) AS milestones,
-            t.schedule AS schedule,
+            NULLIF(TRIM(t.schedule), '') AS schedule,
             t.status AS status,
             t.topic AS topic,
             t.disciplineid AS discipline_id,

@@ -1,3 +1,4 @@
+from drf_haystack.viewsets import HaystackViewSet
 from rest_flex_fields.views import FlexFieldsMixin
 from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import ReadOnlyModelViewSet
@@ -249,6 +250,14 @@ class ProjectViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     )
 
 
+class ProjectSearchViewSet(HaystackViewSet):
+    index_models = [models.Project]
+    serializer_class = serializers.ProjectSearchSerializer
+    permission_classes = (
+        AllowAny,
+    )
+
+
 @docstring_format(
     model=models.PublicationCategory.__doc__,
     serializer=serializers.PublicationCategorySerializer.__doc__
@@ -306,4 +315,12 @@ class PublicationViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
         'organizations',
         'category',
         'document',
+    )
+
+
+class PublicationSearchViewSet(HaystackViewSet):
+    index_models = [models.Publication]
+    serializer_class = serializers.PublicationSearchSerializer
+    permission_classes = (
+        AllowAny,
     )

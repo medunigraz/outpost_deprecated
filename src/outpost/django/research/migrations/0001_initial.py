@@ -250,10 +250,7 @@ class Migration(migrations.Migration):
         '''
         CREATE MATERIALIZED VIEW "public"."research_projectcategory" AS SELECT
             PROJEKT_TYP_ID::integer AS id,
-            hstore(
-                ARRAY['de', 'en'],
-                ARRAY[PROJEKT_TYP_DE, PROJEKT_TYP_EN]
-            ) AS name,
+            PROJEKT_TYP_DE AS name,
             PROJEKT_TYP_KURZ_DE AS short
         FROM
             "research"."projekt_typ"
@@ -264,10 +261,7 @@ class Migration(migrations.Migration):
         '''
         CREATE MATERIALIZED VIEW "public"."research_projectresearch" AS SELECT
             FORSCHUNG_ART_ID::integer AS id,
-            hstore(
-                ARRAY['de', 'en'],
-                ARRAY[FORSCHUNG_ART_DE, FORSCHUNG_ART_EN]
-            ) AS name
+            FORSCHUNG_ART_DE AS name
         FROM
             "research"."forschung_art"
         ''',
@@ -277,10 +271,7 @@ class Migration(migrations.Migration):
         '''
         CREATE MATERIALIZED VIEW "public"."research_funder" AS SELECT
             GELDGEBER_ID::integer AS id,
-            hstore(
-                ARRAY['de', 'en'],
-                ARRAY[GELDGEBER_DE, GELDGEBER_EN]
-            ) AS name,
+            GELDGEBER_DE AS name,
             STRASSE AS street,
             ORT AS city,
             POSTLEITZAHL AS zipcode,
@@ -296,10 +287,7 @@ class Migration(migrations.Migration):
         '''
         CREATE MATERIALIZED VIEW "public"."research_fundercategory" AS SELECT
             GELDGEBER_TYP_ID::integer AS id,
-            hstore(
-                ARRAY['de', 'en'],
-                ARRAY[GELDGEBER_TYP_DE, GELDGEBER_TYP_EN]
-            ) AS name,
+            GELDGEBER_TYP_DE AS name,
             GELDGEBER_TYP_KURZ AS short
         FROM
             "research"."geldgeber_typ"
@@ -310,10 +298,7 @@ class Migration(migrations.Migration):
         '''
         CREATE MATERIALIZED VIEW "public"."research_country" AS SELECT
             LAND_ID::integer AS id,
-            hstore(
-                ARRAY['de', 'en'],
-                ARRAY[LAND_DE, LAND_EN]
-            ) AS name
+            LAND_DE AS name
         FROM
             "research"."land"
         ''',
@@ -323,10 +308,7 @@ class Migration(migrations.Migration):
         '''
         CREATE MATERIALIZED VIEW "public"."research_projectpartnerfunction" AS SELECT
             ORG_PARTNER_PROJEKTFUNKTION_ID::integer AS id,
-            hstore(
-                ARRAY['de', 'en'],
-                ARRAY[ORG_PARTNER_PROJEKTFUNKTION_DE, ORG_PARTNER_PROJEKTFUNKTION_EN]
-            ) AS name
+            ORG_PARTNER_PROJEKTFUNKTION_DE AS name
         FROM
             "research"."org_partner_projektfunktion"
         ''',
@@ -362,7 +344,16 @@ class Migration(migrations.Migration):
             STUDIE_ART_ID::integer AS study_id,
             SPRACHE_ID::integer AS language_id
         FROM
-            "research"."projekt"
+            research.projekt
+        INNER JOIN
+            campusonline.personen AS co_p_m
+            ON projekt.projektleiter_id::integer = co_p_m.pers_nr::integer
+        INNER JOIN
+            campusonline.personen AS co_p_c
+            ON projekt.kontaktperson_id::integer = co_p_c.pers_nr::integer
+        INNER JOIN
+            campusonline.organisationen AS co_o
+            ON projekt.orgeinheit_id::integer = co_o.nr::integer
         ''',
         '''
         CREATE UNIQUE INDEX research_project_id_idx ON "public"."research_project" ("id");
@@ -397,10 +388,7 @@ class Migration(migrations.Migration):
         '''
         CREATE MATERIALIZED VIEW "public"."research_language" AS SELECT
             SPRACHE_ID::integer AS id,
-            hstore(
-                ARRAY['de', 'en'],
-                ARRAY[SPRACHE_DE, SPRACHE_EN]
-            ) AS name,
+            SPRACHE_DE AS name,
             SPRACHE_EN_KURZ AS iso
         FROM
             "research"."sprache"
@@ -414,10 +402,7 @@ class Migration(migrations.Migration):
         '''
         CREATE MATERIALIZED VIEW "public"."research_projectstudy" AS SELECT
             STUDIE_ART_ID::integer AS id,
-            hstore(
-                ARRAY['de', 'en'],
-                ARRAY[STUDIE_ART_DE, STUDIE_ART_EN]
-            ) AS name
+            STUDIE_ART_DE AS name
         FROM
             "research"."studie_art"
         ''',
@@ -427,10 +412,7 @@ class Migration(migrations.Migration):
         '''
         CREATE MATERIALIZED VIEW "public"."research_projectevent" AS SELECT
             VERANSTALTUNG_ART_ID::integer AS id,
-            hstore(
-                ARRAY['de', 'en'],
-                ARRAY[VERANSTALTUNG_ART_DE, VERANSTALTUNG_ART_EN]
-            ) AS name
+            VERANSTALTUNG_ART_DE AS name
         FROM
             "research"."veranstaltung_art"
         ''',
@@ -440,10 +422,7 @@ class Migration(migrations.Migration):
         '''
         CREATE MATERIALIZED VIEW "public"."research_projectgrant" AS SELECT
             VERGABE_ART_ID::integer AS id,
-            hstore(
-                ARRAY['de', 'en'],
-                ARRAY[VERGABE_ART_DE, VERGABE_ART_EN]
-            ) AS name
+            VERGABE_ART_DE AS name
         FROM
             "research"."vergabe_art"
         ''',
@@ -452,10 +431,16 @@ class Migration(migrations.Migration):
         ''',
         '''
         CREATE MATERIALIZED VIEW "public"."research_publication_person" AS SELECT
-            publikation_id::integer AS publication_id,
-            medonline_person_id::integer AS person_id
+            person_publikation.publikation_id::integer AS publication_id,
+            person_publikation.medonline_person_id::integer AS person_id
         FROM
-            "research"."person_publikation"
+            research.person_publikation
+        INNER JOIN
+            research.publikation r_p
+            ON person_publikation.publikation_id::integer = r_p.publikation_id::integer
+        INNER JOIN
+            campusonline.personen co_p
+            ON person_publikation.medonline_person_id::integer = co_p.pers_nr::integer
         ''',
         '''
         CREATE UNIQUE INDEX research_publication_person_idx ON "public"."research_publication_person" ("publication_id", "person_id");
@@ -468,10 +453,16 @@ class Migration(migrations.Migration):
         ''',
         '''
         CREATE MATERIALIZED VIEW "public"."research_publication_organization" AS SELECT DISTINCT
-            publikation_id::integer AS publication_id,
-            medonline_id::integer AS organization_id
+            orgeinheit_publikation.publikation_id::integer AS publication_id,
+            orgeinheit_publikation.medonline_id::integer AS organization_id
         FROM
-            "research"."orgeinheit_publikation"
+            research.orgeinheit_publikation
+        INNER JOIN
+            research.publikation r_p
+            ON orgeinheit_publikation.publikation_id::integer = r_p.publikation_id::integer
+        INNER JOIN
+            campusonline.organisationen co_o
+            ON orgeinheit_publikation.medonline_id::integer = co_o.nr::integer
         ''',
         '''
         CREATE UNIQUE INDEX research_publication_organization_idx ON "public"."research_publication_organization" ("publication_id", "organization_id");
@@ -485,10 +476,7 @@ class Migration(migrations.Migration):
         '''
         CREATE MATERIALIZED VIEW "public"."research_publicationcategory" AS SELECT
             PUBLIKATION_TYP_ID::integer AS id,
-            hstore(
-                ARRAY['de', 'en'],
-                ARRAY[PUBLIKATION_TYP_DE, PUBLIKATION_TYP_EN]
-            ) AS name
+            PUBLIKATION_TYP_DE AS name
         FROM
             "research"."publikation_typ";
         ''',
@@ -512,7 +500,7 @@ class Migration(migrations.Migration):
         CREATE MATERIALIZED VIEW "public"."research_publication" AS SELECT
             PUBLIKATION_ID::integer AS id,
             TITEL AS title,
-            string_to_array(AUTOR, '; ') AS authors,
+            regexp_split_to_array(trim(both ' ' from AUTOR), ';\s*') AS authors,
             JAHR::integer AS year,
             QUELLE AS source,
             PUBLIKATION_TYP_ID::integer AS category_id,

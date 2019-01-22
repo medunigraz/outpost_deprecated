@@ -1,9 +1,10 @@
 import logging
 
+from drf_haystack.serializers import HaystackSerializerMixin
 from rest_flex_fields import FlexFieldsModelSerializer
 from rest_framework.serializers import ModelSerializer
 
-from . import models
+from . import models, search_indexes
 
 logger = logging.getLogger(__name__)
 
@@ -70,3 +71,14 @@ class ThesisSerializer(FlexFieldsModelSerializer):
     class Meta:
         model = models.Thesis
         fields = '__all__'
+
+
+class ThesisSearchSerializer(HaystackSerializerMixin, ThesisSerializer):
+    class Meta(ThesisSerializer.Meta):
+        # index_classes = [search_indexes.ThesisIndex]
+        field_aliases = {
+            'q': 'text__contains'
+        }
+        search_fields = (
+            'text',
+        )

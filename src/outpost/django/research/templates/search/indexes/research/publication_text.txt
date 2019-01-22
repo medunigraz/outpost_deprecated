@@ -1,14 +1,15 @@
+{% load base %}
+{{ object.pk }}
 {{ object.title }}
 {% for author in object.authors %}
 {{ author }}
 {% endfor %}
-{{ object.source }}
 {{ object.category }}
 {{ object.sci }}
 {{ object.pubmed }}
 {{ object.doi }}
 {{ object.pmc }}
-{{ object.abstract }}
+{{ object.abstract|sanitize }}
 {% for person in object.persons.all %}
 {{ person }}
 {% endfor %}

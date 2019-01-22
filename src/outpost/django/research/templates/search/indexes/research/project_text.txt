@@ -7,7 +7,6 @@
 {{ object.category }}
 {{ object.manager }}
 {{ object.contact }}
-{{ object.url }}
 {{ object.abstract }}
 {% for funder in object.funders.all %}
 {{ funder }}
