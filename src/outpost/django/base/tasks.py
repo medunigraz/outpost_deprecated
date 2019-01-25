@@ -9,10 +9,13 @@ from celery.task import (
     PeriodicTask,
     Task,
 )
-from celery_haystack.tasks import CeleryHaystackSignalHandler, CeleryHaystackUpdateIndex
+from celery_haystack.tasks import (
+    CeleryHaystackSignalHandler,
+    CeleryHaystackUpdateIndex,
+)
 from django.apps import apps
-from django.utils import timezone
 from django.core.cache import cache
+from django.utils import timezone
 from guardian.utils import clean_orphan_obj_perms
 
 from .models import NetworkedDeviceMixin

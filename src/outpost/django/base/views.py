@@ -19,6 +19,7 @@ from django.views.generic import (
     View,
 )
 from PIL import Image as PILImage
+from pudb import set_trace
 from wand.image import Image
 
 from . import models
@@ -124,5 +125,5 @@ class DebuggerView(View):
 
     def dispatch(self, request, *args, **kwargs):
         if settings.DEBUG:
-            import pudb; pu.db  # NOQA
+            set_trace()
         return HttpResponse()
