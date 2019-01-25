@@ -1,16 +1,25 @@
+import time
+from hashlib import sha1
+
 from celery.result import AsyncResult
 from django.contrib.contenttypes.models import ContentType
+from django.core.cache import cache
+from django.utils.translation import gettext as _
+from flor import BloomFilter
 from rest_framework import (
     generics,
     permissions,
     viewsets,
 )
+from rest_framework.response import Response
 from rest_hooks.models import Hook
+from zxcvbn import zxcvbn
 
 from . import (
     models,
     serializers,
 )
+from .conf import settings
 
 
 class ContentTypeViewSet(viewsets.ReadOnlyModelViewSet):
@@ -75,3 +84,40 @@ class HookViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+class PasswordStrengthViewSet(viewsets.ViewSet):
+    permission_classes = (
+        permissions.AllowAny,
+    )
+
+    def create(self, request):
+        raw = request.data.get('password', None)
+        if not raw:
+            return Response()
+        hashed = sha1(raw.encode('utf-8')).hexdigest().upper().encode('ascii')
+        key = f'base-password-strength-{hashed}'
+        cached = cache.get(key, None)
+        if cached:
+            time.sleep(settings.BASE_PASSWORD_STRENGTH_CACHE_SLEEP)
+            return Response(cached)
+        bf = BloomFilter()
+        with open(settings.BASE_PASSWORD_STRENGTH_BLOOM_FILE, 'rb') as inp:
+            bf.read(inp)
+        checked = zxcvbn(raw)
+        suggestions = [_(msg) for msg in checked['feedback']['suggestions']]
+        result = {
+            'leaked': hashed in bf,
+            'score': checked['score'],
+            'guesses': checked['guesses'],
+            'feedback': {
+                'warning': _(checked['feedback']['warning']),
+                'suggestions': suggestions,
+            }
+        }
+        cache.set(
+            key,
+            result,
+            timeout=settings.BASE_PASSWORD_STRENGTH_CACHE_TIMEOUT
+        )
+        return Response(result)

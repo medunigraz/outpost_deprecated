@@ -41,6 +41,11 @@ v1.register(
     base_name='base-task'
 )
 v1.register(
+    r'base/password-strength',
+    base.PasswordStrengthViewSet,
+    base_name='base-password-strength'
+)
+v1.register(
     r'positioning/locate',
     positioning.LocateView,
     base_name='positioning-locate'
