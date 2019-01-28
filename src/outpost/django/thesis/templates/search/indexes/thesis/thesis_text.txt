@@ -1,0 +1,11 @@
+{{ object.topic }}
+{{ object.description }}
+{{ object.prerequisites }}
+{{ object.goals }}
+{{ object.hypothesis }}
+{{ object.methods }}
+{{ object.discipline }}
+{{ object.doctoralschool }}
+{% for editor in object.editors.all %}
+{{ editor }}
+{% endfor %}

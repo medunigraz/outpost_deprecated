@@ -6,7 +6,7 @@ Type=simple
 Environment=DJANGO_LOCAL_CONFIGURATION=/etc/django/%i.py
 WorkingDirectory=/var/www/wsgi/%i/src
 User=www-data-api
-ExecStart=/usr/bin/python3 -m celery worker -E -A outpost.celery --loglevel=WARNING -n 'maintainance@%i' --autoscale=20,10 -Q maintainance --purge
+ExecStart=/usr/bin/python3 -m celery worker -E -A outpost.django.celery --loglevel=WARNING -n 'maintainance@%i' --autoscale=20,10 -Q maintainance --purge
 LimitNOFILE=500000
 LimitNPROC=500000
 

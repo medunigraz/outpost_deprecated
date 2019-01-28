@@ -1,0 +1,14 @@
+[Unit]
+Description=%I - Celery Worker
+
+[Service]
+Type=simple
+Environment=DJANGO_LOCAL_CONFIGURATION=/etc/django/%i.py
+WorkingDirectory=/var/www/wsgi/%i/src
+User=www-data-api
+ExecStart=/usr/bin/python3 -m celery worker -E -A outpost.django.celery --loglevel=WARNING -n 'haystack@%i' -c 1 -Q haystack
+LimitNOFILE=500000
+LimitNPROC=500000
+
+[Install]
+WantedBy=outpost@%i.target
