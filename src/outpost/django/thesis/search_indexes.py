@@ -1,9 +1,7 @@
 from celery_haystack.indexes import CelerySearchIndex
 from haystack import indexes
 
-from .models import (
-    Thesis,
-)
+from .models import Thesis
 
 
 class ThesisIndex(CelerySearchIndex, indexes.Indexable):

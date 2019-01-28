@@ -1,5 +1,4 @@
 import logging
-import re
 from textwrap import shorten
 
 from django.contrib.gis.db import models

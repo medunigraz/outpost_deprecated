@@ -4,7 +4,7 @@ from drf_haystack.serializers import HaystackSerializerMixin
 from rest_flex_fields import FlexFieldsModelSerializer
 from rest_framework.serializers import ModelSerializer
 
-from . import models, search_indexes
+from . import models
 
 logger = logging.getLogger(__name__)
 
