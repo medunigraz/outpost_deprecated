@@ -276,6 +276,11 @@ v1.register(
     base_name='campusonline-bulletin'
 )
 v1.register(
+    r'campusonline/search/bulletin.page',
+    campusonline.BulletinPageSearchViewSet,
+    base_name='campusonline-search-bulletin-page'
+)
+v1.register(
     r'campusonline/course-group-term',
     campusonline.CourseGroupTermViewSet,
     base_name='campusonline-course-group-term'

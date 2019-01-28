@@ -1,7 +1,18 @@
+import logging
+
+import requests
 from django.contrib.gis.db import models
+from django.db import transaction
 from django.utils.translation import gettext_lazy as _
 from ordered_model.models import OrderedModel
+from popplerqt5 import Poppler
+from PyQt5.QtCore import QRectF
 from treebeard.al_tree import AL_Node
+
+from ..base.signals import materialized_view_refreshed
+from ..base.tasks import RefreshMaterializedViewTask
+
+logger = logging.getLogger(__name__)
 
 
 class RoomCategory(models.Model):
@@ -878,12 +889,51 @@ class Bulletin(models.Model):
     class Meta:
         managed = False
         db_table = 'campusonline_bulletin'
+        get_latest_by = 'published'
         ordering = (
             '-published',
         )
 
     class Refresh:
-        interval = 3600
+        interval = 0
 
     def __str__(s):
         return f'{s.issue} {s.academic_year} ({s.published})'
+
+    @classmethod
+    @transaction.atomic
+    def update(cls, name, model, **kwargs):
+        if not cls == model:
+            return
+        BulletinPage.objects.all().delete()
+        for b in model.objects.all():
+            try:
+                req = requests.get(b.url)
+                req.raise_for_status()
+            except requests.exceptions.RequestException as e:
+                logger.warn(f'Could not download bulletin: {e}')
+                return []
+            doc = Poppler.Document.loadFromData(req.content)
+            for n, p in enumerate(doc):
+                BulletinPage.objects.create(
+                    bulletin=b,
+                    index=n,
+                    text=p.text(QRectF())
+                )
+
+
+materialized_view_refreshed.connect(
+    Bulletin.update,
+    sender=RefreshMaterializedViewTask
+)
+
+
+class BulletinPage(models.Model):
+    bulletin = models.ForeignKey(
+        'Bulletin',
+        models.DO_NOTHING,
+        db_constraint=False,
+        related_name='pages'
+    )
+    index = models.PositiveSmallIntegerField()
+    text = models.TextField()

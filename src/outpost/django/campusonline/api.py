@@ -1,5 +1,6 @@
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_haystack.viewsets import HaystackViewSet
 from rest_flex_fields.views import FlexFieldsMixin
 from rest_framework.permissions import (
     AllowAny,
@@ -251,3 +252,11 @@ class BulletinViewSet(ReadOnlyModelViewSet):
         DjangoFilterBackend,
     )
     filter_class = filters.BulletinFilter
+
+
+class BulletinPageSearchViewSet(HaystackViewSet):
+    index_models = [models.BulletinPage]
+    serializer_class = serializers.BulletinPageSearchSerializer
+    permission_classes = (
+        AllowAny,
+    )

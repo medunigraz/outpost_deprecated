@@ -1,4 +1,5 @@
 from django.urls import reverse
+from drf_haystack.serializers import HaystackSerializerMixin
 from rest_flex_fields import FlexFieldsModelSerializer
 from rest_framework.serializers import (
     ModelSerializer,
@@ -297,3 +298,22 @@ class BulletinSerializer(ModelSerializer):
     class Meta:
         model = models.Bulletin
         fields = '__all__'
+
+
+class BulletinPageSerializer(ModelSerializer):
+    bulletin = BulletinSerializer()
+
+    class Meta:
+        model = models.BulletinPage
+        fields = (
+            'bulletin',
+            'index'
+        )
+
+
+class BulletinPageSearchSerializer(HaystackSerializerMixin, BulletinPageSerializer):
+
+    class Meta(BulletinPageSerializer.Meta):
+        search_fields = (
+            'text',
+        )
