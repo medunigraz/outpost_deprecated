@@ -61,6 +61,10 @@ urlpatterns.extend([
         include('outpost.django.oauth2.urls', namespace='oauth2')
     ),
     url(
+        r'^lti/',
+        include('outpost.django.lti.urls', namespace='lti')
+    ),
+    url(
         r'^attendance/',
         include('outpost.django.attendance.urls', namespace='attendance')
     ),
