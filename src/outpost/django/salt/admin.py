@@ -3,6 +3,10 @@ from django.contrib import admin
 from . import models
 
 
+class PublicKeyInline(admin.TabularInline):
+    model = models.PublicKey
+
+
 class SystemUserInline(admin.TabularInline):
     model = models.SystemUser
 
@@ -31,6 +35,7 @@ class HostAdmin(admin.ModelAdmin):
 class UserAdmin(admin.ModelAdmin):
     inlines = (
         SystemUserInline,
+        PublicKeyInline,
     )
     list_display = (
         'pk',

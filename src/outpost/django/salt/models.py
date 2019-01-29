@@ -1,7 +1,45 @@
+from base64 import b64encode
+from hashlib import sha256
+
+import asyncssh
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.contrib.auth.signals import user_logged_in
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from ..base.decorators import signal_connect
+from ..campusonline.models import Person
+from ..base.validators import PublicKeyValidator
+
+
+class PublicKey(models.Model):
+    user = models.ForeignKey(
+        'User',
+    )
+    name = models.CharField(
+        max_length=128,
+    )
+    key = models.TextField(
+        validators=(
+            PublicKeyValidator(),
+        )
+    )
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def fingerprint(self):
+        k = asyncssh.import_public_key(self.key)
+        d = sha256(k.get_ssh_public_key()).digest()
+        f = b64encode(d).replace(b'=', b'').decode('utf-8')
+        return 'SHA256:{}'.format(f)
+
+    @property
+    def comment(self):
+        k = asyncssh.import_public_key(self.key)
+        return k.get_comment()
 
 
 class System(models.Model):
@@ -78,6 +116,11 @@ class User(models.Model):
         through='SystemUser',
         blank=True
     )
+    local = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        null=True
+    )
 
     class Meta:
         ordering = (
@@ -98,6 +141,29 @@ class User(models.Model):
 
     def __str__(self):
         return f'{self.person} ({self.username}:{self.pk})'
+
+    @classmethod
+    def update(cls, sender, request, user, **kwargs):
+        username = getattr(user, user.USERNAME_FIELD)
+        try:
+            person = Person.objects.get(username=username)
+        except Person.DoesNotExist:
+            return
+        defaults = {
+            'person': person,
+            'local': user,
+        }
+        suser, created = cls.objects.get_or_create(
+            person__username=getattr(user, user.USERNAME_FIELD),
+            defaults=defaults
+        )
+        if not created:
+            if suser.local != user:
+                suser.local = user
+                suser.save()
+
+
+user_logged_in.connect(User.update)
 
 
 class Group(models.Model):

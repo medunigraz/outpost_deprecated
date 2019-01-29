@@ -3,6 +3,19 @@ from rest_framework import serializers
 from . import models
 
 
+class PublicKeySerializer(serializers.ModelSerializer):
+    fingerprint = serializers.CharField(
+        read_only=True
+    )
+
+    class Meta:
+        model = models.PublicKey
+        fields = (
+            'fingerprint',
+            'key',
+        )
+
+
 class GroupSerializer(serializers.ModelSerializer):
     gid = serializers.IntegerField(source='pk')
 
@@ -20,6 +33,10 @@ class SystemUserSerializer(serializers.ModelSerializer):
     displayname = serializers.CharField(source='user.displayname')
     homedir = serializers.SerializerMethodField()
     groups = GroupSerializer(many=True)
+    keys = PublicKeySerializer(
+        source='user.publickey_set.all',
+        many=True
+    )
 
     class Meta:
         model = models.SystemUser
@@ -31,6 +48,7 @@ class SystemUserSerializer(serializers.ModelSerializer):
             'shell',
             'groups',
             'sudo',
+            'keys',
         )
 
     def get_homedir(self, o):

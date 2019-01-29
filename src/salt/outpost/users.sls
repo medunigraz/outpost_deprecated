@@ -19,4 +19,16 @@ outpost_user_{{ user.username }}:
     {%- for group in user.groups %}
         - group: outpost_group_{{ group.name }}
     {%- endfor %}
+
+{%- if user.keys is defined %}
+outpost_user_{{ user.username }}_ssh_key:
+    ssh_auth.present:
+        - user: {{ user.username }}
+        - names:
+{%- for key in user.keys %}
+            - {{ key }}
+{%- endfor %}
+    - require:
+        - user: outpost_user_{{ user.username }}
+{%- endif %}
 {%- endfor %}
