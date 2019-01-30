@@ -77,6 +77,10 @@ urlpatterns.extend([
         include('outpost.django.networktoken.urls', namespace='networktoken')
     ),
     url(
+        r'^salt/',
+        include('outpost.django.salt.urls', namespace='salt')
+    ),
+    url(
         r'^typo3/',
         include('outpost.django.typo3.urls', namespace='typo3')
     ),

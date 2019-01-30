@@ -9,8 +9,8 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from ..base.decorators import signal_connect
-from ..campusonline.models import Person
 from ..base.validators import PublicKeyValidator
+from ..campusonline.models import Person
 
 
 class PublicKey(models.Model):
