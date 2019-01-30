@@ -1,4 +1,4 @@
-{% if user.is_authenticated %}
+{% if request.user.is_authenticated %}
 <li>
   <a href="{% url 'networktoken:create' %}">
     <span class="glyphicon glyphicon-tower"></span>
