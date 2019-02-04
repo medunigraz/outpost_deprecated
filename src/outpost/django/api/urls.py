@@ -271,6 +271,11 @@ v1.register(
     base_name='campusonline-event'
 )
 v1.register(
+    r'campusonline/bulletin/page',
+    campusonline.BulletinPageViewSet,
+    base_name='campusonline-bulletin-page'
+)
+v1.register(
     r'campusonline/bulletin',
     campusonline.BulletinViewSet,
     base_name='campusonline-bulletin'

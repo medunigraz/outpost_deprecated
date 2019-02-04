@@ -254,6 +254,28 @@ class BulletinViewSet(ReadOnlyModelViewSet):
     filter_class = filters.BulletinFilter
 
 
+@docstring_format(
+    model=models.BulletinPage.__doc__,
+    filter=filters.BulletinPageFilter.__doc__
+)
+class BulletinPageViewSet(ReadOnlyModelViewSet):
+    '''
+    List official bulletin pages with extracted text from CAMPUSonline.
+
+    {model}
+    {filter}
+    '''
+    queryset = models.BulletinPage.objects.all()
+    serializer_class = serializers.BulletinPageSerializer
+    filter_backends = (
+        DjangoFilterBackend,
+    )
+    filter_class = filters.BulletinPageFilter
+    permission_classes = (
+        AllowAny,
+    )
+
+
 class BulletinPageSearchViewSet(HaystackViewSet):
     index_models = [models.BulletinPage]
     serializer_class = serializers.BulletinPageSearchSerializer

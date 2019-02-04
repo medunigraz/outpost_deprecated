@@ -307,7 +307,8 @@ class BulletinPageSerializer(ModelSerializer):
         model = models.BulletinPage
         fields = (
             'bulletin',
-            'index'
+            'index',
+            'text',
         )
 
 

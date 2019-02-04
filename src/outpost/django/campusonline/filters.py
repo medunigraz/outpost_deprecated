@@ -475,3 +475,41 @@ class BulletinFilter(filterset.FilterSet):
                 'date',
             ),
         }
+
+
+class BulletinPageFilter(filterset.FilterSet):
+    '''
+    ## Filters
+
+    To filter for exact value matches:
+
+        ?<fieldname>=<value>
+
+    For advanced filtering use lookups:
+
+        ?<fieldname>__<lookup>=<value>
+
+    Possible lookups:
+
+      - `bulletin`: `gte`, `gt`, `lte`, `lt`
+      - `index`: `gte`, `gt`, `lte`, `lt`
+    '''
+
+    class Meta:
+        model = models.BulletinPage
+        fields = {
+            'bulletin': (
+                'exact',
+                'gt',
+                'lt',
+                'gte',
+                'lte',
+            ),
+            'index': (
+                'exact',
+                'gt',
+                'lt',
+                'gte',
+                'lte',
+            ),
+        }
