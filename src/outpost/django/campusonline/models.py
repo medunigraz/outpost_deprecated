@@ -987,6 +987,10 @@ class BulletinPage(models.Model):
     )
 
     class Meta:
+        ordering = (
+            '-bulletin',
+            'index',
+        )
         unique_together = (
             'bulletin',
             'index',
