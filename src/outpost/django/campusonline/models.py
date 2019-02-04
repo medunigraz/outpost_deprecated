@@ -908,7 +908,7 @@ class Bulletin(models.Model):
         )
 
     class Refresh:
-        interval = 0
+        interval = 86400
 
     def __str__(s):
         return f'{s.issue} {s.academic_year} ({s.published})'
