@@ -1,4 +1,5 @@
 from functools import wraps
+from locale import setlocale
 
 from django.db.models.signals import (
     post_delete,
@@ -53,6 +54,18 @@ def signal_skip(func):
             return None
         instance.skip_signal = True
         return func(sender, instance, **kwargs)
+    return _decorator
+
+
+def locale(cat, loc):
+    def _decorator(func):
+        @wraps(func)
+        def _wrapper(*args, **kwargs):
+            orig = setlocale(cat, loc)
+            value = func(*args, **kwargs)
+            setlocale(cat, orig)
+            return value
+        return _wrapper
     return _decorator
 
 

@@ -1,16 +1,29 @@
 import logging
+from io import BytesIO
+from locale import (
+    LC_ALL,
+    LC_CTYPE,
+    LC_NUMERIC,
+)
 
 import requests
 from django.contrib.gis.db import models
 from django.db import transaction
 from django.utils.translation import gettext_lazy as _
 from ordered_model.models import OrderedModel
+from PIL import Image
 from popplerqt5 import Poppler
-from PyQt5.QtCore import QRectF
+from PyQt5.QtCore import (
+    QBuffer,
+    QIODevice,
+    QRectF,
+)
 from treebeard.al_tree import AL_Node
 
+from ..base.decorators import locale
 from ..base.signals import materialized_view_refreshed
 from ..base.tasks import RefreshMaterializedViewTask
+from .conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -902,10 +915,14 @@ class Bulletin(models.Model):
 
     @classmethod
     @transaction.atomic
+    @locale(LC_ALL, 'C')
+    @locale(LC_CTYPE, 'C')
+    @locale(LC_NUMERIC, 'C')
     def update(cls, name, model, **kwargs):
         if not cls == model:
             return
-        BulletinPage.objects.all().delete()
+        from tesserocr import PyTessBaseAPI
+        ocr = PyTessBaseAPI(lang=settings.CAMPUSONLINE_BULLETIN_OCR_LANGUAGE)
         for b in model.objects.all():
             try:
                 req = requests.get(b.url)
@@ -915,10 +932,38 @@ class Bulletin(models.Model):
                 return []
             doc = Poppler.Document.loadFromData(req.content)
             for n, p in enumerate(doc):
+                try:
+                    BulletinPage.objects.get(
+                        bulletin=b,
+                        index=n
+                    )
+                    continue
+                except BulletinPage.DoesNotExist:
+                    pass
+                clean = True
+                text = p.text(QRectF())
+                if len(text) < 50:
+                    logger.warn(f'Using OCR on bulletin {b} page {n}.')
+                    buf = QBuffer()
+                    buf.open(QIODevice.ReadWrite)
+                    p.renderToImage().save(buf, 'PNG')
+                    bio = BytesIO()
+                    bio.write(buf.data())
+                    buf.close()
+                    bio.seek(0)
+                    img = Image.open(bio)
+                    ocr.SetImage(img)
+                    scanned = ocr.GetUTF8Text()
+                    img.close()
+                    bio.close()
+                    if len(text) < len(scanned):
+                        text = scanned
+                        clean = False
                 BulletinPage.objects.create(
                     bulletin=b,
                     index=n,
-                    text=p.text(QRectF())
+                    text=text.strip(),
+                    clean=clean
                 )
 
 
@@ -937,3 +982,12 @@ class BulletinPage(models.Model):
     )
     index = models.PositiveSmallIntegerField()
     text = models.TextField()
+    clean = models.BooleanField(
+        default=False
+    )
+
+    class Meta:
+        unique_together = (
+            'bulletin',
+            'index',
+        )
