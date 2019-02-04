@@ -4,7 +4,7 @@ from appconf import AppConf
 from django.conf import settings
 
 
-class LTIAppConf(AppConf):
+class BaseAppConf(AppConf):
     PASSWORD_STRENGTH_BLOOM_FILE = os.path.join(
         settings.MEDIA_ROOT,
         'passwords.flor'
