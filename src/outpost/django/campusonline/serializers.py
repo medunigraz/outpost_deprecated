@@ -147,6 +147,7 @@ class PersonSerializer(FlexFieldsModelSerializer):
             'functions',
             'organizations',
             'sex',
+            'mobile',
         )
 
 
@@ -175,6 +176,7 @@ class AuthenticatedPersonSerializer(PersonSerializer):
             'username',
             'avatar_private',
             'hash',
+            'mobile',
         )
 
     def get_avatar(self, obj):
