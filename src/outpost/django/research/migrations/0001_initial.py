@@ -476,7 +476,10 @@ class Migration(migrations.Migration):
         '''
         CREATE MATERIALIZED VIEW "public"."research_publicationcategory" AS SELECT
             PUBLIKATION_TYP_ID::integer AS id,
-            PUBLIKATION_TYP_DE AS name
+            hstore(
+                ARRAY['de', 'en'],
+                ARRAY[PUBLIKATION_TYP_DE, PUBLIKATION_TYP_EN]
+            ) AS name
         FROM
             "research"."publikation_typ";
         ''',
