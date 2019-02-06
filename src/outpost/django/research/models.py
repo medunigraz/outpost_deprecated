@@ -43,7 +43,7 @@ class Country(models.Model):
         interval = 86400
 
     def __str__(self):
-        return self.name.get('de')
+        return self.name
 
 
 class Language(models.Model):
@@ -78,7 +78,7 @@ class Language(models.Model):
         interval = 86400
 
     def __str__(self):
-        return self.name.get('de')
+        return self.name
 
 
 class FunderCategory(models.Model):
@@ -113,7 +113,7 @@ class FunderCategory(models.Model):
         interval = 86400
 
     def __str__(self):
-        return self.name.get('de')
+        return self.name
 
 
 class Funder(models.Model):
@@ -174,7 +174,7 @@ class Funder(models.Model):
         interval = 86400
 
     def __str__(self):
-        return self.name.get('de')
+        return self.name
 
 
 class ProjectCategory(models.Model):
@@ -201,7 +201,7 @@ class ProjectCategory(models.Model):
         interval = 86400
 
     def __str__(self):
-        return self.name.get('de')
+        return self.name
 
 
 class ProjectResearch(models.Model):
@@ -228,7 +228,7 @@ class ProjectResearch(models.Model):
         interval = 86400
 
     def __str__(self):
-        return self.name.get('de')
+        return self.name
 
 
 class ProjectPartnerFunction(models.Model):
@@ -255,7 +255,7 @@ class ProjectPartnerFunction(models.Model):
         interval = 86400
 
     def __str__(self):
-        return self.name.get('de')
+        return self.name
 
 
 class ProjectStudy(models.Model):
@@ -282,7 +282,7 @@ class ProjectStudy(models.Model):
         interval = 86400
 
     def __str__(self):
-        return self.name.get('de')
+        return self.name
 
 
 class ProjectEvent(models.Model):
@@ -309,7 +309,7 @@ class ProjectEvent(models.Model):
         interval = 86400
 
     def __str__(self):
-        return self.name.get('de')
+        return self.name
 
 
 class ProjectGrant(models.Model):
@@ -336,7 +336,7 @@ class ProjectGrant(models.Model):
         interval = 86400
 
     def __str__(self):
-        return self.name.get('de')
+        return self.name
 
 
 class ProjectStatus(models.Model):
