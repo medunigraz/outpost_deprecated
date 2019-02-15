@@ -5,10 +5,10 @@ from locale import (
     LC_CTYPE,
     LC_NUMERIC,
 )
+from typing import Optional
 
 import requests
 from django.contrib.gis.db import models
-from django.db import transaction
 from django.utils.translation import gettext_lazy as _
 from ordered_model.models import OrderedModel
 from PIL import Image
@@ -923,58 +923,43 @@ class Bulletin(models.Model):
     def __str__(s):
         return f'{s.issue} {s.academic_year} ({s.published})'
 
+    @property
+    def content(self) -> Optional[bytes]:
+        try:
+            req = requests.get(self.url)
+            req.raise_for_status()
+            return req.content
+        except requests.exceptions.RequestException as e:
+            logger.warn(f'Could not download bulletin {self}: {e}')
+            return None
+
+    def extract(self):
+        content = self.content
+        if not content:
+            return
+        doc = Poppler.Document.loadFromData(content)
+        if not doc:
+            logger.warn(f'Could not parse bulletin {self}')
+            return
+        for n, p in enumerate(doc):
+            bp, created = BulletinPage.objects.get_or_create(
+                bulletin=self,
+                index=n,
+                defaults={
+                    'bulletin': self,
+                    'index': n,
+                }
+            )
+            if created or (bp.harvest and not bp.clean):
+                bp.extract(p)
+                bp.save()
+
     @classmethod
-    @transaction.atomic
-    @locale(LC_ALL, 'C')
-    @locale(LC_CTYPE, 'C')
-    @locale(LC_NUMERIC, 'C')
     def update(cls, name, model, **kwargs):
         if not cls == model:
             return
-        from tesserocr import PyTessBaseAPI
-        ocr = PyTessBaseAPI(lang=settings.CAMPUSONLINE_BULLETIN_OCR_LANGUAGE)
         for b in model.objects.all():
-            try:
-                req = requests.get(b.url)
-                req.raise_for_status()
-            except requests.exceptions.RequestException as e:
-                logger.warn(f'Could not download bulletin: {e}')
-                return []
-            doc = Poppler.Document.loadFromData(req.content)
-            for n, p in enumerate(doc):
-                try:
-                    BulletinPage.objects.get(
-                        bulletin=b,
-                        index=n
-                    )
-                    continue
-                except BulletinPage.DoesNotExist:
-                    pass
-                clean = True
-                text = p.text(QRectF())
-                if len(text) < 50:
-                    logger.warn(f'Using OCR on bulletin {b} page {n}.')
-                    buf = QBuffer()
-                    buf.open(QIODevice.ReadWrite)
-                    p.renderToImage().save(buf, 'PNG')
-                    bio = BytesIO()
-                    bio.write(buf.data())
-                    buf.close()
-                    bio.seek(0)
-                    img = Image.open(bio)
-                    ocr.SetImage(img)
-                    scanned = ocr.GetUTF8Text()
-                    img.close()
-                    bio.close()
-                    if len(text) < len(scanned):
-                        text = scanned
-                        clean = False
-                BulletinPage.objects.create(
-                    bulletin=b,
-                    index=n,
-                    text=text.strip(),
-                    clean=clean
-                )
+            b.extract()
 
 
 materialized_view_refreshed.connect(
@@ -991,8 +976,13 @@ class BulletinPage(models.Model):
         related_name='pages'
     )
     index = models.PositiveSmallIntegerField()
-    text = models.TextField()
+    text = models.TextField(
+        null=True
+    )
     clean = models.BooleanField(
+        default=False
+    )
+    harvest = models.BooleanField(
         default=False
     )
 
@@ -1005,3 +995,30 @@ class BulletinPage(models.Model):
             'bulletin',
             'index',
         )
+
+    @locale(LC_ALL, 'C')
+    @locale(LC_CTYPE, 'C')
+    @locale(LC_NUMERIC, 'C')
+    def extract(self, page: Poppler.Page):
+        from tesserocr import PyTessBaseAPI  # NOQA Stupid assert on LC_* == 'C'
+        ocr = PyTessBaseAPI(lang=settings.CAMPUSONLINE_BULLETIN_OCR_LANGUAGE)
+        text = page.text(QRectF()).strip()
+        if len(text) > settings.CAMPUSONLINE_BULLETIN_OCR_THRESHOLD:
+            self.clean = True
+            self.text = text
+            return
+        dpi = settings.CAMPUSONLINE_BULLETIN_OCR_DPI
+        buf = QBuffer()
+        buf.open(QIODevice.ReadWrite)
+        page.renderToImage(dpi, dpi).save(buf, 'PNG')
+        bio = BytesIO()
+        bio.write(buf.data())
+        buf.close()
+        bio.seek(0)
+        img = Image.open(bio)
+        ocr.SetImage(img)
+        scanned = ocr.GetUTF8Text().strip()
+        img.close()
+        bio.close()
+        self.clean = False
+        self.text = scanned
