@@ -311,6 +311,7 @@ class EventSerializer(FlexFieldsModelSerializer):
     media = EventMediaSerializer(many=True, read_only=True)
     breadcrumb = ReadOnlyField()
     url = URLField(read_only=True, allow_null=True)
+    link = URLField(read_only=True, allow_null=True)
     description = RichTextField(read_only=True)
 
     class Meta:

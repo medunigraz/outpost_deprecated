@@ -389,7 +389,7 @@ class Event(models.Model):
     register = models.BooleanField()
     registration_end = models.DateTimeField(blank=True, null=True)
     attending_fees = models.BooleanField()
-    url = models.CharField(max_length=512, blank=True, null=True)
+    link = models.CharField(max_length=512, blank=True, null=True)
     dfp_points = models.IntegerField(blank=True, null=True)
     contact = models.CharField(max_length=256, blank=True, null=True)
     email = models.CharField(max_length=256, blank=True, null=True)

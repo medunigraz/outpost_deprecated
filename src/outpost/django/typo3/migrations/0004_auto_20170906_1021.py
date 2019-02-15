@@ -71,7 +71,7 @@ class Migration(migrations.Migration):
                 NULL
             END AS registration_end,
             tx_mugcal_attendingfees::boolean AS attending_fees,
-            tx_mugcal_www AS url,
+            tx_mugcal_www AS link,
             tx_mugcal_dfppoints AS dfp_points,
             tx_mugcal_contact AS contact,
             tx_mugcal_contact_email AS email,
