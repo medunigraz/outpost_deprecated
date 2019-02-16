@@ -6,7 +6,7 @@ Type=notify
 Environment=DJANGO_LOCAL_CONFIGURATION=/etc/django/%i.py
 WorkingDirectory=/var/www/wsgi/%i/src
 User=www-data-api
-ExecStart=/usr/bin/django-admin recordinguploadserver --settings outpost.settings --pythonpath .
+ExecStart=/usr/bin/django-admin recordinguploadserver --settings outpost.django.settings --pythonpath .
 
 [Install]
 WantedBy=outpost@%i.target

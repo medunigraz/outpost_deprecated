@@ -3,7 +3,7 @@ Description=%I - gunicorn
 
 [Service]
 Type=simple
-Environment=DJANGO_SETTINGS_MODULE=outpost.settings
+Environment=DJANGO_SETTINGS_MODULE=outpost.django.settings
 Environment=DJANGO_LOCAL_CONFIGURATION=/etc/django/%i.py
 Environment=PYTHONPATH=/var/www/wsgi/%i/src
 EnvironmentFile=-/etc/django/%i.env
