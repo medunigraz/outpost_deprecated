@@ -33,7 +33,7 @@ class SystemUserSerializer(serializers.ModelSerializer):
     displayname = serializers.CharField(source='user.displayname')
     homedir = serializers.SerializerMethodField()
     groups = GroupSerializer(many=True)
-    keys = PublicKeySerializer(
+    public_keys = PublicKeySerializer(
         source='user.publickey_set.all',
         many=True
     )
@@ -48,7 +48,7 @@ class SystemUserSerializer(serializers.ModelSerializer):
             'shell',
             'groups',
             'sudo',
-            'keys',
+            'public_keys',
         )
 
     def get_homedir(self, o):
