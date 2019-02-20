@@ -22,13 +22,10 @@ outpost_user_{{ user.username }}:
 
 {%- if user.public_keys is iterable %}
 outpost_user_{{ user.username }}_ssh_key:
-    ssh_auth.present:
-        - user: {{ user.username }}
-        - names:
-{%- for key in user.public_keys %}
-            - {{ key }}
-{%- endfor %}
+  ssh_auth.present:
+    - user: {{ user.username }}
+    - names: {{ user.public_keys }}
     - require:
-        - user: outpost_user_{{ user.username }}
+      - user: outpost_user_{{ user.username }}
 {%- endif %}
 {%- endfor %}
