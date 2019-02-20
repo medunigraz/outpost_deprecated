@@ -20,12 +20,12 @@ outpost_user_{{ user.username }}:
         - group: outpost_group_{{ group.name }}
     {%- endfor %}
 
-{%- if user.keys is defined %}
+{%- if user.public_keys is iterable %}
 outpost_user_{{ user.username }}_ssh_key:
     ssh_auth.present:
         - user: {{ user.username }}
         - names:
-{%- for key in user.get('public_keys', []) %}
+{%- for key in user.public_keys %}
             - {{ key }}
 {%- endfor %}
     - require:
