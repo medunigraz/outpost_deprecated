@@ -425,7 +425,7 @@ class Event(models.Model):
     def breadcrumb(self):
         url = URL(settings.OUTPOST['typo3_api'])
         url = url.query_param('tx_mugapi_endpoint[recordType]', 'RootLine')
-        url = url.query_param('tx_mugapi_endpoint[pageUid]', self.source.pk)
+        url = url.query_param('tx_mugapi_endpoint[pageUid]', self.source_id)
         logger.debug(f'Fetching TYPO3 event breadcrumb: {url.as_string()}')
         r = fetch(url.as_string())
         if r.status_code != 200:
@@ -652,7 +652,7 @@ class News(models.Model):
     def breadcrumb(self):
         url = URL(settings.OUTPOST['typo3_api'])
         url = url.query_param('tx_mugapi_endpoint[recordType]', 'RootLine')
-        url = url.query_param('tx_mugapi_endpoint[pageUid]', self.source.pk)
+        url = url.query_param('tx_mugapi_endpoint[pageUid]', self.source_id)
         logger.debug(f'Fetching TYPO3 news breadcrumb: {url.as_string()}')
         r = fetch(url.as_string())
         if r.status_code != 200:
