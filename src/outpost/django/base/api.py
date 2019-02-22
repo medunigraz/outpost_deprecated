@@ -75,9 +75,9 @@ class TaskViewSet(generics.ListAPIView, generics.RetrieveAPIView, viewsets.Gener
 
 
 class HookViewSet(viewsets.ModelViewSet):
-    """
+    '''
     Retrieve, create, update or destroy webhooks.
-    """
+    '''
     queryset = Hook.objects.all()
     model = Hook
     serializer_class = serializers.HookSerializer
@@ -87,11 +87,34 @@ class HookViewSet(viewsets.ModelViewSet):
 
 
 class PasswordStrengthViewSet(viewsets.ViewSet):
+    '''
+    Test passwords against a wide range of criterias to prevent them being
+    easily guessable.
+    '''
     permission_classes = (
         permissions.AllowAny,
     )
 
     def create(self, request):
+        '''
+        Test password in request:
+
+            {
+                "password":"easy_to_guess"
+            }
+
+        Test password and use additional words to be blacklisted (e.g.
+        username, first or family name, ...):
+
+            {
+                "password":"easy_to_guess",
+                "blacklist": [
+                    "john",
+                    "doe",
+                    "j.doe"
+                ]
+            }
+        '''
         raw = request.data.get('password', None)
         if not raw:
             return Response()
