@@ -110,6 +110,7 @@ class PasswordStrengthViewSet(viewsets.ViewSet):
             'leaked': hashed in bf,
             'score': checked['score'],
             'guesses': checked['guesses'],
+            'crack_time': checked['crack_times_display']['offline_slow_hashing_1e4_per_second'],
             'feedback': {
                 'warning': _(checked['feedback']['warning']),
                 'suggestions': suggestions,
