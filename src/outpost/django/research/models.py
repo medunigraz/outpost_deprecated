@@ -11,6 +11,139 @@ from memoize import memoize
 logger = logging.getLogger(__name__)
 
 
+class Classification(models.Model):
+    '''
+    Classification of a person as per (ÖFOS2012)[https://www.data.gv.at/katalog/dataset/stat_ofos-2012].
+
+    ## Fields
+
+    ### `id` (`integer`)
+    Primary key.
+
+    ### `name` (`object`)
+    Names of classification, defined by language.
+
+    ### `persons` (`integer[]`)
+    List of foreign keys to `campusonline/person`.
+    '''
+    name = HStoreField()
+    persons = models.ManyToManyField(
+        'campusonline.Person',
+        db_table='research_classification_person',
+        db_constraint=False,
+        #related_name='classifications'
+    )
+
+    class Meta:
+        managed = False
+        db_table = 'research_classification'
+
+    class Refresh:
+        interval = 86400
+
+    def __str__(self):
+        return self.name.get('de')
+
+
+class Expertise(models.Model):
+    '''
+    Expertise of a person.
+
+    ## Fields
+
+    ### `id` (`integer`)
+    Primary key.
+
+    ### `name` (`object`)
+    Names of expertise, defined by language.
+
+    ### `person` (`integer`)
+    Foreign key to `campusonline/person` this expertise applies to.
+    '''
+    name = HStoreField()
+    person = models.ForeignKey(
+        'campusonline.Person',
+        models.DO_NOTHING,
+        db_constraint=False,
+    )
+
+    class Meta:
+        managed = False
+        db_table = 'research_expertise'
+
+    class Refresh:
+        interval = 86400
+
+    def __str__(self):
+        return self.name.get('de')
+
+
+class Knowledge(models.Model):
+    '''
+    Knowledge of a person.data.gv.at/katalog/dataset/stat_ofos-2012].
+
+    ## Fields
+
+    ### `id` (`integer`)
+    Primary key.
+
+    ### `name` (`object`)
+    Names of knowledge, defined by language.
+
+    ### `person` (`integer`)
+    Foreign key to `campusonline/person` this knowledge applies to.
+    '''
+    name = HStoreField()
+    person = models.ForeignKey(
+        'campusonline.Person',
+        models.DO_NOTHING,
+        db_constraint=False,
+    )
+
+    class Meta:
+        managed = False
+        db_table = 'research_knowledge'
+
+    class Refresh:
+        interval = 86400
+
+    def __str__(self):
+        return self.name.get('de')
+
+
+class Education(models.Model):
+    '''
+    Education of a person.
+
+    ## Fields
+
+    ### `id` (`integer`)
+    Primary key.
+
+    ### `name` (`object`)
+    Names of education, defined by language.
+
+    ### `person` (`integer`)
+    Foreign key to `campusonline/person` this education applies to.
+    '''
+    name = HStoreField()
+    person = models.ForeignKey(
+        'campusonline.Person',
+        models.DO_NOTHING,
+        db_constraint=False,
+    )
+
+    class Meta:
+        managed = False
+        db_table = 'research_education'
+
+    class Refresh:
+        interval = 86400
+
+    def __str__(self):
+        return self.name.get('de')
+
+
 class Country(models.Model):
     '''
     ## Fields
@@ -192,6 +325,7 @@ class ProjectCategory(models.Model):
         blank=True,
         null=True
     )
+    public = models.BooleanField()
 
     class Meta:
         managed = False
@@ -202,6 +336,25 @@ class ProjectCategory(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class DjangoProjectCategory(models.Model):
+    id = models.OneToOneField(
+        'ProjectCategory',
+        models.DO_NOTHING,
+        db_column='id',
+        db_constraint=False,
+        related_name='+',
+        primary_key=True
+    )
+    public = models.BooleanField(
+        default=False
+    )
+
+    def __str__(self):
+        return str(self.id)
+
+# TODO: Catch signal to update view
 
 
 class ProjectResearch(models.Model):
@@ -354,10 +507,58 @@ class ProjectStatus(models.Model):
         blank=True,
         null=True
     )
+    public = models.BooleanField()
 
     class Meta:
         managed = False
         db_table = 'research_projectstatus'
+
+    class Refresh:
+        interval = 86400
+
+    def __str__(self):
+        return self.name
+
+
+class DjangoProjectStatus(models.Model):
+    id = models.OneToOneField(
+        'ProjectStatus',
+        models.DO_NOTHING,
+        db_column='id',
+        db_constraint=False,
+        related_name='+',
+        primary_key=True
+    )
+    public = models.BooleanField(
+        default=False
+    )
+
+    def __str__(self):
+        return str(self.id)
+
+# TODO: Catch signal to update view
+
+
+class Program(models.Model):
+    '''
+    ## Fields
+
+    ### `id` (`integer`)
+    Primary key.
+
+    ### `name` (`string`)
+    Name of research program.
+    '''
+    name = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True
+    )
+    active = models.BooleanField()
+
+    class Meta:
+        managed = False
+        db_table = 'research_program'
 
     class Refresh:
         interval = 86400
@@ -488,6 +689,21 @@ class Project(models.Model):
         db_constraint=False,
         related_name='projects'
     )
+    assignment = models.DateTimeField(
+        blank=True,
+        null=True
+    )
+    program = models.ForeignKey(
+        'Program',
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
+        blank=True,
+    )
+    subprogram = models.TextField(
+        blank=True,
+        null=True
+    )
 
     class Meta:
         managed = False
@@ -544,6 +760,82 @@ class PublicationDocument(models.Model):
 
     def __str__(self):
         return self.name.get('de')
+
+
+class PublicationAuthorship(models.Model):
+    '''
+    ## Fields
+
+    ### `id` (`integer`)
+    Primary key.
+
+    ### `name` (`object`)
+    Names of publication authorship, defined by language.
+    '''
+    name = HStoreField()
+
+    class Meta:
+        managed = False
+        db_table = 'research_publicationauthorship'
+
+    class Refresh:
+        interval = 86400
+
+    def __str__(self):
+        return self.name.get('de')
+
+
+class PublicationOrganization(models.Model):
+    '''
+    ## Fields
+
+    ### `id` (`string`)
+    Primary key.
+
+    ### `name` (`object`)
+    Names of publication authorship, defined by language.
+    '''
+    id = models.CharField(
+        max_length=256,
+        primary_key=True
+    )
+    publication = models.ForeignKey(
+        'Publication',
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        related_name='organizations'
+    )
+    organization = models.ForeignKey(
+        'campusonline.Organization',
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        related_name='publications'
+    )
+    authorship = models.ForeignKey(
+        'PublicationAuthorship',
+        models.SET_NULL,
+        db_constraint=False,
+        null=True,
+        blank=True,
+    )
+    assigned = models.DateTimeField(
+        blank=True,
+        null=True
+    )
+
+    class Meta:
+        managed = False
+        db_table = 'research_publicationorganization'
+
+    class Refresh:
+        interval = 86400
+
+    def __str__(self):
+        return f'{self.publication} ({self.organization})'
 
 
 class Publication(models.Model):
@@ -612,12 +904,6 @@ class Publication(models.Model):
     persons = models.ManyToManyField(
         'campusonline.Person',
         db_table='research_publication_person',
-        db_constraint=False,
-        related_name='publications'
-    )
-    organizations = models.ManyToManyField(
-        'campusonline.Organization',
-        db_table='research_publication_organization',
         db_constraint=False,
         related_name='publications'
     )

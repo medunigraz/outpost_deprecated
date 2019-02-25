@@ -229,7 +229,10 @@ class ProjectViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     {model}
     {serializer}
     '''
-    queryset = models.Project.objects.all()
+    queryset = models.Project.objects.filter(
+        status__public=True,
+        category__public=True
+    )
     serializer_class = serializers.ProjectSerializer
     permission_classes = (
         AllowAny,
@@ -315,6 +318,8 @@ class PublicationViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
         'organizations',
         'category',
         'document',
+        'status',
+        'program'
     )
 
 
