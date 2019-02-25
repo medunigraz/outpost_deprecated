@@ -771,6 +771,7 @@ class CourseGroupTerm(models.Model):
     class Meta:
         managed = False
         db_table = 'campusonline_coursegroupterm'
+        get_latest_by = 'start'
         ordering = (
             'start',
             'end',

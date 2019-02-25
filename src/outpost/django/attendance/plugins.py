@@ -62,39 +62,60 @@ class CampusOnlineTerminalBehaviour(TerminalBehaviourPlugin):
     def create(self, entry):
         from .models import CampusOnlineHolding, CampusOnlineEntry
         logger.debug(f'{self.__class__.__name__}: create({entry})')
-        try:
-            holding = CampusOnlineHolding.objects.get(
-                room=entry.terminal.room,
-                initiated__gte=timezone.now(),
-                state__in=('running', 'finished')
-            )
-        except CampusOnlineHolding.DoesNotExist:
-            holding = None
         coe, created = CampusOnlineEntry.objects.get_or_create(
                 incoming__student=entry.student,
                 incoming__terminal__room=entry.terminal.room,
-                holding=holding,
                 ended__isnull=True,
-                defaults={'created': entry}
+                defaults={
+                    'incoming': entry,
+                }
         )
         if created:
-            # New entry, student should have entered room by now
-            return [_('Welcome')]
-        if not holding:
-            # No holding but prior entry found, assume he/she left the room
-            # with this entry
-            coe.cancel(entry)
+            # New entry, student entering the room
+            logger.debug(
+                f'Student {entry.student} entering {entry.terminal.room}'
+            )
+            try:
+                holding = CampusOnlineHolding.objects.get(
+                    room=entry.terminal.room,
+                    initiated__lte=timezone.now(),
+                    state='running'
+                )
+                coe.assign(holding)
+            except CampusOnlineHolding.DoesNotExist:
+                logger.debug(f'No active holding found for {coe}')
+            msg = _(
+                'Welcome '
+                '{coe.incoming.student.title} '
+                '{coe.incoming.student.first_name} '
+                '{coe.incoming.student.last_name}'
+            )
         else:
-            if holding.state == 'running':
-                if coe.state == 'assigned':
+            # Existing entry, student leaving room
+            logger.debug(
+                f'Student {entry.student} leaving {entry.terminal.room}'
+            )
+            if not coe.holding:
+                # No holding but prior entry found, assume he/she left the room
+                # with this entry
+                logger.debug(
+                    f'{entry.student} canceling {entry.terminal.room}'
+                )
+                coe.cancel(entry)
+                msg = _('Goodbye')
+            else:
+                # Holding is present and student should be assigned to it
+                if coe.holding.state == 'running' and coe.state == 'assigned':
+                    logger.debug(
+                        f'{entry.student} leaving {entry.terminal.room}'
+                    )
                     coe.leave(entry)
-                if coe.state == 'created':
-                    coe.assign(holding)
-            if holding.state == 'finished':
-                if coe.state == 'assigned':
-                    coe.complete(entry)
+                msg = _(
+                    'Thank you for attending '
+                    '{coe.holding.course_group_term.coursegroup}'
+                )
         coe.save()
-        return [_('Goodbye')]
+        return msg.format(coe=coe)
 
 
 class StatisticsTerminalBehaviour(TerminalBehaviourPlugin):

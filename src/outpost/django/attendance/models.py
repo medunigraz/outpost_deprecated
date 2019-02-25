@@ -1,3 +1,5 @@
+import logging
+
 from django.conf import settings
 from django.contrib.postgres.fields import (
     DateTimeRangeField,
@@ -15,8 +17,9 @@ from model_utils.models import TimeStampedModel
 from ..base.decorators import signal_connect
 from ..base.fields import ChoiceArrayField
 from ..base.models import NetworkedDeviceMixin
-
 from .plugins import TerminalBehaviour
+
+logger = logging.getLogger(__name__)
 
 
 class Terminal(NetworkedDeviceMixin, models.Model):
@@ -72,9 +75,10 @@ class Entry(models.Model):
         blank=True,
         related_name='+'
     )
-    status = JSONField(default=dict)
+    status = JSONField(default=list)
 
     class Meta:
+        get_latest_by = 'created'
         permissions = (
             ('view_entry', _('View Entry')),
         )
@@ -84,9 +88,11 @@ class Entry(models.Model):
             return
         setattr(self, '_post_save', True)
         if kwargs.get('created', False):
-            self.status = self.terminal.plugins.hook.create(entry=self)
+            hook = self.terminal.plugins.hook.create
         else:
-            self.status = self.terminal.plugins.hook.update(entry=self)
+            hook = self.terminal.plugins.hook.update
+        self.status = hook(entry=self)
+        self.save()
         setattr(self, '_post_save', False)
 
     def __str__(s):
@@ -97,7 +103,7 @@ class CampusOnlineHolding(models.Model):
     state = FSMField(default='pending')
     course_group_term = models.ForeignKey(
         'campusonline.CourseGroupTerm',
-        models.SET_NULL,
+        models.DO_NOTHING,
         db_constraint=False,
         null=True,
         blank=True,
@@ -105,7 +111,7 @@ class CampusOnlineHolding(models.Model):
     )
     room = models.ForeignKey(
         'campusonline.Room',
-        models.SET_NULL,
+        models.DO_NOTHING,
         db_constraint=False,
         null=True,
         blank=True,
@@ -113,7 +119,7 @@ class CampusOnlineHolding(models.Model):
     )
     lecturer = models.ForeignKey(
         'campusonline.Person',
-        models.SET_NULL,
+        models.DO_NOTHING,
         db_constraint=False,
         null=True,
         blank=True,
@@ -129,6 +135,7 @@ class CampusOnlineHolding(models.Model):
     )
 
     class Meta:
+        get_latest_by = 'initiated'
         permissions = (
             ('view_campusonlineholding', _('View CAMPUSonline Holding')),
         )
@@ -137,7 +144,7 @@ class CampusOnlineHolding(models.Model):
     def start(self):
         self.initiated = timezone.now()
         coes = CampusOnlineEntry.objects.filter(
-            created__terminal__room=self.room,
+            incoming__terminal__room=self.room,
             holding=None,
             state='created'
         )
@@ -149,21 +156,28 @@ class CampusOnlineHolding(models.Model):
     def end(self):
         coes = CampusOnlineEntry.objects.filter(
             holding=self,
-            state='assigned'
+            state__in=('assigned', 'left')
         )
         for coe in coes:
             coe.complete()
             coe.save()
         self.finished = timezone.now()
 
-    @transition(field=state, source='pending', target='canceled')
+    @transition(field=state, source=('running', 'pending'), target='canceled')
     def cancel(self):
-        for coe in CampusOnlineEntry.objects.filter(holding=self):
+        query = {
+            'holding': self,
+            'state__in': (
+                'assigned',
+                'left',
+            )
+        }
+        for coe in CampusOnlineEntry.objects.filter(**query):
             coe.pullout()
             coe.save()
 
     def __str__(s):
-        return f'{s.campusonline} [{s.lecturer}, {s.room}: {s.state}]'
+        return f'{s.course_group_term} [{s.lecturer}, {s.room}: {s.state}]'
 
 
 class CampusOnlineEntry(models.Model):
@@ -207,28 +221,37 @@ class CampusOnlineEntry(models.Model):
             ('view_campusonlineentry', _('View CAMPUSonline Entry')),
         )
 
+    def __str__(s):
+        return f'{s.incoming}: {s.state}'
+
     @transition(field=state, source='created', target='canceled')
     def cancel(self, entry=None):
+        logger.debug(f'Canceling {self}')
         self.ended = timezone.now()
         self.outgoing = entry
 
     @transition(field=state, source='created', target='assigned')
     def assign(self, holding):
+        logger.debug(f'Assigning {self} to {holding}')
         self.holding = holding
         self.assigned = timezone.now()
 
-    @transition(field=state, source='assigned', target='canceled')
+    @transition(field=state, source=('assigned', 'left'), target='canceled')
     def pullout(self):
+        logger.debug(f'Pulling {self} out')
+        self.assigned = None
         self.ended = timezone.now()
 
     @transition(field=state, source='assigned', target='left')
     def leave(self, entry=None):
+        logger.debug(f'{self} leaving')
         self.ended = timezone.now()
         self.outgoing = entry
 
     @transition(field=state, source=('assigned', 'left'), target='complete')
     def complete(self, entry=None):
         from django.db import connection
+        logger.debug(f'{self} completing')
         query = '''
         INSERT INTO campusonline.stud_lv_anw (
             buchung_nr,
@@ -247,19 +270,19 @@ class CampusOnlineEntry(models.Model):
             );
         '''
         self.ended = timezone.now()
-        self.completed = entry
+        if entry:
+            self.outgoing = entry
+        data = [
+            self.id,
+            self.incoming.student.id,
+            self.holding.course_group_term.coursegroup.id,
+            self.holding.course_group_term.term,
+            self.assigned,
+            self.ended,
+        ]
+        logger.debug(f'{self} writing to CAMPUSonline')
         with connection.cursor() as cursor:
-            cursor.execute(
-                query,
-                [
-                    self.id,
-                    self.created.student.id,
-                    self.holding.cource_group_term.coursegroup.id,
-                    self.holding.cource_group_term.term,
-                    self.assigned,
-                    self.ended,
-                ]
-            )
+            cursor.execute(query, data)
         # TODO: Find out if next planed holding has same student in it
         if False:
             CampusOnlineEntry.objects.create()
