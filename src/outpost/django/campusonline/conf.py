@@ -8,6 +8,7 @@ class CAMPUSonlineAppConf(AppConf):
     BULLETIN_OCR_LANGUAGE = 'deu+eng'
     BULLETIN_OCR_DPI = 300
     BULLETIN_OCR_THRESHOLD = 50
+    PHONE_NUMBER_REGION = 'AT'
 
     class Meta:
         prefix = 'campusonline'

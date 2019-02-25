@@ -1,5 +1,11 @@
 from django.urls import reverse
 from drf_haystack.serializers import HaystackSerializerMixin
+from phonenumbers import (
+    PhoneNumberFormat,
+    format_number,
+)
+from phonenumbers import parse as parse_number
+from phonenumbers import phonenumberutil
 from rest_flex_fields import FlexFieldsModelSerializer
 from rest_framework.serializers import (
     ModelSerializer,
@@ -8,6 +14,7 @@ from rest_framework.serializers import (
 )
 
 from . import models
+from .conf import settings
 
 
 class RoomCategorySerializer(ModelSerializer):
@@ -153,6 +160,7 @@ class PersonSerializer(FlexFieldsModelSerializer):
 
 class AuthenticatedPersonSerializer(PersonSerializer):
     avatar = SerializerMethodField()
+    mobile = SerializerMethodField()
 
     expandable_fields = {
         'functions': (
@@ -176,7 +184,6 @@ class AuthenticatedPersonSerializer(PersonSerializer):
             'username',
             'avatar_private',
             'hash',
-            'mobile',
         )
 
     def get_avatar(self, obj):
@@ -192,6 +199,16 @@ class AuthenticatedPersonSerializer(PersonSerializer):
         if request:
             return request.build_absolute_uri(path)
         return path
+
+    def get_mobile(self, obj):
+        try:
+            p = parse_number(
+                obj.mobile,
+                settings.CAMPUSONLINE_PHONE_NUMBER_REGION
+            )
+            return format_number(p, PhoneNumberFormat.INTERNATIONAL)
+        except phonenumberutil.NumberParseException:
+            return None
 
 
 class PersonOrganizationFunctionSerializer(ModelSerializer):
