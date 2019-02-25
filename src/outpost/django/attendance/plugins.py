@@ -1,8 +1,9 @@
 import logging
+from typing import List
 
 import pluggy
 from django.utils import timezone
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext as _
 
 from ..base.plugins import Plugin
 
@@ -30,12 +31,12 @@ class TerminalBehaviour(object):
         return pm
 
     @hookspec
-    def create(self, entry):
+    def create(self, entry) -> List[str]:
         '''
         '''
 
     @hookspec
-    def update(self, entry):
+    def update(self, entry) -> List[str]:
         '''
         '''
 
@@ -78,7 +79,7 @@ class CampusOnlineTerminalBehaviour(TerminalBehaviourPlugin):
         )
         if created:
             # New entry, student should have entered room by now
-            return _('Welcome')
+            return [_('Welcome')]
         if not holding:
             # No holding but prior entry found, assume he/she left the room
             # with this entry
@@ -93,7 +94,7 @@ class CampusOnlineTerminalBehaviour(TerminalBehaviourPlugin):
                 if coe.state == 'assigned':
                     coe.complete(entry)
         coe.save()
-        return _('Goodbye')
+        return [_('Goodbye')]
 
 
 class StatisticsTerminalBehaviour(TerminalBehaviourPlugin):
@@ -104,6 +105,7 @@ class StatisticsTerminalBehaviour(TerminalBehaviourPlugin):
     def create(self, entry):
         from .models import StatisticsEntry
         logger.debug(f'{self.__class__.__name__}: create({entry})')
+        msg = list()
         for s in entry.terminal.statistics_set.all():
             try:
                 se = StatisticsEntry.objects.filter(
@@ -115,11 +117,11 @@ class StatisticsTerminalBehaviour(TerminalBehaviourPlugin):
                 se.complete(entry)
                 se.save()
 
-                msg = _('Welcome')
+                msg.append(_('Recorded: {statistic}').format(statistic=s))
             except StatisticsEntry.DoesNotExist:
                 se = StatisticsEntry.objects.create(
                     statistics=s,
                     incoming=entry
                 )
-                msg = _('Goodbye')
-            return msg
+                msg.append(_('Concluded: {statistic}').format(statistic=s))
+        return msg

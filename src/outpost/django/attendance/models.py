@@ -323,4 +323,4 @@ class StatisticsEntry(models.Model):
         self.outgoing = entry
 
     def __str__(s):
-        return f'{s.statistics}: {s.incoming}'
+        return f'{s.statistics}: {s.incoming}/{s.outgoing}'
