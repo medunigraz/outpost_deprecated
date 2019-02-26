@@ -1,3 +1,4 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from drf_haystack.viewsets import HaystackViewSet
 from rest_flex_fields.views import FlexFieldsMixin
 from rest_framework.permissions import AllowAny
@@ -10,6 +11,7 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 #     CacheResponseMixin,
 # )
 from . import (
+    filters,
     models,
     serializers,
 )
@@ -315,6 +317,10 @@ class ProjectViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
         category__public=True
     )
     serializer_class = serializers.ProjectSerializer
+    filter_backends = (
+        DjangoFilterBackend,
+    )
+    filter_class = filters.ProjectFilter
     permission_classes = (
         AllowAny,
     )
@@ -391,6 +397,10 @@ class PublicationViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     '''
     queryset = models.Publication.objects.all()
     serializer_class = serializers.PublicationSerializer
+    filter_backends = (
+        DjangoFilterBackend,
+    )
+    filter_class = filters.PublicationFilter
     permission_classes = (
         AllowAny,
     )
