@@ -1,6 +1,7 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_haystack.viewsets import HaystackViewSet
 from rest_flex_fields.views import FlexFieldsMixin
+from rest_framework.filters import OrderingFilter
 from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
@@ -303,7 +304,8 @@ class ProjectStatusViewSet(ReadOnlyModelViewSet):
 
 @docstring_format(
     model=models.Project.__doc__,
-    serializer=serializers.ProjectSerializer.__doc__
+    serializer=serializers.ProjectSerializer.__doc__,
+    filter=filters.ProjectFilter.__doc__
 )
 class ProjectViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     '''
@@ -311,6 +313,7 @@ class ProjectViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
 
     {model}
     {serializer}
+    {filter}
     '''
     queryset = models.Project.objects.filter(
         status__public=True,
@@ -319,8 +322,15 @@ class ProjectViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     serializer_class = serializers.ProjectSerializer
     filter_backends = (
         DjangoFilterBackend,
+        OrderingFilter,
     )
     filter_class = filters.ProjectFilter
+    ordering_fields = (
+        'begin_planned',
+        'begin_effective',
+        'end_planned',
+        'end_effective',
+    )
     permission_classes = (
         AllowAny,
     )
@@ -386,7 +396,8 @@ class PublicationDocumentViewSet(ReadOnlyModelViewSet):
 
 @docstring_format(
     model=models.Publication.__doc__,
-    serializer=serializers.PublicationSerializer.__doc__
+    serializer=serializers.PublicationSerializer.__doc__,
+    filter=filters.PublicationFilter.__doc__
 )
 class PublicationViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     '''
@@ -394,6 +405,7 @@ class PublicationViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
 
     {model}
     {serializer}
+    {filter}
     '''
     queryset = models.Publication.objects.all()
     serializer_class = serializers.PublicationSerializer

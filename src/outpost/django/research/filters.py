@@ -15,13 +15,33 @@ class ProjectFilter(filterset.FilterSet):
 
         ?<fieldname>=<value>
 
+    Possible exact filters:
+
+      - `organization`
+      - `category`
+      - `manager`
+      - `contact`
+      - `status`
+      - `grant`
+      - `research`
+      - `study`
+      - `language`
+      - `funders`
+      - `program`
+
     For advanced filtering use lookups:
 
         ?<fieldname>__<lookup>=<value>
 
+    All fields with advanced lookups can also be used for exact value matches
+    as described above.
+
     Possible advanced lookups:
 
-      - `end`: `gt`, `gte`, `lt`, `lte`
+      - `begin_planned`: `gt`, `gte`, `lt`, `lte`
+      - `begin_effective`: `gt`, `gte`, `lt`, `lte`
+      - `end_planned`: `gt`, `gte`, `lt`, `lte`
+      - `end_effective`: `gt`, `gte`, `lt`, `lte`
     '''
 
     class Meta:
@@ -90,9 +110,19 @@ class PublicationFilter(filterset.FilterSet):
 
         ?<fieldname>=<value>
 
+    Possible exact filters:
+
+      - `year`
+      - `category`
+      - `document`
+      - `persons`
+
     For advanced filtering use lookups:
 
         ?<fieldname>__<lookup>=<value>
+
+    All fields with advanced lookups can also be used for exact value matches
+    as described above.
 
     Possible advanced lookups:
 
