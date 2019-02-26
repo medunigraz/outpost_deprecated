@@ -53,6 +53,87 @@ class LanguageViewSet(ReadOnlyModelViewSet):
 
 
 @docstring_format(
+    model=models.Classification.__doc__,
+    serializer=serializers.ClassificationSerializer.__doc__
+)
+class ClassificationViewSet(ReadOnlyModelViewSet):
+    '''
+    List publication categories.
+
+    {model}
+    {serializer}
+    '''
+    queryset = models.Classification.objects.all()
+    serializer_class = serializers.ClassificationSerializer
+    permission_classes = (
+        AllowAny,
+    )
+
+
+@docstring_format(
+    model=models.Expertise.__doc__,
+    serializer=serializers.ExpertiseSerializer.__doc__
+)
+class ExpertiseViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
+    '''
+    List publication categories.
+
+    {model}
+    {serializer}
+    '''
+    queryset = models.Expertise.objects.all()
+    serializer_class = serializers.ExpertiseSerializer
+    permission_classes = (
+        AllowAny,
+    )
+    permit_list_expands = (
+        'person',
+    )
+
+
+@docstring_format(
+    model=models.Knowledge.__doc__,
+    serializer=serializers.KnowledgeSerializer.__doc__
+)
+class KnowledgeViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
+    '''
+    List publication categories.
+
+    {model}
+    {serializer}
+    '''
+    queryset = models.Knowledge.objects.all()
+    serializer_class = serializers.KnowledgeSerializer
+    permission_classes = (
+        AllowAny,
+    )
+    permit_list_expands = (
+        'person',
+    )
+
+
+@docstring_format(
+    model=models.Education.__doc__,
+    serializer=serializers.EducationSerializer.__doc__
+)
+class EducationViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
+    '''
+    List publication categories.
+
+    {model}
+    {serializer}
+    '''
+    queryset = models.Education.objects.all()
+    serializer_class = serializers.EducationSerializer
+    permission_classes = (
+        AllowAny,
+    )
+    permit_list_expands = (
+        'person',
+    )
+
+
+@docstring_format(
     model=models.FunderCategory.__doc__,
     serializer=serializers.FunderCategorySerializer.__doc__
 )
@@ -103,7 +184,7 @@ class ProjectCategoryViewSet(ReadOnlyModelViewSet):
     {model}
     {serializer}
     '''
-    queryset = models.ProjectCategory.objects.all()
+    queryset = models.ProjectCategory.objects.filter(public=True)
     serializer_class = serializers.ProjectCategorySerializer
     permission_classes = (
         AllowAny,
@@ -211,7 +292,7 @@ class ProjectStatusViewSet(ReadOnlyModelViewSet):
     {model}
     {serializer}
     '''
-    queryset = models.ProjectStatus.objects.all()
+    queryset = models.ProjectStatus.objects.filter(public=True)
     serializer_class = serializers.ProjectStatusSerializer
     permission_classes = (
         AllowAny,

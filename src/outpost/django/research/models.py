@@ -6,6 +6,7 @@ from django.contrib.postgres.fields import (
     ArrayField,
     HStoreField,
 )
+from django.db.models.signals import post_save
 from memoize import memoize
 
 logger = logging.getLogger(__name__)
@@ -31,7 +32,7 @@ class Classification(models.Model):
         'campusonline.Person',
         db_table='research_classification_person',
         db_constraint=False,
-        #related_name='classifications'
+        related_name='classifications'
     )
 
     class Meta:
@@ -65,6 +66,7 @@ class Expertise(models.Model):
         'campusonline.Person',
         models.DO_NOTHING,
         db_constraint=False,
+        related_name='expertise',
     )
 
     class Meta:
@@ -98,6 +100,7 @@ class Knowledge(models.Model):
         'campusonline.Person',
         models.DO_NOTHING,
         db_constraint=False,
+        related_name='knowledge',
     )
 
     class Meta:
@@ -131,6 +134,7 @@ class Education(models.Model):
         'campusonline.Person',
         models.DO_NOTHING,
         db_constraint=False,
+        related_name='education',
     )
 
     class Meta:
@@ -354,7 +358,15 @@ class DjangoProjectCategory(models.Model):
     def __str__(self):
         return str(self.id)
 
-# TODO: Catch signal to update view
+    @classmethod
+    def update(cls, **kwargs):
+        from ..base.tasks import RefreshMaterializedViewTask
+        RefreshMaterializedViewTask().delay(
+            cls.id.field.related_model._meta.db_table
+        )
+
+
+post_save.connect(DjangoProjectCategory.update, sender=DjangoProjectCategory)
 
 
 class ProjectResearch(models.Model):
@@ -536,7 +548,15 @@ class DjangoProjectStatus(models.Model):
     def __str__(self):
         return str(self.id)
 
-# TODO: Catch signal to update view
+    @classmethod
+    def update(cls, **kwargs):
+        from ..base.tasks import RefreshMaterializedViewTask
+        RefreshMaterializedViewTask().delay(
+            cls.id.field.related_model._meta.db_table
+        )
+
+
+post_save.connect(DjangoProjectStatus.update, sender=DjangoProjectStatus)
 
 
 class Program(models.Model):

@@ -140,21 +140,61 @@ class PersonSerializer(FlexFieldsModelSerializer):
 
      * `functions` <i class="glyphicon glyphicon-lock"></i>
      * `organizations` <i class="glyphicon glyphicon-lock"></i>
+     * `classification`
+     * `expertise`
+     * `knowledge`
+     * `education`
 
     '''
     room = RoomSerializer()
 
+    expandable_fields = {
+        'classifications': (
+            'outpost.django.research.serializers.ClassificationSerializer',
+            {
+                'source': 'classifications',
+                'many': True
+            }
+        ),
+        'expertise': (
+            'outpost.django.research.serializers.ExpertiseSerializer',
+            {
+                'source': 'expertise',
+                'many': True
+            }
+        ),
+        'knowledge': (
+            'outpost.django.research.serializers.KnowledgeSerializer',
+            {
+                'source': 'knowledge',
+                'many': True
+            }
+        ),
+        'education': (
+            'outpost.django.research.serializers.EducationSerializer',
+            {
+                'source': 'education',
+                'many': True
+            }
+        ),
+    }
+
     class Meta:
         model = models.Person
-        exclude = (
-            'username',
-            'avatar_private',
-            'hash',
-            'email',
-            'functions',
-            'organizations',
-            'sex',
-            'mobile',
+        fields = (
+            'id',
+            'room',
+            'avatar',
+            'first_name',
+            'last_name',
+            'title',
+            'consultation',
+            'appendix',
+            'phone',
+            'classifications',
+            'expertise',
+            'knowledge',
+            'education',
         )
 
 
@@ -162,28 +202,36 @@ class AuthenticatedPersonSerializer(PersonSerializer):
     avatar = SerializerMethodField()
     mobile = SerializerMethodField()
 
-    expandable_fields = {
-        'functions': (
-            'outpost.django.campusonline.serializers.FunctionSerializer',
-            {
-                'source': 'functions',
-                'many': True
+    @property
+    def expandable_fields(self):
+        base = 'outpost.django.campusonline.serializers'
+        return {
+            **super().expandable_fields,
+            **{
+                'functions': (
+                    f'{base}.FunctionSerializer',
+                    {
+                        'source': 'functions',
+                        'many': True
+                    }
+                ),
+                'organizations': (
+                    f'{base}.OrganizationSerializer',
+                    {
+                        'source': 'organizations',
+                        'many': True
+                    }
+                ),
             }
-        ),
-        'organizations': (
-            'outpost.django.campusonline.serializers.OrganizationSerializer',
-            {
-                'source': 'organizations',
-                'many': True
-            }
-        ),
-    }
+        }
 
     class Meta(PersonSerializer.Meta):
-        exclude = (
-            'username',
-            'avatar_private',
-            'hash',
+        fields = PersonSerializer.Meta.fields + (
+            'email',
+            'sex',
+            'mobile',
+            'functions',
+            'organizations',
         )
 
     def get_avatar(self, obj):

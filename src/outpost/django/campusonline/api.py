@@ -142,6 +142,10 @@ class PersonViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     permit_list_expands = (
         'functions',
         'organizations',
+        'classification',
+        'expertise',
+        'knowledge',
+        'education',
     )
 
     def get_serializer_class(self):

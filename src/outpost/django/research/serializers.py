@@ -2,9 +2,15 @@ import logging
 
 from drf_haystack.serializers import HaystackSerializer
 from rest_flex_fields import FlexFieldsModelSerializer
-from rest_framework import serializers
+from rest_framework.serializers import (
+    CharField,
+    PrimaryKeyRelatedField,
+)
 
-from . import models, search_indexes
+from . import (
+    models,
+    search_indexes,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +25,159 @@ class LanguageSerializer(FlexFieldsModelSerializer):
     class Meta:
         model = models.Language
         fields = '__all__'
+
+
+class ClassificationSerializer(FlexFieldsModelSerializer):
+    '''
+    ## Expansions
+
+    To activate relation expansion add the desired fields as a comma separated
+    list to the `expand` query parameter like this:
+
+        ?expand=<field>,<field>,<field>,...
+
+    The following relational fields can be expanded:
+
+     * `persons`
+
+    '''
+
+    class Meta:
+        model = models.Classification
+        fields = '__all__'
+
+    @property
+    def expandable_fields(self):
+        person = 'PersonSerializer'
+        request = self.context.get('request', None)
+        if request:
+            if request.user:
+                if request.user.is_authenticated():
+                    person = 'AuthenticatedPersonSerializer'
+        return {
+            'persons': (
+                f'outpost.django.campusonline.serializers.{person}',
+                {
+                    'source': 'persons',
+                    'many': True
+                }
+            ),
+        }
+
+
+class ExpertiseSerializer(FlexFieldsModelSerializer):
+    '''
+    ## Expansions
+
+    To activate relation expansion add the desired fields as a comma separated
+    list to the `expand` query parameter like this:
+
+        ?expand=<field>,<field>,<field>,...
+
+    The following relational fields can be expanded:
+
+     * `person`
+
+    '''
+
+    class Meta:
+        model = models.Expertise
+        fields = '__all__'
+
+    @property
+    def expandable_fields(self):
+        person = 'PersonSerializer'
+        request = self.context.get('request', None)
+        if request:
+            if request.user:
+                if request.user.is_authenticated():
+                    person = 'AuthenticatedPersonSerializer'
+        return {
+            'person': (
+                f'outpost.django.campusonline.serializers.{person}',
+                {
+                    'source': 'person',
+                }
+            ),
+        }
+
+
+class KnowledgeSerializer(FlexFieldsModelSerializer):
+    '''
+    ## Expansions
+
+    To activate relation expansion add the desired fields as a comma separated
+    list to the `expand` query parameter like this:
+
+        ?expand=<field>,<field>,<field>,...
+
+    The following relational fields can be expanded:
+
+     * `person`
+
+    '''
+
+    person = PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = models.Knowledge
+        fields = '__all__'
+
+    @property
+    def expandable_fields(self):
+        person = 'PersonSerializer'
+        request = self.context.get('request', None)
+        if request:
+            if request.user:
+                if request.user.is_authenticated():
+                    person = 'AuthenticatedPersonSerializer'
+        return {
+            'person': (
+                f'outpost.django.campusonline.serializers.{person}',
+                {
+                    'source': 'person',
+                }
+            ),
+        }
+
+
+class EducationSerializer(FlexFieldsModelSerializer):
+    '''
+    ## Expansions
+
+    To activate relation expansion add the desired fields as a comma separated
+    list to the `expand` query parameter like this:
+
+        ?expand=<field>,<field>,<field>,...
+
+    The following relational fields can be expanded:
+
+     * `person`
+
+    '''
+
+    person = PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = models.Education
+        fields = '__all__'
+
+    @property
+    def expandable_fields(self):
+        person = 'PersonSerializer'
+        request = self.context.get('request', None)
+        if request:
+            if request.user:
+                if request.user.is_authenticated():
+                    person = 'AuthenticatedPersonSerializer'
+        return {
+            'person': (
+                f'outpost.django.campusonline.serializers.{person}',
+                {
+                    'source': 'person',
+                }
+            ),
+        }
 
 
 class FunderCategorySerializer(FlexFieldsModelSerializer):
@@ -67,7 +226,9 @@ class FunderSerializer(FlexFieldsModelSerializer):
 class ProjectCategorySerializer(FlexFieldsModelSerializer):
     class Meta:
         model = models.ProjectCategory
-        fields = '__all__'
+        exclude = (
+            'public',
+        )
 
 
 class ProjectResearchSerializer(FlexFieldsModelSerializer):
@@ -103,7 +264,9 @@ class ProjectGrantSerializer(FlexFieldsModelSerializer):
 class ProjectStatusSerializer(FlexFieldsModelSerializer):
     class Meta:
         model = models.ProjectStatus
-        fields = '__all__'
+        exclude = (
+            'public',
+        )
 
 
 class ProjectSerializer(FlexFieldsModelSerializer):
@@ -258,7 +421,7 @@ class PublicationSerializer(FlexFieldsModelSerializer):
      * `document`
 
     '''
-    abstract = serializers.CharField(read_only=True)
+    abstract = CharField(read_only=True)
 
     @property
     def expandable_fields(self):

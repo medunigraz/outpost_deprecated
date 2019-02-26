@@ -38,7 +38,10 @@ class ProjectIndex(CelerySearchIndex, indexes.Indexable):
         return Project
 
     def index_queryset(self, using=None):
-        return self.get_model().objects.all()
+        return self.get_model().objects.filter(
+            status__public=True,
+            category__public=True
+        )
 
 
 class PublicationIndex(CelerySearchIndex, indexes.Indexable):
