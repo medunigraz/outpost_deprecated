@@ -673,6 +673,12 @@ class Student(models.Model):
     class Refresh:
         interval = 7200
 
+    @property
+    def display(self):
+        if self.title:
+            return '{s.title} {s.first_name} {s.last_name}'.format(s=self)
+        return '{s.first_name} {s.last_name}'.format(s=self)
+
     def __str__(self):
         return '{s.last_name}, {s.first_name}'.format(s=self)
 
