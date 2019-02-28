@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: outpost.django.base\n"
-"Report-Msgid-Bugs-To: EMAIL@ADDRES://github.com/medunigraz/outpost/issues\n"
-"POT-Creation-Date: 2019-01-25 21:43+0100\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-02-28 10:40+0100\n"
 "PO-Revision-Date: 2019-01-25 22:12+02\n"
 "Last-Translator: Michael Fladischer <michael.fladischer@medunigraz.at>\n"
 "Language-Team: MedUniGraz <development@medunigraz.at>\n"
@@ -18,66 +18,46 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: models.py:57
+#: src/outpost/django/base/models.py:57
 msgid "Icon"
 msgstr ""
 
-#: models.py:80
+#: src/outpost/django/base/models.py:80
 msgid "License"
 msgstr "Lizenz"
 
-#: models.py:91
+#: src/outpost/django/base/models.py:91
 msgid "Replaceable entity"
 msgstr ""
 
-#: models.py:112
+#: src/outpost/django/base/models.py:112
 msgid "Notification"
 msgstr "Benachrichtigung"
 
-#: templates/base/includes/confirm.html:6
+#: src/outpost/django/base/validators.py:43
+msgid "Requests coming in too fast"
+msgstr "Anfragen werden zu schnell gestellt"
+
+#: src/outpost/django/base/validators.py:58
+msgid "Could not parse public key"
+msgstr "Konnte öffentlichen Schlüssel nicht lesen"
+
 msgid "Yes"
 msgstr "Ja"
 
-#: templates/base/includes/confirm.html:10
 msgid "No"
 msgstr "Nein"
-
-#: templates/outpost/error.html:6
-msgid ""
-"\n"
-"  An unexpected error occured.\n"
-"  "
-msgstr ""
-
-#: templates/outpost/error/404.html:6
-msgid ""
-"\n"
-"  The requested resource could not be found.\n"
-"  "
-msgstr ""
-
-#: templates/outpost/error/500.html:7
-#, python-format
-msgid ""
-"\n"
-"    If you need assistance, you may reference this error as <strong>%(id)s</"
-"strong>.\n"
-"    "
-msgstr ""
-
-#: validators.py:35
-msgid "Requests coming in too fast"
-msgstr ""
 
 msgid "This is a very common password."
 msgstr "Dies ist ein sehr gebräuchliches Passwort."
 
 msgid "Add another word or two. Uncommon words are better."
-msgstr "Fügen Sie ein oder zwei weitere Wörter hinzu. Ungewöhnliche Wörter sind besser."
+msgstr ""
+"Fügen Sie ein oder zwei weitere Wörter hinzu. Ungewöhnliche Wörter sind "
+"besser."
 
 msgid "Use a few words, avoid common phrases."
 msgstr "Verwenden Sie einige Wörter, vermeiden Sie gängige Ausdrücke."
-
 
 msgid "No need for symbols, digits, or uppercase letters."
 msgstr "Keine Notwendigkeit für Symbole, Ziffern oder Großbuchstaben."
@@ -94,8 +74,11 @@ msgstr "Verwenden Sie ein längeres Tastaturmuster mit mehreren Variationen."
 msgid "Repeats like \"aaa\" are easy to guess."
 msgstr "Wiederholungen wie \"aaa\" sind leicht zu erraten."
 
-msgid "Repeats like \"abcabcabc\" are only slightly harder to guess than \"abc\"."
-msgstr "Wiederholungen wie \"abcabcabc\" sind nur etwas schwieriger zu erraten als \"abc\"."
+msgid ""
+"Repeats like \"abcabcabc\" are only slightly harder to guess than \"abc\"."
+msgstr ""
+"Wiederholungen wie \"abcabcabc\" sind nur etwas schwieriger zu erraten "
+"als \"abc\"."
 
 msgid "Avoid repeated words and characters."
 msgstr "Vermeiden Sie wiederholte Wörter und Zeichen."
@@ -143,10 +126,14 @@ msgid "Capitalization doesn't help very much."
 msgstr "Kapitalisierung hilft nicht viel."
 
 msgid "All-uppercase is almost as easy to guess as all-lowercase."
-msgstr "Ausschliesslich Großbuchstaben sind fast so leicht zu erraten wie ausschliesslich Kleinbuchstaben."
+msgstr ""
+"Ausschliesslich Großbuchstaben sind fast so leicht zu erraten wie "
+"ausschliesslich Kleinbuchstaben."
 
 msgid "Reversed words aren't much harder to guess.  "
 msgstr "Umgekehrte Wörter sind nicht viel schwieriger zu erraten."
 
-msgid "Predictable substitutions like '@' instead of 'a' don't help very much."
-msgstr "Vorhersehbare Substitutionen wie '@' anstelle von 'a' helfen nicht viel."
+msgid ""
+"Predictable substitutions like '@' instead of 'a' don't help very much."
+msgstr ""
+"Vorhersehbare Substitutionen wie '@' anstelle von 'a' helfen nicht viel."

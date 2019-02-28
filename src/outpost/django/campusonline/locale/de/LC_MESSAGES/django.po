@@ -1,0 +1,75 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-02-28 10:40+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: src/outpost/django/campusonline/filters.py:27
+#: src/outpost/django/campusonline/filters.py:78
+msgid "Category"
+msgstr ""
+
+#: src/outpost/django/campusonline/filters.py:31
+msgid "Person"
+msgstr ""
+
+#: src/outpost/django/campusonline/filters.py:82
+msgid "Parent"
+msgstr ""
+
+#: src/outpost/django/campusonline/filters.py:190
+msgid "Sex"
+msgstr ""
+
+#: src/outpost/django/campusonline/filters.py:194
+msgid "Function"
+msgstr ""
+
+#: src/outpost/django/campusonline/models.py:227
+msgid "Technical"
+msgstr ""
+
+#: src/outpost/django/campusonline/models.py:228
+msgid "Legal"
+msgstr ""
+
+#: src/outpost/django/campusonline/models.py:330
+msgid "Organizational Unit"
+msgstr ""
+
+#: src/outpost/django/campusonline/models.py:331
+msgid "Research Unit"
+msgstr ""
+
+#: src/outpost/django/campusonline/models.py:332
+msgid "Teaching Unit"
+msgstr ""
+
+#: src/outpost/django/campusonline/models.py:333
+msgid "Virtual"
+msgstr ""
+
+#: src/outpost/django/campusonline/models.py:444
+msgid "Female"
+msgstr ""
+
+#: src/outpost/django/campusonline/models.py:445
+msgid "Male"
+msgstr ""
+
+#: src/outpost/django/campusonline/models.py:780
+msgid "Can view course group term"
+msgstr ""
