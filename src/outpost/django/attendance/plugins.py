@@ -82,9 +82,13 @@ class CampusOnlineTerminalBehaviour(TerminalBehaviourPlugin):
                     state='running'
                 )
                 coe.assign(holding)
+                msg = _(
+                    'Welcome {coe.incoming.student.display} to '
+                    '{coe.holding.course_group_term.coursegroup}'
+                )
             except CampusOnlineHolding.DoesNotExist:
                 logger.debug(f'No active holding found for {coe}')
-            msg = _('Welcome {coe.incoming.student.display}')
+                msg = _('Welcome {coe.incoming.student.display}')
         else:
             # Existing entry, student leaving room
             logger.debug(

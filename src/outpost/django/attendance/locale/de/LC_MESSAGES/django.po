@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-28 12:50+0100\n"
+"POT-Creation-Date: 2019-02-28 13:31+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -46,31 +46,40 @@ msgstr "Debugger"
 msgid "CAMPUSonline"
 msgstr "CAMPUSonline"
 
-#: src/outpost/django/attendance/plugins.py:87
+#: src/outpost/django/attendance/plugins.py:86
+#, python-brace-format
+msgid ""
+"Welcome {coe.incoming.student.display} to {coe.holding.course_group_term."
+"coursegroup}"
+msgstr ""
+"Willkommen {coe.incoming.student.display} zu {coe.holding.course_group_term."
+"coursegroup}"
+
+#: src/outpost/django/attendance/plugins.py:91
 #, python-brace-format
 msgid "Welcome {coe.incoming.student.display}"
 msgstr "Wilkommen {coe.incoming.student.display}"
 
-#: src/outpost/django/attendance/plugins.py:100
+#: src/outpost/django/attendance/plugins.py:104
 msgid "Goodbye"
 msgstr "Auf Wiedersehen"
 
-#: src/outpost/django/attendance/plugins.py:109
+#: src/outpost/django/attendance/plugins.py:113
 #, python-brace-format
 msgid "Thank you for attending {coe.holding.course_group_term.coursegroup}"
 msgstr ""
 "Danke für Ihre Teilnahme an {coe.holding.course_group_term.coursegroup}"
 
-#: src/outpost/django/attendance/plugins.py:118
+#: src/outpost/django/attendance/plugins.py:122
 msgid "Statistics"
 msgstr "Statistiken"
 
-#: src/outpost/django/attendance/plugins.py:136
+#: src/outpost/django/attendance/plugins.py:140
 #, python-brace-format
 msgid "Recorded: {statistic}"
 msgstr "Aufgezeichnet: {statistic}"
 
-#: src/outpost/django/attendance/plugins.py:142
+#: src/outpost/django/attendance/plugins.py:146
 #, python-brace-format
 msgid "Concluded: {statistic}"
 msgstr "Abgeschlossen: {statistic}"
