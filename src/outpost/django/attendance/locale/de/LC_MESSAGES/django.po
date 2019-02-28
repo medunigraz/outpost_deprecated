@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-28 10:40+0100\n"
+"POT-Creation-Date: 2019-02-28 12:50+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,9 +17,10 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
 #: src/outpost/django/attendance/models.py:50
 msgid "View Terminal"
-msgstr ""
+msgstr "Terminal anzeigen"
 
 #: src/outpost/django/attendance/models.py:83
 msgid "View Entry"
@@ -45,34 +46,38 @@ msgstr "Debugger"
 msgid "CAMPUSonline"
 msgstr "CAMPUSonline"
 
-#: src/outpost/django/attendance/plugins.py:88
+#: src/outpost/django/attendance/plugins.py:87
 #, python-brace-format
-msgid ""
-"Welcome {coe.incoming.student.title} {coe.incoming.student.first_name} {coe."
-"incoming.student.last_name}"
-msgstr ""
-"Willkommen {coe.incoming.student.title} {coe.incoming.student.first_name} {coe."
-"incoming.student.last_name}"
+msgid "Welcome {coe.incoming.student.display}"
+msgstr "Wilkommen {coe.incoming.student.display}"
 
-#: src/outpost/django/attendance/plugins.py:105
+#: src/outpost/django/attendance/plugins.py:100
 msgid "Goodbye"
 msgstr "Auf Wiedersehen"
 
-#: src/outpost/django/attendance/plugins.py:114
+#: src/outpost/django/attendance/plugins.py:109
 #, python-brace-format
 msgid "Thank you for attending {coe.holding.course_group_term.coursegroup}"
-msgstr "Danke für Ihre Teilnahme an {coe.holding.course_group_term.coursegroup}"
+msgstr ""
+"Danke für Ihre Teilnahme an {coe.holding.course_group_term.coursegroup}"
 
-#: src/outpost/django/attendance/plugins.py:123
+#: src/outpost/django/attendance/plugins.py:118
 msgid "Statistics"
 msgstr "Statistiken"
 
-#: src/outpost/django/attendance/plugins.py:141
+#: src/outpost/django/attendance/plugins.py:136
 #, python-brace-format
 msgid "Recorded: {statistic}"
 msgstr "Aufgezeichnet: {statistic}"
 
-#: src/outpost/django/attendance/plugins.py:147
+#: src/outpost/django/attendance/plugins.py:142
 #, python-brace-format
 msgid "Concluded: {statistic}"
 msgstr "Abgeschlossen: {statistic}"
+
+#~ msgid ""
+#~ "Welcome {coe.incoming.student.title} {coe.incoming.student.first_name} "
+#~ "{coe.incoming.student.last_name}"
+#~ msgstr ""
+#~ "Willkommen {coe.incoming.student.title} {coe.incoming.student.first_name} "
+#~ "{coe.incoming.student.last_name}"
