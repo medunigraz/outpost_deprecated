@@ -27,6 +27,12 @@ class LanguageSerializer(FlexFieldsModelSerializer):
         fields = '__all__'
 
 
+class ProgramSerializer(FlexFieldsModelSerializer):
+    class Meta:
+        model = models.Program
+        fields = '__all__'
+
+
 class ClassificationSerializer(FlexFieldsModelSerializer):
     '''
     ## Expansions
@@ -291,6 +297,7 @@ class ProjectSerializer(FlexFieldsModelSerializer):
      * `event`
      * `study`
      * `language`
+     * `program`
      * `funders`
 
     '''
@@ -370,6 +377,12 @@ class ProjectSerializer(FlexFieldsModelSerializer):
                     'source': 'language',
                 }
             ),
+            'program': (
+                ProgramSerializer,
+                {
+                    'source': 'program',
+                }
+            ),
             'funders': (
                 FunderSerializer,
                 {
@@ -392,6 +405,12 @@ class ProjectSearchSerializer(HaystackSerializer):
         )
 
 
+class PublicationAuthorshipSerializer(FlexFieldsModelSerializer):
+    class Meta:
+        model = models.PublicationAuthorship
+        fields = '__all__'
+
+
 class PublicationCategorySerializer(FlexFieldsModelSerializer):
     class Meta:
         model = models.PublicationCategory
@@ -405,6 +424,30 @@ class PublicationDocumentSerializer(FlexFieldsModelSerializer):
 
 
 class PublicationOrganizationSerializer(FlexFieldsModelSerializer):
+
+    @property
+    def expandable_fields(self):
+        return {
+            'organization': (
+                'outpost.django.campusonline.serializers.OrganizationSerializer',
+                {
+                    'source': 'organization',
+                }
+            ),
+            'publication': (
+                'PublicationSerializer',
+                {
+                    'source': 'publication',
+                }
+            ),
+            'authorship': (
+                'PublicationAuthorship',
+                {
+                    'source': 'authorship',
+                }
+            ),
+        }
+
     class Meta:
         model = models.PublicationOrganization
         fields = '__all__'
@@ -422,9 +465,9 @@ class PublicationSerializer(FlexFieldsModelSerializer):
     The following relational fields can be expanded:
 
      * `persons`
-     * `organizations`
      * `category`
      * `document`
+     * `organization_authorship`'
 
     '''
     abstract = CharField(read_only=True)
@@ -445,10 +488,10 @@ class PublicationSerializer(FlexFieldsModelSerializer):
                     'many': True,
                 }
             ),
-            'organization_links': (
+            'organization_authorship': (
                 'outpost.django.research.serializers.PublicationOrganizationSerializer',
                 {
-                    'source': 'organization_links',
+                    'source': 'organization_authorship',
                     'many': True,
                 }
             ),
@@ -481,7 +524,7 @@ class PublicationSerializer(FlexFieldsModelSerializer):
             'pubmed',
             'doi',
             'pmc',
-            'organization_links',
+            'organization_authorship',
             'persons',
         )
 

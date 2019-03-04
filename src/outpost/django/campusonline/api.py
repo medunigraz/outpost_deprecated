@@ -114,6 +114,7 @@ class OrganizationViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     )
     permit_list_expands = (
         'persons',
+        'publication_authorship',
     )
 
 

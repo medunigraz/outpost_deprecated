@@ -327,6 +327,11 @@ v1.register(
     base_name='research-language'
 )
 v1.register(
+    r'research/program',
+    research.ProgramViewSet,
+    base_name='research-program'
+)
+v1.register(
     r'research/classification',
     research.ClassificationViewSet,
     base_name='research-classification'
@@ -415,6 +420,11 @@ v1.register(
     r'research/search/project',
     research.ProjectSearchViewSet,
     base_name='research-project-search'
+)
+v1.register(
+    r'research/publication:authorship',
+    research.PublicationAuthorshipViewSet,
+    base_name='research-publication-authorship'
 )
 v1.register(
     r'research/publication:category',

@@ -1,8 +1,4 @@
-from django.utils.translation import gettext_lazy as _
-from django_filters.rest_framework import (
-    filters,
-    filterset,
-)
+from django_filters.rest_framework import filterset
 
 from . import models
 
@@ -130,6 +126,8 @@ class PublicationFilter(filterset.FilterSet):
       - `pubmed`: `iexact`, `contains`, `icontains`, `startswith`, `istartswith`
       - `doi`: `iexact`, `contains`, `icontains`, `startswith`, `istartswith`
       - `pmc`: `iexact`, `contains`, `icontains`, `startswith`, `istartswith`
+      - `organization_authorship`: `in`
+      - `organization_authorship__assigned`: `gt`, `gte`, `lt`, `lte`, `date`
     '''
 
     class Meta:
@@ -173,6 +171,11 @@ class PublicationFilter(filterset.FilterSet):
             'persons': ('exact',),
         }
 
+    @property
+    def qs(self):
+        qs = super().qs
+        return qs
+
 
 class BiddingDeadlineFilter(filterset.FilterSet):
     '''
@@ -195,7 +198,7 @@ class BiddingDeadlineFilter(filterset.FilterSet):
 
     Possible advanced lookups:
 
-      - `deadline`: `gt`, `gte`, `lt`, `lte`
+      - `deadline`: `gt`, `gte`, `lt`, `lte`, `date`
     '''
 
     class Meta:

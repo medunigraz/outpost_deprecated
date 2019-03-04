@@ -120,11 +120,31 @@ class OrganizationSerializer(FlexFieldsModelSerializer):
                     'many': True
                 }
             ),
+            'publication_authorship': (
+                f'outpost.django.research.serializers.PublicationOrganizationSerializer',
+                {
+                    'source': 'publication_authorship',
+                    'many': True
+                }
+            ),
         }
 
     class Meta:
         model = models.Organization
-        fields = '__all__'
+        fields = (
+            'id',
+            'name',
+            'short',
+            'sib_order',
+            'category',
+            'address',
+            'email',
+            'phone',
+            'url',
+            'parent',
+            'persons',
+            'publication_authorship',
+        )
 
 
 class PersonSerializer(FlexFieldsModelSerializer):

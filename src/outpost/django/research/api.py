@@ -56,6 +56,24 @@ class LanguageViewSet(ReadOnlyModelViewSet):
 
 
 @docstring_format(
+    model=models.Program.__doc__,
+    serializer=serializers.ProgramSerializer.__doc__
+)
+class ProgramViewSet(ReadOnlyModelViewSet):
+    '''
+    List programs.
+
+    {model}
+    {serializer}
+    '''
+    queryset = models.Program.objects.all()
+    serializer_class = serializers.ProgramSerializer
+    permission_classes = (
+        AllowAny,
+    )
+
+
+@docstring_format(
     model=models.Classification.__doc__,
     serializer=serializers.ClassificationSerializer.__doc__
 )
@@ -347,6 +365,7 @@ class ProjectViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
         'study',
         'language',
         'funders',
+        'program',
     )
 
 
@@ -359,12 +378,30 @@ class ProjectSearchViewSet(HaystackViewSet):
 
 
 @docstring_format(
+    model=models.PublicationAuthorship.__doc__,
+    serializer=serializers.PublicationAuthorshipSerializer.__doc__
+)
+class PublicationAuthorshipViewSet(ReadOnlyModelViewSet):
+    '''
+    List publication authorships.
+
+    {model}
+    {serializer}
+    '''
+    queryset = models.PublicationAuthorship.objects.all()
+    serializer_class = serializers.PublicationAuthorshipSerializer
+    permission_classes = (
+        AllowAny,
+    )
+
+
+@docstring_format(
     model=models.PublicationCategory.__doc__,
     serializer=serializers.PublicationCategorySerializer.__doc__
 )
 class PublicationCategoryViewSet(ReadOnlyModelViewSet):
     '''
-    Search projects.
+    List publication categories.
 
     {model}
     {serializer}
@@ -422,11 +459,11 @@ class PublicationViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     )
     permit_list_expands = (
         'persons',
-        'organizations',
         'category',
         'document',
         'status',
-        'program'
+        'program',
+        'organization_authorship',
     )
 
 

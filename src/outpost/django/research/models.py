@@ -825,7 +825,7 @@ class PublicationOrganization(models.Model):
         db_constraint=False,
         null=True,
         blank=True,
-        related_name='organization_links'
+        related_name='organization_authorship'
     )
     organization = models.ForeignKey(
         'campusonline.Organization',
@@ -833,7 +833,7 @@ class PublicationOrganization(models.Model):
         db_constraint=False,
         null=True,
         blank=True,
-        related_name='publication_links'
+        related_name='publication_authorship'
     )
     authorship = models.ForeignKey(
         'PublicationAuthorship',
