@@ -347,7 +347,22 @@ v1.register(
     base_name='research-education'
 )
 v1.register(
-    r'research/funder.category',
+    r'research/bidding:deadline',
+    research.BiddingDeadlineViewSet,
+    base_name='research-bidding-deadline'
+)
+v1.register(
+    r'research/bidding:endowment',
+    research.BiddingEndowmentViewSet,
+    base_name='research-bidding-endowment'
+)
+v1.register(
+    r'research/bidding',
+    research.BiddingViewSet,
+    base_name='research-bidding'
+)
+v1.register(
+    r'research/funder:category',
     research.FunderCategoryViewSet,
     base_name='research-funder-category'
 )
@@ -357,37 +372,37 @@ v1.register(
     base_name='research-funder'
 )
 v1.register(
-    r'research/project.category',
+    r'research/project:category',
     research.ProjectCategoryViewSet,
     base_name='research-project-category'
 )
 v1.register(
-    r'research/project.research',
+    r'research/project:research',
     research.ProjectResearchViewSet,
     base_name='research-project-research'
 )
 v1.register(
-    r'research/project.partnerfunction',
+    r'research/project:partnerfunction',
     research.ProjectPartnerFunctionViewSet,
     base_name='research-project-partner-function'
 )
 v1.register(
-    r'research/project.study',
+    r'research/project:study',
     research.ProjectStudyViewSet,
     base_name='research-project-study'
 )
 v1.register(
-    r'research/project.event',
+    r'research/project:event',
     research.ProjectEventViewSet,
     base_name='research-project-event'
 )
 v1.register(
-    r'research/project.grant',
+    r'research/project:grant',
     research.ProjectGrantViewSet,
     base_name='research-project-grant'
 )
 v1.register(
-    r'research/project.status',
+    r'research/project:status',
     research.ProjectStatusViewSet,
     base_name='research-project-status'
 )
@@ -402,12 +417,12 @@ v1.register(
     base_name='research-project-search'
 )
 v1.register(
-    r'research/publication.category',
+    r'research/publication:category',
     research.PublicationCategoryViewSet,
     base_name='research-publication-category'
 )
 v1.register(
-    r'research/publication.document',
+    r'research/publication:document',
     research.PublicationDocumentViewSet,
     base_name='research-publication-document'
 )

@@ -142,7 +142,7 @@ class PersonViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     permit_list_expands = (
         'functions',
         'organizations',
-        'classification',
+        'classifications',
         'expertise',
         'knowledge',
         'education',

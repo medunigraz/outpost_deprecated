@@ -172,3 +172,131 @@ class PublicationFilter(filterset.FilterSet):
             ),
             'persons': ('exact',),
         }
+
+
+class BiddingDeadlineFilter(filterset.FilterSet):
+    '''
+    ## Filters
+
+    To filter for exact value matches:
+
+        ?<fieldname>=<value>
+
+    Possible exact filters:
+
+      - `bidding`
+
+    For advanced filtering use lookups:
+
+        ?<fieldname>__<lookup>=<value>
+
+    All fields with advanced lookups can also be used for exact value matches
+    as described above.
+
+    Possible advanced lookups:
+
+      - `deadline`: `gt`, `gte`, `lt`, `lte`
+    '''
+
+    class Meta:
+        model = models.BiddingDeadline
+        fields = {
+            'bidding': ('exact',),
+            'deadline': (
+                'exact',
+                'gt',
+                'lt',
+                'gte',
+                'lte',
+                'date',
+            ),
+        }
+
+
+class BiddingEndowmentFilter(filterset.FilterSet):
+    '''
+    ## Filters
+
+    To filter for exact value matches:
+
+        ?<fieldname>=<value>
+
+    Possible exact filters:
+
+      - `bidding`
+
+    For advanced filtering use lookups:
+
+        ?<fieldname>__<lookup>=<value>
+
+    All fields with advanced lookups can also be used for exact value matches
+    as described above.
+
+    Possible advanced lookups:
+
+      - `amount`: `gt`, `gte`, `lt`, `lte`
+    '''
+
+    class Meta:
+        model = models.BiddingEndowment
+        fields = {
+            'bidding': ('exact',),
+            'amount': (
+                'exact',
+                'gt',
+                'lt',
+                'gte',
+                'lte',
+            ),
+        }
+
+
+class BiddingFilter(filterset.FilterSet):
+    '''
+    ## Filters
+
+    To filter for exact value matches:
+
+        ?<fieldname>=<value>
+
+    Possible exact filters:
+
+      - `running`
+
+    For advanced filtering use lookups:
+
+        ?<fieldname>__<lookup>=<value>
+
+    All fields with advanced lookups can also be used for exact value matches
+    as described above.
+
+    Possible advanced lookups:
+
+      - `title`: `iexact`, `contains`, `icontains`
+      - `mode`: `iexact`, `contains`, `icontains`
+      - `funders`: `in`
+    '''
+
+    class Meta:
+        model = models.Bidding
+        fields = {
+            'title': (
+                'exact',
+                'iexact',
+                'contains',
+                'icontains',
+            ),
+            'mode': (
+                'exact',
+                'iexact',
+                'contains',
+                'icontains',
+            ),
+            'running': (
+                'exact',
+            ),
+            'funders': (
+                'exact',
+                'in',
+            ),
+        }

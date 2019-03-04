@@ -25,7 +25,7 @@ from ..base.decorators import docstring_format
 )
 class CountryViewSet(ReadOnlyModelViewSet):
     '''
-    List publication categories.
+    List countries.
 
     {model}
     {serializer}
@@ -43,7 +43,7 @@ class CountryViewSet(ReadOnlyModelViewSet):
 )
 class LanguageViewSet(ReadOnlyModelViewSet):
     '''
-    List publication categories.
+    List languages.
 
     {model}
     {serializer}
@@ -61,7 +61,7 @@ class LanguageViewSet(ReadOnlyModelViewSet):
 )
 class ClassificationViewSet(ReadOnlyModelViewSet):
     '''
-    List publication categories.
+    List OESTAT 2012 classifications.
 
     {model}
     {serializer}
@@ -79,7 +79,7 @@ class ClassificationViewSet(ReadOnlyModelViewSet):
 )
 class ExpertiseViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     '''
-    List publication categories.
+    List expertise.
 
     {model}
     {serializer}
@@ -100,7 +100,7 @@ class ExpertiseViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
 )
 class KnowledgeViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     '''
-    List publication categories.
+    List knowledge.
 
     {model}
     {serializer}
@@ -121,7 +121,7 @@ class KnowledgeViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
 )
 class EducationViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     '''
-    List publication categories.
+    List educations.
 
     {model}
     {serializer}
@@ -142,7 +142,7 @@ class EducationViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
 )
 class FunderCategoryViewSet(ReadOnlyModelViewSet):
     '''
-    List publication categories.
+    List funder categories.
 
     {model}
     {serializer}
@@ -160,7 +160,7 @@ class FunderCategoryViewSet(ReadOnlyModelViewSet):
 )
 class FunderViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     '''
-    List publication categories.
+    List funders.
 
     {model}
     {serializer}
@@ -182,7 +182,7 @@ class FunderViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
 )
 class ProjectCategoryViewSet(ReadOnlyModelViewSet):
     '''
-    List publication categories.
+    List project categories.
 
     {model}
     {serializer}
@@ -200,7 +200,7 @@ class ProjectCategoryViewSet(ReadOnlyModelViewSet):
 )
 class ProjectResearchViewSet(ReadOnlyModelViewSet):
     '''
-    List publication categories.
+    List project research.
 
     {model}
     {serializer}
@@ -218,7 +218,7 @@ class ProjectResearchViewSet(ReadOnlyModelViewSet):
 )
 class ProjectPartnerFunctionViewSet(ReadOnlyModelViewSet):
     '''
-    List publication categories.
+    List project partner functions.
 
     {model}
     {serializer}
@@ -236,7 +236,7 @@ class ProjectPartnerFunctionViewSet(ReadOnlyModelViewSet):
 )
 class ProjectStudyViewSet(ReadOnlyModelViewSet):
     '''
-    List publication categories.
+    List project studies.
 
     {model}
     {serializer}
@@ -254,7 +254,7 @@ class ProjectStudyViewSet(ReadOnlyModelViewSet):
 )
 class ProjectEventViewSet(ReadOnlyModelViewSet):
     '''
-    List publication categories.
+    List project events.
 
     {model}
     {serializer}
@@ -272,7 +272,7 @@ class ProjectEventViewSet(ReadOnlyModelViewSet):
 )
 class ProjectGrantViewSet(ReadOnlyModelViewSet):
     '''
-    List publication categories.
+    List project grants.
 
     {model}
     {serializer}
@@ -290,7 +290,7 @@ class ProjectGrantViewSet(ReadOnlyModelViewSet):
 )
 class ProjectStatusViewSet(ReadOnlyModelViewSet):
     '''
-    List publication categories.
+    List project status.
 
     {model}
     {serializer}
@@ -309,7 +309,7 @@ class ProjectStatusViewSet(ReadOnlyModelViewSet):
 )
 class ProjectViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     '''
-    List publication categories.
+    List projects.
 
     {model}
     {serializer}
@@ -364,7 +364,7 @@ class ProjectSearchViewSet(HaystackViewSet):
 )
 class PublicationCategoryViewSet(ReadOnlyModelViewSet):
     '''
-    List publication categories.
+    Search projects.
 
     {model}
     {serializer}
@@ -401,7 +401,7 @@ class PublicationDocumentViewSet(ReadOnlyModelViewSet):
 )
 class PublicationViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     '''
-    List thesis.
+    List publications.
 
     {model}
     {serializer}
@@ -411,8 +411,12 @@ class PublicationViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     serializer_class = serializers.PublicationSerializer
     filter_backends = (
         DjangoFilterBackend,
+        OrderingFilter,
     )
     filter_class = filters.PublicationFilter
+    ordering_fields = (
+        'year',
+    )
     permission_classes = (
         AllowAny,
     )
@@ -431,4 +435,87 @@ class PublicationSearchViewSet(HaystackViewSet):
     serializer_class = serializers.PublicationSearchSerializer
     permission_classes = (
         AllowAny,
+    )
+
+
+@docstring_format(
+    model=models.BiddingDeadline.__doc__,
+    serializer=serializers.BiddingDeadlineSerializer.__doc__,
+    filter=filters.BiddingDeadlineFilter.__doc__
+)
+class BiddingDeadlineViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
+    '''
+    List bidding deadlines.
+
+    {model}
+    {serializer}
+    {filter}
+    '''
+    queryset = models.BiddingDeadline.objects.all()
+    serializer_class = serializers.BiddingDeadlineSerializer
+    filter_backends = (
+        DjangoFilterBackend,
+    )
+    filter_class = filters.BiddingDeadlineFilter
+    permission_classes = (
+        AllowAny,
+    )
+    permit_list_expands = (
+        'deadline',
+    )
+
+
+@docstring_format(
+    model=models.BiddingEndowment.__doc__,
+    serializer=serializers.BiddingEndowmentSerializer.__doc__,
+    filter=filters.BiddingEndowmentFilter.__doc__
+)
+class BiddingEndowmentViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
+    '''
+    List bidding endowments.
+
+    {model}
+    {serializer}
+    {filter}
+    '''
+    queryset = models.BiddingEndowment.objects.all()
+    serializer_class = serializers.BiddingEndowmentSerializer
+    filter_backends = (
+        DjangoFilterBackend,
+    )
+    filter_class = filters.BiddingEndowmentFilter
+    permission_classes = (
+        AllowAny,
+    )
+    permit_list_expands = (
+        'bidding',
+    )
+
+
+@docstring_format(
+    model=models.Bidding.__doc__,
+    serializer=serializers.BiddingSerializer.__doc__,
+    filter=filters.BiddingFilter.__doc__
+)
+class BiddingViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
+    '''
+    List biddings.
+
+    {model}
+    {serializer}
+    {filter}
+    '''
+    queryset = models.Bidding.objects.all()
+    serializer_class = serializers.BiddingSerializer
+    filter_backends = (
+        DjangoFilterBackend,
+    )
+    filter_class = filters.BiddingFilter
+    permission_classes = (
+        AllowAny,
+    )
+    permit_list_expands = (
+        'funders',
+        'deadlines',
+        'endowments',
     )

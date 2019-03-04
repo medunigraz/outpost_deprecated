@@ -404,6 +404,12 @@ class PublicationDocumentSerializer(FlexFieldsModelSerializer):
         fields = '__all__'
 
 
+class PublicationOrganizationSerializer(FlexFieldsModelSerializer):
+    class Meta:
+        model = models.PublicationOrganization
+        fields = '__all__'
+
+
 class PublicationSerializer(FlexFieldsModelSerializer):
     '''
     ## Expansions
@@ -439,10 +445,10 @@ class PublicationSerializer(FlexFieldsModelSerializer):
                     'many': True,
                 }
             ),
-            'organizations': (
-                'outpost.django.campusonline.serializers.OrganizationSerializer',
+            'organization_links': (
+                'outpost.django.research.serializers.PublicationOrganizationSerializer',
                 {
-                    'source': 'organizations',
+                    'source': 'organization_links',
                     'many': True,
                 }
             ),
@@ -462,8 +468,21 @@ class PublicationSerializer(FlexFieldsModelSerializer):
 
     class Meta:
         model = models.Publication
-        exclude = (
-            'abstract_bytes',
+        fields = (
+            'id',
+            'title',
+            'abstract',
+            'authors',
+            'year',
+            'source',
+            'category',
+            'document',
+            'sci',
+            'pubmed',
+            'doi',
+            'pmc',
+            'organization_links',
+            'persons',
         )
 
 
@@ -472,4 +491,119 @@ class PublicationSearchSerializer(HaystackSerializer):
         index_classes = [search_indexes.PublicationIndex]
         fields = (
             'text',
+        )
+
+
+class BiddingSerializer(FlexFieldsModelSerializer):
+    '''
+    ## Expansions
+
+    To activate relation expansion add the desired fields as a comma separated
+    list to the `expand` query parameter like this:
+
+        ?expand=<field>,<field>,<field>,...
+
+    The following relational fields can be expanded:
+
+     * `persons`
+     * `organizations`
+     * `category`
+     * `document`
+
+    '''
+
+    @property
+    def expandable_fields(self):
+        base = 'outpost.django.research.serializers'
+        return {
+            'funders': (
+                f'{base}.FunderSerializer',
+                {
+                    'source': 'funders',
+                    'many': True,
+                }
+            ),
+            'deadlines': (
+                f'{base}.BiddingDeadlineSerializer',
+                {
+                    'source': 'deadlines',
+                    'many': True,
+                }
+            ),
+            'endowments': (
+                f'{base}.BiddingEndowmentSerializer',
+                {
+                    'source': 'endowments',
+                    'many': True,
+                }
+            ),
+        }
+
+    class Meta:
+        model = models.Bidding
+        fields = (
+            'id',
+            'title',
+            'short',
+            'description',
+            'mode',
+            'url',
+            'running',
+            'funders',
+            'deadlines',
+            'endowments',
+        )
+
+
+class BiddingDeadlineSerializer(FlexFieldsModelSerializer):
+    '''
+    '''
+
+    @property
+    def expandable_fields(self):
+        base = 'outpost.django.research.serializers'
+        return {
+            'bidding': (
+                f'{base}.BiddingSerializer',
+                {
+                    'source': 'bidding',
+                }
+            ),
+        }
+
+    class Meta:
+        model = models.BiddingDeadline
+        fields = (
+            'id',
+            'bidding',
+            'deadline',
+            'time',
+            'comment',
+        )
+
+
+class BiddingEndowmentSerializer(FlexFieldsModelSerializer):
+    '''
+    '''
+
+    @property
+    def expandable_fields(self):
+        base = 'outpost.django.research.serializers'
+        return {
+            'bidding': (
+                f'{base}.BiddingSerializer',
+                {
+                    'source': 'bidding',
+                }
+            ),
+        }
+
+    class Meta:
+        model = models.BiddingEndowment
+        fields = (
+            'id',
+            'bidding',
+            'information',
+            'amount',
+            'currency',
         )

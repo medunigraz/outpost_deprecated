@@ -825,7 +825,7 @@ class PublicationOrganization(models.Model):
         db_constraint=False,
         null=True,
         blank=True,
-        related_name='organizations'
+        related_name='organization_links'
     )
     organization = models.ForeignKey(
         'campusonline.Organization',
@@ -833,7 +833,7 @@ class PublicationOrganization(models.Model):
         db_constraint=False,
         null=True,
         blank=True,
-        related_name='publications'
+        related_name='publication_links'
     )
     authorship = models.ForeignKey(
         'PublicationAuthorship',
@@ -950,3 +950,157 @@ class Publication(models.Model):
             return str(self.pk)
         short = shorten(self.abstract, 30)
         return f'{self.pk}: {short}'
+
+
+class Bidding(models.Model):
+    '''
+    ## Fields
+
+    ### `id` (`integer`)
+    Primary key.
+
+    ### `title` (`string`)
+    Title of bidding.
+
+    ### `short` (`string`)
+    Short description of bidding.
+
+    ### `description` (`string`)
+    Full description of bidding.
+
+    ### `mode` (`string`)
+    Mode of submission.
+
+    ### `url` (`string`)
+    URL to web presence.
+
+    ### `short` (`boolean`)
+    Bidding running or not.
+
+    ### `funders` (`integer[]`)
+    List of foreign keys to funders for this bidding.
+    '''
+    title = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True,
+    )
+    short = models.TextField()
+    description = models.TextField()
+    mode = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True,
+    )
+    url = models.URLField(
+        blank=True,
+        null=True
+    )
+    running = models.BooleanField()
+    funders = models.ManyToManyField(
+        'Funder',
+        db_table='research_bidding_funder',
+        db_constraint=False,
+        related_name='biddings'
+    )
+
+    class Meta:
+        managed = False
+        db_table = 'research_bidding'
+
+    class Refresh:
+        interval = 86400
+
+    def __str__(self):
+        return self.title
+
+
+class BiddingDeadline(models.Model):
+    '''
+    ## Fields
+
+    ### `id` (`integer`)
+    Primary key.
+
+    ### `bidding` (`integer`)
+    Foreign key to bidding.
+
+    ### `deadline` (`date`)
+    Datetime of deadline.
+
+    ### `time` (`string`)
+    Time of deadline.
+
+    ### `comment` (`string`)
+    Generic comment.
+    '''
+    bidding = models.ForeignKey(
+        'Bidding',
+        models.DO_NOTHING,
+        db_constraint=False,
+        related_name='deadlines'
+    )
+    deadline = models.DateTimeField()
+    time = models.CharField(
+        max_length=16,
+        blank=True,
+        null=True,
+    )
+    comment = models.TextField()
+
+    class Meta:
+        managed = False
+        db_table = 'research_biddingdeadline'
+
+    class Refresh:
+        interval = 86400
+
+    def __str__(self):
+        return f'{self.bidding} (Deadline: {self.deadline})'
+
+
+class BiddingEndowment(models.Model):
+    '''
+    ## Fields
+
+    ### `id` (`integer`)
+    Primary key.
+
+    ### `bidding` (`integer`)
+    Foreign key to bidding.
+
+    ### `information` (`string`)
+    Generic textual information.
+
+    ### `amount` (`number`)
+    Monetary amount of endowment.
+
+    ### `currency` (`string`)
+    Currency used to define amount.
+    '''
+    bidding = models.ForeignKey(
+        'Bidding',
+        models.DO_NOTHING,
+        db_constraint=False,
+        related_name='endowments'
+    )
+    information = models.TextField()
+    amount = models.DecimalField(
+        max_digits=20,
+        decimal_places=2
+    )
+    currency = models.CharField(
+        max_length=16,
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        managed = False
+        db_table = 'research_biddingendowment'
+
+    class Refresh:
+        interval = 86400
+
+    def __str__(self):
+        return f'{self.bidding} (Endowment)'
