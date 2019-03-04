@@ -157,17 +157,9 @@ class Country(models.Model):
 
     ### `name` (`object`)
     Names of country, defined by language.
-
-    ### `iso` (`string`)
-    ISO code of country.
     '''
     name = models.CharField(
         max_length=256,
-        blank=True,
-        null=True
-    )
-    iso = models.CharField(
-        max_length=2,
         blank=True,
         null=True
     )
