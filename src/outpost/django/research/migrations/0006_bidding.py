@@ -122,7 +122,7 @@ class Migration(migrations.Migration):
                 DOTIERUNG_ID::integer AS id,
                 AUSSCHREIBUNG_ID::integer AS bidding_id,
                 INFO_DOTIERUNG AS information,
-                BETRAG::money AS amount,
+                BETRAG AS amount,
                 WAEHRUNG AS currency
             FROM
                 "research"."ausschreibung_dotierung"
