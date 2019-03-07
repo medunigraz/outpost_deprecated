@@ -592,6 +592,7 @@ class BiddingSerializer(FlexFieldsModelSerializer):
             'mode',
             'url',
             'running',
+            'start',
             'funders',
             'deadlines',
             'endowments',

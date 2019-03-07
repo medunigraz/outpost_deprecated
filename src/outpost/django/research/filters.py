@@ -290,6 +290,7 @@ class BiddingFilter(filterset.FilterSet):
       - `title`: `iexact`, `contains`, `icontains`
       - `mode`: `iexact`, `contains`, `icontains`
       - `funders`: `in`
+      - `start`: `gt`, `gte`, `lt`, `lte`, `date`
     '''
 
     class Meta:
@@ -309,4 +310,12 @@ class BiddingFilter(filterset.FilterSet):
             ),
             'running': ('exact',),
             'funders': ('exact',),
+            'start': (
+                'exact',
+                'gt',
+                'lt',
+                'gte',
+                'lte',
+                'date',
+            ),
         }

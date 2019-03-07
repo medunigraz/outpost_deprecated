@@ -995,6 +995,7 @@ class Bidding(models.Model):
         db_constraint=False,
         related_name='biddings'
     )
+    start = models.DateTimeField()
 
     class Meta:
         managed = False

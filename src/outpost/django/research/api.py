@@ -492,8 +492,12 @@ class BiddingDeadlineViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     serializer_class = serializers.BiddingDeadlineSerializer
     filter_backends = (
         DjangoFilterBackend,
+        OrderingFilter,
     )
     filter_class = filters.BiddingDeadlineFilter
+    ordering_fields = (
+        'deadline',
+    )
     permission_classes = (
         AllowAny,
     )
@@ -546,8 +550,12 @@ class BiddingViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
     serializer_class = serializers.BiddingSerializer
     filter_backends = (
         DjangoFilterBackend,
+        OrderingFilter,
     )
     filter_class = filters.BiddingFilter
+    ordering_fields = (
+        'start',
+    )
     permission_classes = (
         AllowAny,
     )

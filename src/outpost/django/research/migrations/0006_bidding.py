@@ -22,7 +22,8 @@ class Migration(migrations.Migration):
                 LANGINFO varchar,
                 EINREICHMODUS varchar,
                 INFO_WEBSITE varchar,
-                LAUFEND_JA_NEIN varchar
+                LAUFEND_JA_NEIN varchar,
+                START_DATUM timestamp
             )
             SERVER sqlalchemy OPTIONS (
                 tablename 'AUSSCHREIBUNG',
@@ -93,7 +94,8 @@ class Migration(migrations.Migration):
                 LANGINFO AS description,
                 EINREICHMODUS as mode,
                 INFO_WEBSITE AS url,
-                (LOWER(LAUFEND_JA_NEIN) = 'ja')::boolean AS running
+                (LOWER(LAUFEND_JA_NEIN) = 'ja')::boolean AS running,
+                START_DATUM::timestamptz AS start
             FROM
                 "research"."ausschreibung"
             ''',
