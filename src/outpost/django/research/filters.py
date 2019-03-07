@@ -169,6 +169,18 @@ class PublicationFilter(filterset.FilterSet):
                 'istartswith',
             ),
             'persons': ('exact',),
+            'organization_authorship': (
+                'exact',
+                'in',
+            ),
+            'organization_authorship__assigned': (
+                'exact',
+                'gt',
+                'lt',
+                'gte',
+                'lte',
+                'date',
+            )
         }
 
     @property
@@ -295,11 +307,6 @@ class BiddingFilter(filterset.FilterSet):
                 'contains',
                 'icontains',
             ),
-            'running': (
-                'exact',
-            ),
-            'funders': (
-                'exact',
-                'in',
-            ),
+            'running': ('exact',),
+            'funders': ('exact',),
         }

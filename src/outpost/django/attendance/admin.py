@@ -17,8 +17,6 @@ class EntryAdmin(admin.ModelAdmin):
     search_fields = (
         'student__first_name',
         'student__last_name',
-        'terminal__room__name',
-        'terminal__room__campusonline__title',
         'terminal__hostname',
     )
     date_hierarchy = 'created'
@@ -28,7 +26,6 @@ class EntryAdmin(admin.ModelAdmin):
 class TerminalAdmin(admin.ModelAdmin):
     list_display = (
         'hostname',
-        'room',
         'enabled',
         'online',
     )
@@ -37,8 +34,6 @@ class TerminalAdmin(admin.ModelAdmin):
         'online',
     )
     search_fields = (
-        'room__name',
-        'room__campusonline__title',
         'hostname',
     )
 
