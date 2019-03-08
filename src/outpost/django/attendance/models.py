@@ -154,15 +154,46 @@ class CampusOnlineHolding(models.Model):
             coe.save()
 
     @transition(field=state, source='running', target='finished')
-    def end(self):
+    def end(self, finished=None):
+        from django.db import connection
         coes = CampusOnlineEntry.objects.filter(
             holding=self,
             state__in=('assigned', 'left')
         )
+        self.finished = finished or timezone.now()
+        query = '''
+        INSERT INTO campusonline.stud_lv_anw (
+            buchung_nr,
+            stud_nr,
+            grp_nr,
+            termin_nr,
+            anm_begin,
+            anm_ende
+            ) VALUES (
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s
+            );
+        '''
         for coe in coes:
-            coe.complete()
-            coe.save()
-        self.finished = timezone.now()
+            if coe.state == 'assigned':
+                coe.complete(finished=finished)
+                coe.save()
+            logger.debug(f'{coe} ending')
+            data = [
+                coe.id,
+                coe.incoming.student.id,
+                coe.holding.course_group_term.coursegroup.id,
+                coe.holding.course_group_term.term,
+                coe.assigned,
+                coe.ended,
+            ]
+            logger.debug(f'{coe} writing to CAMPUSonline')
+            with connection.cursor() as cursor:
+                cursor.execute(query, data)
 
     @transition(field=state, source=('running', 'pending'), target='canceled')
     def cancel(self):
@@ -250,41 +281,11 @@ class CampusOnlineEntry(models.Model):
         self.outgoing = entry
 
     @transition(field=state, source=('assigned', 'left'), target='complete')
-    def complete(self, entry=None):
-        from django.db import connection
+    def complete(self, entry=None, finished=None):
         logger.debug(f'{self} completing')
-        query = '''
-        INSERT INTO campusonline.stud_lv_anw (
-            buchung_nr,
-            stud_nr,
-            grp_nr,
-            termin_nr,
-            anm_begin,
-            anm_ende
-            ) VALUES (
-                %s,
-                %s,
-                %s,
-                %s,
-                %s,
-                %s
-            );
-        '''
-        self.ended = timezone.now()
+        self.ended = finished or timezone.now()
         if entry:
             self.outgoing = entry
-        data = [
-            self.id,
-            self.incoming.student.id,
-            self.holding.course_group_term.coursegroup.id,
-            self.holding.course_group_term.term,
-            self.assigned,
-            self.ended,
-        ]
-        logger.debug(f'{self} writing to CAMPUSonline')
-        with connection.cursor() as cursor:
-            cursor.execute(query, data)
-        # TODO: Find out if next planed holding has same student in it
         if False:
             CampusOnlineEntry.objects.create()
 
