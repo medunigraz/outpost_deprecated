@@ -1,12 +1,29 @@
+from rest_flex_fields import FlexFieldsModelSerializer
 from rest_framework import serializers
 
 from . import models
+from ..campusonline.serializers import StudentSerializer
 
 
-class TerminalSerializer(serializers.ModelSerializer):
+class TerminalSerializer(FlexFieldsModelSerializer):
+
+    expandable_fields = {
+        'rooms': (
+            'outpost.django.campusonline.serializers.RoomSerializer',
+            {
+                'source': 'rooms',
+                'many': True,
+            }
+        ),
+    }
+
     class Meta:
         model = models.Terminal
-        fields = '__all__'
+        fields = (
+            'id',
+            'rooms',
+            'config',
+        )
 
 
 class EntrySerializer(serializers.ModelSerializer):

@@ -64,7 +64,7 @@ class CampusOnlineTerminalBehaviour(TerminalBehaviourPlugin):
         logger.debug(f'{self.__class__.__name__}: create({entry})')
         coe, created = CampusOnlineEntry.objects.get_or_create(
                 incoming__student=entry.student,
-                incoming__terminal__room=entry.terminal.room,
+                incoming__room=entry.room,
                 ended__isnull=True,
                 defaults={
                     'incoming': entry,
@@ -73,11 +73,11 @@ class CampusOnlineTerminalBehaviour(TerminalBehaviourPlugin):
         if created:
             # New entry, student entering the room
             logger.debug(
-                f'Student {entry.student} entering {entry.terminal.room}'
+                f'Student {entry.student} entering {entry.room}'
             )
             try:
                 holding = CampusOnlineHolding.objects.get(
-                    room=entry.terminal.room,
+                    room=entry.room,
                     initiated__lte=timezone.now(),
                     state='running'
                 )
@@ -92,13 +92,13 @@ class CampusOnlineTerminalBehaviour(TerminalBehaviourPlugin):
         else:
             # Existing entry, student leaving room
             logger.debug(
-                f'Student {entry.student} leaving {entry.terminal.room}'
+                f'Student {entry.student} leaving {entry.room}'
             )
             if not coe.holding:
                 # No holding but prior entry found, assume he/she left the room
                 # with this entry
                 logger.debug(
-                    f'{entry.student} canceling {entry.terminal.room}'
+                    f'{entry.student} canceling {entry.room}'
                 )
                 coe.cancel(entry)
                 msg = _('Goodbye')
@@ -106,7 +106,7 @@ class CampusOnlineTerminalBehaviour(TerminalBehaviourPlugin):
                 # Holding is present and student should be assigned to it
                 if coe.holding.state == 'running' and coe.state == 'assigned':
                     logger.debug(
-                        f'{entry.student} leaving {entry.terminal.room}'
+                        f'{entry.student} leaving {entry.room}'
                     )
                     coe.leave(entry)
                 msg = _(

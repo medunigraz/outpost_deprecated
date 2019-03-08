@@ -23,13 +23,10 @@ logger = logging.getLogger(__name__)
 
 
 class Terminal(NetworkedDeviceMixin, models.Model):
-    room = models.ForeignKey(
+    rooms = models.ManyToManyField(
         'campusonline.Room',
-        models.SET_NULL,
         db_constraint=False,
-        null=True,
-        blank=True,
-        related_name='+'
+        related_name='terminals'
     )
     config = JSONField(
         null=True
@@ -55,8 +52,8 @@ class Terminal(NetworkedDeviceMixin, models.Model):
         pm = TerminalBehaviour.manager(lambda p: p.qualified() in self.behaviour)
         return pm
 
-    def __str__(s):
-        return f'{s.room} [{s.hostname}]'
+    def __str__(self):
+        return self.hostname
 
 
 @signal_connect
@@ -69,10 +66,14 @@ class Entry(models.Model):
     )
     student = models.ForeignKey(
         'campusonline.Student',
-        models.SET_NULL,
+        models.DO_NOTHING,
         db_constraint=False,
-        null=True,
-        blank=True,
+        related_name='+'
+    )
+    room = models.ForeignKey(
+        'campusonline.Room',
+        models.DO_NOTHING,
+        db_constraint=False,
         related_name='+'
     )
     status = JSONField(default=list)
@@ -144,7 +145,7 @@ class CampusOnlineHolding(models.Model):
     def start(self):
         self.initiated = timezone.now()
         coes = CampusOnlineEntry.objects.filter(
-            incoming__terminal__room=self.room,
+            incoming__room=self.room,
             holding=None,
             state='created'
         )

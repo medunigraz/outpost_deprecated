@@ -3,6 +3,7 @@ import logging
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from guardian.shortcuts import get_objects_for_user
+from rest_flex_fields.views import FlexFieldsMixin
 from rest_framework import (
     exceptions,
     permissions,
@@ -11,22 +12,24 @@ from rest_framework import (
 from rest_framework.filters import DjangoObjectPermissionsFilter
 from rest_framework.response import Response
 
-from ..api.permissions import ExtendedDjangoModelPermissions
-from ..campusonline import models as co
-
 from . import (
     models,
     serializers,
 )
+from ..api.permissions import ExtendedDjangoModelPermissions
+from ..campusonline import models as co
 
 logger = logging.getLogger(__name__)
 
 
-class TerminalViewSet(viewsets.ModelViewSet):
+class TerminalViewSet(FlexFieldsMixin, viewsets.ModelViewSet):
     queryset = models.Terminal.objects.all()
     serializer_class = serializers.TerminalSerializer
     permission_classes = (
         ExtendedDjangoModelPermissions,
+    )
+    permit_list_expands = (
+        'rooms',
     )
 
 
