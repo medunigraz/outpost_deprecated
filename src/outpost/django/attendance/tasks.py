@@ -42,12 +42,12 @@ class CampusOnlineEntryCleanupTask(PeriodicTask):
 
     def run(self, **kwargs):
         past = timezone.now() - timedelta(hours=12)
-        cond = (Q(state='created') & Q(incoming__created__lt=past)) | (Q(state='assigned') & Q(assigned__lt=past))
-        for e in CampusOnlineEntry.objects.filter(cond):
-            if e.state == 'created':
-                e.cancel()
-            if e.state == 'assigned':
-                e.complete()
+        cond = {
+            'state': 'created',
+            'incoming__created__lt': past
+        }
+        for e in CampusOnlineEntry.objects.filter(**cond):
+            e.cancel()
             e.save()
 
 
