@@ -47,15 +47,18 @@ class CampusOnlineEntryCleanupTask(PeriodicTask):
             if e.state == 'created':
                 e.cancel()
             if e.state == 'assigned':
-                e.leave()
+                e.complete()
             e.save()
 
 
-class HoldingCleanupTask(PeriodicTask):
+class CampusOnlineHoldingCleanupTask(PeriodicTask):
     run_every = timedelta(minutes=5)
 
     def run(self, **kwargs):
+        now = timezone.now()
         # TODO: Fix filter to find holding that have recently ended
         for h in CampusOnlineHolding.objects.filter(state='running'):
-            h.end()
-            h.save()
+            period = h.course_group_term.end - h.course_group_term.start
+            if h.initiated + period + timedelta(hours=2) < now:
+                h.end(finished=h.initiated + period)
+                h.save()
