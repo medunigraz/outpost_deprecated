@@ -148,9 +148,14 @@ v1.register(
     base_name='attendance-clock'
 )
 v1.register(
-    r'attendance/campusonline-holding',
+    r'attendance/campusonlineholding',
     attendance.CampusOnlineHoldingViewSet,
     base_name='attendance-campusonline-holding'
+)
+v1.register(
+    r'attendance/campusonlineentry',
+    attendance.CampusOnlineEntryViewSet,
+    base_name='attendance-campusonline-entry'
 )
 v1.register(
     r'attendance/statistics',

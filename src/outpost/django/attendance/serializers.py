@@ -35,10 +35,73 @@ class EntrySerializer(serializers.ModelSerializer):
         )
 
 
-class CampusOnlineHoldingSerializer(serializers.ModelSerializer):
+class CampusOnlineHoldingSerializer(FlexFieldsModelSerializer):
+
+    expandable_fields = {
+        'course_group_term': (
+            f'outpost.django.campusonline.serializers.CampusOnlineEntrySerializer',
+            {
+                'source': 'course_group_term',
+                'read_only': True
+            }
+        ),
+        'entries': (
+            f'{__package__}.CampusOnlineEntrySerializer',
+            {
+                'source': 'holding',
+                'read_only': True,
+                'many': True
+            }
+        ),
+    }
+
     class Meta:
         model = models.CampusOnlineHolding
-        fields = '__all__'
+        fields = (
+            'id',
+            'state',
+            'initiated',
+            'finished',
+            'course_group_term',
+            'room',
+            'entries',
+        )
+
+
+class CampusOnlineEntrySerializer(FlexFieldsModelSerializer):
+
+    student = serializers.PrimaryKeyRelatedField(
+        source='incoming.student',
+        read_only=True
+    )
+
+    expandable_fields = {
+        'holding': (
+            f'{__package__}.CampusOnlineHoldingSerializer',
+            {
+                'source': 'holding',
+                'read_only': True
+            }
+        ),
+        'student': (
+            'outpost.django.campusonline.serializers.StudentSerializer',
+            {
+                'source': 'incoming.student',
+                'read_only': False
+            }
+        ),
+    }
+
+    class Meta:
+        model = models.CampusOnlineEntry
+        fields = (
+            'id',
+            'assigned',
+            'ended',
+            'state',
+            'holding',
+            'student',
+        )
 
 
 class StatisticsEntrySerializer(serializers.ModelSerializer):

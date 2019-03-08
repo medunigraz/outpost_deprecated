@@ -39,43 +39,80 @@ class ClockViewSet(viewsets.ViewSet):
     )
 
     def create(self, request):
-        term_id = request.data.get('terminal')
-        logger.debug(f'Incoming request for terminal {term_id}')
+        terminal_id = request.data.get('terminal')
+        logger.debug(f'Incoming request for terminal {terminal_id}')
         try:
             terminal = models.Terminal.objects.get(
-                pk=request.data.get('terminal'),
+                pk=terminal_id,
                 online=True,
                 enabled=True
             )
         except models.Terminal.DoesNotExist:
-            logger.warn(f'Unknown terminal {term_id}')
+            logger.warn(f'Unknown terminal {terminal_id}')
             raise exceptions.NotFound('Unknown terminal identification')
-        cardid = request.data.get('cardid', None)
-        if not cardid:
-            logger.warn(f'Missing card id')
-            raise exceptions.ValidationError('Missing cardid information')
+        room_id = request.data.get('room')
         try:
-            student = co.Student.objects.get(cardid=cardid)
+            room = terminal.rooms.get(
+                pk=room_id
+            )
+        except terminal.rooms.DoesNotExist:
+            logger.warn(f'Unknown room {room_id}')
+            raise exceptions.NotFound('Unknown room identification')
+        card_id = request.data.get('cardid', None)
+        if not card_id:
+            logger.warn(f'Missing card id')
+            raise exceptions.ValidationError('Missing card information')
+        try:
+            student = co.Student.objects.get(cardid=card_id)
         except co.Student.DoesNotExist:
-            logger.warn(f'No student found for cardid {cardid}')
+            logger.warn(f'No student found for cardid {card_id}')
             raise exceptions.NotFound('Unknown student identification')
         entry = models.Entry.objects.create(
             student=student,
-            terminal=terminal
+            terminal=terminal,
+            room=room
         )
         return Response({
             'status': entry.status,
             'name': str(student),
             'entry': entry.pk,
+            'room': room
         })
 
 
-class CampusOnlineHoldingViewSet(viewsets.ModelViewSet):
+class CampusOnlineHoldingViewSet(FlexFieldsMixin, viewsets.ModelViewSet):
     queryset = models.CampusOnlineHolding.objects.all()
     serializer_class = serializers.CampusOnlineHoldingSerializer
     permission_classes = (
         ExtendedDjangoModelPermissions,
     )
+    permit_list_expands = (
+        'entries',
+    )
+
+    def get_queryset(self):
+        username = self.request.user.username
+        return self.queryset.filter(
+            lecturer__username=username
+        )
+
+
+class CampusOnlineEntryViewSet(FlexFieldsMixin, viewsets.ModelViewSet):
+    queryset = models.CampusOnlineEntry.objects.all()
+    serializer_class = serializers.CampusOnlineEntrySerializer
+    permission_classes = (
+        permissions.IsAuthenticated,
+    )
+    permit_list_expands = (
+        'holding',
+        'student',
+    )
+
+    def get_queryset(self):
+        username = self.request.user.username
+        return self.queryset.filter(
+            holding__lecturer__username=username
+        )
 
 
 class StatisticsViewSet(viewsets.ModelViewSet):

@@ -237,7 +237,8 @@ class CampusOnlineEntry(models.Model):
         'CampusOnlineHolding',
         models.CASCADE,
         null=True,
-        blank=True
+        blank=True,
+        related_name='entries'
     )
     state = FSMField(
         default='created'
