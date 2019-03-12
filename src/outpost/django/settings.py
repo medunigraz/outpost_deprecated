@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'outpost.django.geo',
     'outpost.django.networktoken',
     'outpost.django.oauth2',
+    'outpost.django.kages',
     'outpost.django.lti',
     'outpost.django.positioning',
     'outpost.django.research',

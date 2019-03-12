@@ -10,6 +10,7 @@ from ..attendance import api as attendance
 from ..base import api as base
 from ..campusonline import api as campusonline
 from ..geo import api as geo
+from ..kages import api as kages
 from ..networktoken import api as networktoken
 from ..positioning import api as positioning
 from ..research import api as research
@@ -155,6 +156,11 @@ v1.register(
     r'attendance/statistics',
     attendance.StatisticsViewSet,
     base_name='attendance-statistics'
+)
+v1.register(
+    r'kages/translate',
+    kages.TranslateViewSet,
+    base_name='kages-translate'
 )
 v1.register(
     r'networktoken/token',
