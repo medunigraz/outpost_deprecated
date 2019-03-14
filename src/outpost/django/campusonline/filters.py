@@ -1,4 +1,5 @@
 from django.utils.translation import gettext_lazy as _
+from django_filters import CharFilter
 from django_filters.rest_framework import (
     filters,
     filterset,
@@ -302,6 +303,8 @@ class CourseGroupTermFilter(filterset.FilterSet):
       - `start`: `exact`, `gt`, `gte`, `lt`, `lte`, `date`
       - `end`: `exact`, `gt`, `gte`, `lt`, `lte`, `date`
     '''
+    room_title = CharFilter(field_name='room__title')
+    room_number = CharFilter(field_name='room__full')
 
     class Meta:
         model = models.CourseGroupTerm
@@ -330,6 +333,30 @@ class CourseGroupTermFilter(filterset.FilterSet):
                 'gte',
                 'lte',
                 'date',
+            ),
+            'title': (
+                'contains',
+                'icontains',
+                'startswith',
+                'istartswith',
+                'endswith',
+                'iendswith',
+            ),
+            'room_title': (
+                'contains',
+                'icontains',
+                'startswith',
+                'istartswith',
+                'endswith',
+                'iendswith',
+            ),
+            'room_number': (
+                'contains',
+                'icontains',
+                'startswith',
+                'istartswith',
+                'endswith',
+                'iendswith',
             ),
         }
 
