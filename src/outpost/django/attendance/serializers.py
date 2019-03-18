@@ -1,7 +1,11 @@
 from rest_flex_fields import FlexFieldsModelSerializer
-from rest_framework import serializers
+from rest_framework import (
+    exceptions,
+    serializers,
+)
 
 from . import models
+from ..campusonline.models import Person
 from ..campusonline.serializers import StudentSerializer
 
 
@@ -66,6 +70,23 @@ class CampusOnlineHoldingSerializer(FlexFieldsModelSerializer):
             'room',
             'entries',
         )
+
+    def save(self):
+        request = self.context.get('request', None)
+        if not request:
+            raise serializers.ValidationError('No request found in context.')
+        if not request.user.is_authenticated:
+            raise exceptions.NotAuthenticated(
+                'Must be authenticated to create holding.'
+            )
+        try:
+            lecturer = Person.objects.get(username=request.user.username)
+        except Person.DoesNotExist:
+            raise exceptions.PermissionDenied(
+                'Only users with CAMPUSonline accounts can create holdings'
+            )
+        self.validated_data['lecturer'] = lecturer
+        return super().save()
 
 
 class CampusOnlineEntrySerializer(FlexFieldsModelSerializer):
