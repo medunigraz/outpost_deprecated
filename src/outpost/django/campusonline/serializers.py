@@ -333,6 +333,17 @@ class DistributionListSerializer(FlexFieldsModelSerializer):
         fields = '__all__'
 
 
+class StudentSerializer(ModelSerializer):
+
+    class Meta:
+        model = models.Student
+        fields = (
+            'first_name',
+            'last_name',
+            'title',
+        )
+
+
 class CourseSerializer(ModelSerializer):
 
     class Meta:
