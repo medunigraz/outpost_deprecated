@@ -404,6 +404,7 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.NamespaceVersioning',
     'DEFAULT_METADATA_CLASS': 'outpost.django.api.metadata.ExtendedMetadata',
+    'HTML_SELECT_CUTOFF': 200,
 }
 
 REST_FRAMEWORK_EXTENSIONS = {
