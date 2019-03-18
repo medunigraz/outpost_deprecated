@@ -17,6 +17,26 @@ from .utils import Uuid4Upload
 logger = logging.getLogger(__name__)
 
 
+class RelatedManager(models.Manager):
+
+    def __init__(self, select=None, prefetch=None):
+        super().__init__()
+        self._select_related = select
+        self._prefetch_related = prefetch
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if self._select_related:
+            qs = qs.select_related(
+                *self._select_related
+            )
+        if self._prefetch_related:
+            qs = qs.prefetch_related(
+                *self._prefetch_related
+            )
+        return qs
+
+
 class NetworkedDeviceMixin(models.Model):
     hostname = models.CharField(max_length=128, blank=False, null=False)
     enabled = models.BooleanField(default=True)

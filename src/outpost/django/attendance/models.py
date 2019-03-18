@@ -16,7 +16,10 @@ from model_utils.models import TimeStampedModel
 
 from ..base.decorators import signal_connect
 from ..base.fields import ChoiceArrayField
-from ..base.models import NetworkedDeviceMixin
+from ..base.models import (
+    NetworkedDeviceMixin,
+    RelatedManager,
+)
 from .plugins import TerminalBehaviour
 
 logger = logging.getLogger(__name__)
@@ -133,6 +136,18 @@ class CampusOnlineHolding(models.Model):
     finished = models.DateTimeField(
         null=True,
         blank=True
+    )
+
+    objects = RelatedManager(
+        select=(
+            'course_group_term',
+            'course_group_term__coursegroup',
+            'course_group_term__coursegroup__course',
+            'course_group_term__room',
+            'course_group_term__person',
+            'lecturer',
+            'room',
+         )
     )
 
     class Meta:

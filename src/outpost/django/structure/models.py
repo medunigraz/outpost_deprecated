@@ -1,6 +1,7 @@
 from django.db import models
 
 from ..base.fields import LowerCaseCharField
+from ..base.models import RelatedManager
 
 
 class Organization(models.Model):
@@ -29,6 +30,18 @@ class Organization(models.Model):
     )
     hidden = models.BooleanField(
         default=False
+    )
+
+    objects = RelatedManager(
+        select=(
+            'campusonline',
+            'office',
+        ),
+        prefetch=(
+            'campusonline__persons',
+            'campusonline__publication_authorship',
+            'office__campusonline',
+        )
     )
 
     class Meta:

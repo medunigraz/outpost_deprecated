@@ -14,6 +14,7 @@ from polymorphic.models import PolymorphicModel
 from ..base.decorators import signal_connect
 from ..base.fields import LowerCaseCharField
 from ..base.key_constructors import UpdatedAtKeyBit
+from ..base.models import RelatedManager
 
 
 class OriginMixin(models.Model):
@@ -234,6 +235,13 @@ class Room(OriginMixin, Node):
         'structure.Organization',
         null=True,
         blank=True
+    )
+
+    objects = RelatedManager(
+        select=(
+            'category',
+            'campusonline',
+        ),
     )
 
     def __str__(self):

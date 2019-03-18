@@ -21,6 +21,7 @@ from PyQt5.QtCore import (
 from treebeard.al_tree import AL_Node
 
 from ..base.decorators import locale
+from ..base.models import RelatedManager
 from ..base.signals import materialized_view_refreshed
 from ..base.tasks import RefreshMaterializedViewTask
 from .conf import settings
@@ -772,6 +773,15 @@ class CourseGroupTerm(models.Model):
         db_constraint=False,
         null=True,
         blank=True,
+    )
+
+    objects = RelatedManager(
+        select=(
+            'coursegroup',
+            'coursegroup__course',
+            'person',
+            'room',
+        )
     )
 
     class Meta:
