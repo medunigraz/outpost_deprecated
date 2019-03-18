@@ -70,6 +70,13 @@ class CampusOnlineHoldingSerializer(FlexFieldsModelSerializer):
             'room',
             'entries',
         )
+        read_only_fields = (
+            'id',
+            'state',
+            'initiated',
+            'finished',
+            'entries',
+        )
 
     def save(self):
         request = self.context.get('request', None)
