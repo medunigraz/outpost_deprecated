@@ -44,9 +44,16 @@ class RoomSerializer(ModelSerializer):
 
     class Meta:
         model = models.Room
-        exclude = (
-            'area',
-            'height',
+        fields = (
+            'id',
+            'category',
+            'floor',
+            'building',
+            'title',
+            'name_short',
+            'name_full',
+            'organization',
+            'geo',
         )
 
 

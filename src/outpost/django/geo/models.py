@@ -228,7 +228,7 @@ class Room(OriginMixin, Node):
         db_constraint=False,
         null=True,
         blank=True,
-        related_name='+'
+        related_name='geo'
     )
     organization = models.ForeignKey(
         'structure.Organization',
