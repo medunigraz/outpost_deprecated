@@ -752,14 +752,14 @@ class CourseGroupTerm(models.Model):
     )
     coursegroup = models.ForeignKey(
         'CourseGroup',
-        models.SET_NULL,
+        models.DO_NOTHING,
         db_constraint=False,
         null=True,
         blank=True,
     )
     person = models.ForeignKey(
         'Person',
-        models.SET_NULL,
+        models.DO_NOTHING,
         db_constraint=False,
         null=True,
         blank=True,
@@ -769,7 +769,7 @@ class CourseGroupTerm(models.Model):
     term = models.IntegerField()
     room = models.ForeignKey(
         'Room',
-        models.SET_NULL,
+        models.DO_NOTHING,
         db_constraint=False,
         null=True,
         blank=True,
