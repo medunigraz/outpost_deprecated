@@ -2,6 +2,7 @@ import logging
 
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from guardian.shortcuts import get_objects_for_user
 from rest_flex_fields.views import FlexFieldsMixin
 from rest_framework import (
@@ -9,10 +10,15 @@ from rest_framework import (
     permissions,
     viewsets,
 )
-from rest_framework.filters import DjangoObjectPermissionsFilter
+from rest_framework.decorators import action
+from rest_framework.filters import (
+    DjangoObjectPermissionsFilter,
+    OrderingFilter,
+)
 from rest_framework.response import Response
 
 from . import (
+    filters,
     models,
     serializers,
 )
@@ -83,8 +89,17 @@ class ClockViewSet(viewsets.ViewSet):
 class CampusOnlineHoldingViewSet(FlexFieldsMixin, viewsets.ModelViewSet):
     queryset = models.CampusOnlineHolding.objects.all()
     serializer_class = serializers.CampusOnlineHoldingSerializer
+    filter_backends = (
+        DjangoFilterBackend,
+        OrderingFilter,
+    )
+    filter_class = filters.CampusOnlineHoldingFilter
+    ordering_fields = (
+        'initiated',
+        'finished',
+    )
     permission_classes = (
-        ExtendedDjangoModelPermissions,
+        permissions.IsAuthenticated,
     )
     permit_list_expands = (
         'entries',
