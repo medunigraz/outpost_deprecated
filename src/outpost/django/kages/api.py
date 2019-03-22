@@ -34,7 +34,7 @@ class TranslateViewSet(viewsets.ViewSet):
             result = conn.search_s(
                 settings.AUTH_LDAP_USER_SEARCH.base_dn,
                 settings.AUTH_LDAP_USER_SEARCH.scope,
-                settings.KAGES_PERS_ID_FILTER.format(id=pk),
+                settings.KAGES_PERS_ID_FILTER.format(id=int(pk)),
                 settings.KAGES_PERS_FIELDS
             )
             found = len(result) == 1
@@ -44,4 +44,4 @@ class TranslateViewSet(viewsets.ViewSet):
             )
             found = False
         logger.debug(f'Matched KAGes ID: {found}')
-        return Response(found)
+        return Response({'exists': found})
