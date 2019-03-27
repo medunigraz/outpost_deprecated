@@ -31,8 +31,8 @@ class HostAdmin(admin.ModelAdmin):
     )
 
 
-@admin.register(models.User)
-class UserAdmin(admin.ModelAdmin):
+@admin.register(models.StaffUser)
+class StaffUserAdmin(admin.ModelAdmin):
     inlines = (
         SystemUserInline,
         PublicKeyInline,
@@ -41,7 +41,6 @@ class UserAdmin(admin.ModelAdmin):
         'pk',
         'username',
         'person',
-        'email',
     )
     list_filter = (
         'systems',
@@ -50,7 +49,27 @@ class UserAdmin(admin.ModelAdmin):
         'person__username',
         'person__first_name',
         'person__last_name',
-        'person__email',
+    )
+
+
+@admin.register(models.StudentUser)
+class StudentUserAdmin(admin.ModelAdmin):
+    inlines = (
+        SystemUserInline,
+        PublicKeyInline,
+    )
+    list_display = (
+        'pk',
+        'username',
+        'person',
+    )
+    list_filter = (
+        'systems',
+    )
+    search_fields = (
+        'person__username',
+        'person__first_name',
+        'person__last_name',
     )
 
 

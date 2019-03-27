@@ -662,6 +662,11 @@ class Student(models.Model):
         blank=True,
         null=True
     )
+    username = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True
+    )
 
     class Meta:
         managed = False

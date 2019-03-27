@@ -7,10 +7,14 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.signals import user_logged_in
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from polymorphic.models import PolymorphicModel
 
 from ..base.decorators import signal_connect
 from ..base.validators import PublicKeyValidator
-from ..campusonline.models import Person
+from ..campusonline.models import (
+    Person,
+    Student,
+)
 
 
 class PublicKey(models.Model):
@@ -106,11 +110,7 @@ class SystemUser(models.Model):
         return f'{self.user.person.username}@{self.system} (self.user)'
 
 
-class User(models.Model):
-    person = models.OneToOneField(
-        'campusonline.Person',
-        db_constraint=False
-    )
+class User(PolymorphicModel):
     systems = models.ManyToManyField(
         'System',
         through='SystemUser',
@@ -146,8 +146,8 @@ class User(models.Model):
     def update(cls, sender, request, user, **kwargs):
         username = getattr(user, user.USERNAME_FIELD)
         try:
-            person = Person.objects.get(username=username)
-        except Person.DoesNotExist:
+            person = cls.campusonline.objects.get(username=username)
+        except cls.campusonline.DoesNotExist:
             return
         defaults = {
             'person': person,
@@ -163,7 +163,24 @@ class User(models.Model):
                 suser.save()
 
 
-user_logged_in.connect(User.update)
+class StaffUser(User):
+    campusonline = Person
+    person = models.OneToOneField(
+        'campusonline.Person',
+        db_constraint=False
+    )
+
+
+class StudentUser(User):
+    campusonline = Student
+    person = models.OneToOneField(
+        'campusonline.Student',
+        db_constraint=False
+    )
+
+
+user_logged_in.connect(StaffUser.update)
+user_logged_in.connect(StudentUser.update)
 
 
 class Group(models.Model):
