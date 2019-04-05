@@ -285,8 +285,8 @@ class CampusOnlineEntry(models.Model):
         self.assigned = timezone.now()
 
     @transition(field=state, source=('assigned', 'left'), target='canceled')
-    def pullout(self):
-        logger.debug(f'Pulling {self} out')
+    def discard(self):
+        logger.debug(f'Discarding {self}')
         self.assigned = None
         self.ended = timezone.now()
 

@@ -104,12 +104,23 @@ class CampusOnlineHoldingViewSet(FlexFieldsMixin, viewsets.ModelViewSet):
     permit_list_expands = (
         'entries',
     )
+    http_method_names = viewsets.ModelViewSet.http_method_names + [
+        'start', 'end', 'cancel'
+    ]
 
     def get_queryset(self):
         username = self.request.user.username
         return self.queryset.filter(
             lecturer__username=username
         )
+
+    @action(methods=['start', 'end', 'cancel'], detail=True)
+    def transition(self, request, pk=None):
+        holding = self.get_object()
+        getattr(holding, request.method.lower())()
+        holding.save()
+        data = self.serializer_class(holding).data
+        return Response(data)
 
 
 class CampusOnlineEntryViewSet(FlexFieldsMixin, viewsets.ModelViewSet):
@@ -122,12 +133,23 @@ class CampusOnlineEntryViewSet(FlexFieldsMixin, viewsets.ModelViewSet):
         'holding',
         'student',
     )
+    http_method_names = viewsets.ModelViewSet.http_method_names + [
+        'discard'
+    ]
 
     def get_queryset(self):
         username = self.request.user.username
         return self.queryset.filter(
             holding__lecturer__username=username
         )
+
+    @action(methods=['discard'], detail=True)
+    def transition(self, request, pk=None):
+        entry = self.get_object()
+        getattr(entry, request.method.lower())()
+        entry.save()
+        data = self.serializer_class(entry).data
+        return Response(data)
 
 
 class StatisticsViewSet(viewsets.ModelViewSet):

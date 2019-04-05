@@ -442,6 +442,9 @@ CORS_REPLACE_HTTPS_REFERER = True
 CORS_ALLOW_METHODS = default_methods + (
     'START',
     'STOP',
+    'END',
+    'CANCEL',
+    'DISCARD',
 )
 
 DEFAULT_SRID = 3857
