@@ -96,7 +96,6 @@ class CampusOnlineHoldingViewSet(FlexFieldsMixin, viewsets.ModelViewSet):
     filter_class = filters.CampusOnlineHoldingFilter
     ordering_fields = (
         'initiated',
-        'finished',
     )
     permission_classes = (
         permissions.IsAuthenticated,
@@ -111,7 +110,11 @@ class CampusOnlineHoldingViewSet(FlexFieldsMixin, viewsets.ModelViewSet):
     def get_queryset(self):
         username = self.request.user.username
         return self.queryset.filter(
-            lecturer__username=username
+            lecturer__username=username,
+            state__in=(
+                'pending',
+                'running'
+            )
         )
 
     @action(methods=['start', 'end', 'cancel'], detail=True)
@@ -126,6 +129,14 @@ class CampusOnlineHoldingViewSet(FlexFieldsMixin, viewsets.ModelViewSet):
 class CampusOnlineEntryViewSet(FlexFieldsMixin, viewsets.ModelViewSet):
     queryset = models.CampusOnlineEntry.objects.all()
     serializer_class = serializers.CampusOnlineEntrySerializer
+    filter_backends = (
+        DjangoFilterBackend,
+        OrderingFilter,
+    )
+    filter_class = filters.CampusOnlineEntryFilter
+    ordering_fields = (
+        'initiated',
+    )
     permission_classes = (
         permissions.IsAuthenticated,
     )
@@ -140,7 +151,8 @@ class CampusOnlineEntryViewSet(FlexFieldsMixin, viewsets.ModelViewSet):
     def get_queryset(self):
         username = self.request.user.username
         return self.queryset.filter(
-            holding__lecturer__username=username
+            holding__lecturer__username=username,
+            holding__state='running'
         )
 
     @action(methods=['discard'], detail=True)

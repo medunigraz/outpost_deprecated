@@ -70,3 +70,26 @@ class CampusOnlineHoldingFilter(filterset.FilterSet):
                 'date',
             ),
         }
+
+
+class CampusOnlineEntryFilter(filterset.FilterSet):
+    '''
+    ## Filters
+
+    To filter for exact value matches:
+
+        ?<fieldname>=<value>
+
+    For advanced filtering use lookups:
+
+        ?<fieldname>__<lookup>=<value>
+
+    Possible lookups:
+
+      - `initiated`: `exact`, `gt`, `gte`, `lt`, `lte`, `date`
+      - `finished`: `exact`, `gt`, `gte`, `lt`, `lte`, `date`
+    '''
+
+    class Meta:
+        model = models.CampusOnlineEntry
+        fields = {}
