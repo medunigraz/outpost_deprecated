@@ -540,3 +540,49 @@ class BulletinPageFilter(filterset.FilterSet):
                 'lte',
             ),
         }
+
+
+class FinalThesisFilter(filterset.FilterSet):
+    '''
+    ## Filters
+
+    To filter for exact value matches:
+
+        ?<fieldname>=<value>
+
+    For advanced filtering use lookups:
+
+        ?<fieldname>__<lookup>=<value>
+
+    Possible lookups:
+
+      - `year`: `contains`, `regex`
+      - `modified`: `gte`, `gt`, `lte`, `lt`, `date`
+    '''
+
+    class Meta:
+        model = models.FinalThesis
+        fields = {
+            'author': (
+                'exact',
+            ),
+            'tutor': (
+                'exact',
+            ),
+            'organization': (
+                'exact',
+            ),
+            'year': (
+                'exact',
+                'contains',
+                'regex',
+            ),
+            'modified': (
+                'exact',
+                'gt',
+                'lt',
+                'gte',
+                'lte',
+                'date',
+            ),
+        }

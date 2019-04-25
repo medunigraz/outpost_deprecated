@@ -287,3 +287,32 @@ class BulletinPageSearchViewSet(HaystackViewSet):
     permission_classes = (
         AllowAny,
     )
+
+
+@docstring_format(
+    model=models.FinalThesis.__doc__,
+    filter=filters.FinalThesisFilter.__doc__,
+    serializer=serializers.FinalThesisSerializer.__doc__
+)
+class FinalThesisViewSet(FlexFieldsMixin, ReadOnlyModelViewSet):
+    '''
+    List final thesis from CAMPUSonline.
+
+    {model}
+    {filter}
+    {serializer}
+    '''
+    queryset = models.FinalThesis.objects.all()
+    serializer_class = serializers.FinalThesisSerializer
+    filter_backends = (
+        DjangoFilterBackend,
+    )
+    filter_class = filters.FinalThesisFilter
+    permission_classes = (
+        IsAuthenticated,
+    )
+    permit_list_expands = (
+        'author',
+        'tutor',
+        'organization',
+    )

@@ -9,6 +9,7 @@ from typing import Optional
 
 import requests
 from django.contrib.gis.db import models
+from django.contrib.postgres.fields import ArrayField
 from django.utils.translation import gettext_lazy as _
 from ordered_model.models import OrderedModel
 from PIL import Image
@@ -1044,3 +1045,51 @@ class BulletinPage(models.Model):
         bio.close()
         self.clean = False
         self.text = scanned
+
+
+
+class FinalThesis(models.Model):
+    study_designation = models.CharField(
+        max_length=256
+    )
+    modified = models.DateTimeField()
+    author = models.ForeignKey(
+        'Student',
+        models.DO_NOTHING,
+        db_constraint=False
+    )
+    authors = ArrayField(
+        models.CharField(
+            max_length=256,
+        )
+    )
+    title = models.CharField(
+        max_length=256
+    )
+    abstract = models.TextField()
+    tutor = models.ForeignKey(
+        'Person',
+        models.DO_NOTHING,
+        db_constraint=False
+    )
+    year = models.PositiveIntegerField()
+    url = models.URLField()
+    category = models.CharField(
+        max_length=256
+    )
+    organization = models.ForeignKey(
+        'Organization',
+        models.DO_NOTHING,
+        db_constraint=False
+    )
+
+    class Meta:
+        managed = False
+        db_table = 'campusonline_finalthesis'
+        get_latest_by = 'modified'
+        ordering = (
+            '-modified',
+        )
+
+    def __str__(self):
+        return f'{self.author}: {self.title} ({self.year})'

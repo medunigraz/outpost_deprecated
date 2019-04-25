@@ -423,3 +423,53 @@ class BulletinPageSearchSerializer(HaystackSerializerMixin, BulletinPageSerializ
         search_fields = (
             'text',
         )
+
+
+class FinalThesisSerializer(FlexFieldsModelSerializer):
+    '''
+    ## Expansions
+
+    To activate relation expansion add the desired fields as a comma separated
+    list to the `expand` query parameter like this:
+
+        ?expand=<field>,<field>,<field>,...
+
+    The following relational fields can be expanded:
+
+     * `author`
+     * `tutor`
+     * `organization`
+
+    '''
+    @property
+    def expandable_fields(self):
+        serializer = 'PersonSerializer'
+        request = self.context.get('request', None)
+        if request:
+            if request.user:
+                if request.user.is_authenticated():
+                    serializer = 'AuthenticatedPersonSerializer'
+        return {
+            'author': (
+                f'{__name__}.StudentSerializer',
+                {
+                    'source': 'author',
+                }
+            ),
+            'tutor': (
+                f'{__name__}.{serializer}',
+                {
+                    'source': 'tutor',
+                }
+            ),
+            'organization': (
+                f'{__name__}.OrganizationSerializer',
+                {
+                    'source': 'organization',
+                }
+            ),
+        }
+
+    class Meta:
+        model = models.FinalThesis
+        fields = '__all__'

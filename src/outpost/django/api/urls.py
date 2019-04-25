@@ -278,6 +278,11 @@ v1.register(
     base_name='campusonline-distributionlist'
 )
 v1.register(
+    r'campusonline/finalthesis',
+    campusonline.FinalThesisViewSet,
+    base_name='campusonline-finalthesis'
+)
+v1.register(
     r'campusonline/event',
     campusonline.EventViewSet,
     base_name='campusonline-event'
