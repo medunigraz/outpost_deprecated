@@ -1,8 +1,15 @@
+import json
+
+from django.contrib.auth.models import Group
 from django.core.validators import (
     MaxLengthValidator,
     MinLengthValidator,
 )
 from django.db import models
+from polymorphic.models import PolymorphicModel
+from pygments import highlight
+from pygments.formatters import HtmlFormatter
+from pygments.lexers import JsonLexer
 
 from .conf import settings
 
@@ -57,3 +64,40 @@ class History(models.Model):
                 'token',
             ]),
         )
+
+
+class GroupRole(models.Model):
+    role = models.CharField(
+        primary_key=True,
+        max_length=256
+    )
+    group = models.ForeignKey(
+        Group
+    )
+
+    def __str__(self):
+        return f'{self.role}: {self.group}'
+
+
+class Resource(PolymorphicModel):
+    consumer = models.ForeignKey(
+        'Consumer',
+        on_delete=models.CASCADE
+    )
+    resource = models.CharField(
+        max_length=256
+    )
+
+
+class DebugResource(Resource):
+    formater = HtmlFormatter()
+
+    def render(self, user, params):
+        data = {
+            'style': self.formater.get_style_defs('.highlight'),
+            'json': highlight(
+                json.dumps(dict(params), indent=2),
+                JsonLexer(),
+                self.formater
+            ),
+        }

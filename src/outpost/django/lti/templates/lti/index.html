@@ -1,0 +1,13 @@
+{% extends "lti/base.html" %}
+
+{% block content %}
+<style>
+{{ style }}
+</style>
+{{ json|safe }}
+<ul>
+{% for resource in resource_classes %}
+<li>{{ resource }}</li>
+{% endfor %}
+</ul>
+{% endblock %}

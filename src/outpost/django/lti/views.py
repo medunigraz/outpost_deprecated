@@ -1,9 +1,16 @@
-from django.contrib.auth import get_user_model
+from django.conf import settings
+from django.contrib.auth import (
+    get_user_model,
+    login,
+)
 from django.http import (
     HttpResponse,
+    HttpResponseForbidden,
     HttpResponseRedirect,
 )
+from django.template.response import TemplateResponse
 from django.urls import reverse
+from django.utils import translation
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
@@ -11,6 +18,11 @@ from lti import ToolConfig
 from lti.contrib.django import DjangoToolProvider
 
 from . import utils
+from .models import (
+    Consumer,
+    GroupRole,
+    Resource,
+)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -40,8 +52,57 @@ class LTIView(View):
         validator = utils.OutpostRequestValidator()
         ok = tool_provider.is_valid_request(validator)
         if not ok:
-            return HttpResponse()
+            return HttpResponseForbidden()
 
-        username = tool_provider.launch_params.get('ext_user_username')
+        try:
+            consumer = Consumer.objects.get(
+                key=tool_provider.consumer_key,
+                enabled=True
+            )
+        except Consumer.DoesNotExist:
+            return HttpResponseForbidden()
+
+        params = tool_provider.to_params()
+        username = params.get('ext_user_username')
         user = get_user_model().objects.get(username=username)
-        return HttpResponse(f'LTI-Request erfolgreich, Benutzer {user} erkannt.')
+        login(
+            request,
+            user,
+            backend='django.contrib.auth.backends.ModelBackend'
+        )
+        #import pudb; pu.db
+        language = params.get(
+            'launch_presentation_locale',
+            settings.LANGUAGE_CODE
+        )
+        with translation.override(language):
+            try:
+                resource = Resource.objects.get(
+                    consumer=consumer,
+                    resource=params.get('resource_link_id')
+                )
+                return resource.render(
+                    request,
+                    consumer,
+                    user,
+                    tool_provider
+                )
+            except Resource.DoesNotExist:
+                roles = params.get('roles')
+                grs = GroupRole.objects.filter(role__in=roles)
+                groups = user.groups.all()
+                for gr in grs:
+                    if gr.group not in groups:
+                        user.groups.add(gr.group)
+                if not user.has_perm('lti.add_resource'):
+                    return HttpResponseForbidden()
+                return TemplateResponse(
+                    request,
+                    'lti/index.html',
+                    {
+                        'consumer': consumer,
+                        'user': user,
+                        'tool_provider': tool_provider,
+                        'resource_classes': Resource.__subclasses__()
+                    }
+                )
