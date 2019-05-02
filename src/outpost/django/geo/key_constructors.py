@@ -1,7 +1,7 @@
 from rest_framework_extensions.key_constructor import bits
 from rest_framework_extensions.key_constructor.constructors import DefaultKeyConstructor
 
-from ..base.key_constructors import UpdatedAtKeyBit
+from outpost.django.base.key_constructors import UpdatedAtKeyBit
 
 
 class RoutingEdgeListKeyConstructor(DefaultKeyConstructor):

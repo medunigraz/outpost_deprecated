@@ -3,6 +3,9 @@ from rest_flex_fields.views import FlexFieldsMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
+from outpost.django.api.permissions import ExtendedDjangoModelPermissions
+from outpost.django.base.decorators import docstring_format
+
 # from rest_framework_extensions.mixins import (
 #     CacheResponseAndETAGMixin,
 # )
@@ -13,8 +16,6 @@ from . import (
     models,
     serializers,
 )
-from ..api.permissions import ExtendedDjangoModelPermissions
-from ..base.decorators import docstring_format
 
 
 @docstring_format(

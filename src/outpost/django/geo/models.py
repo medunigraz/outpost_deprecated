@@ -11,10 +11,10 @@ from django_extensions.db.models import TimeStampedModel
 from ordered_model.models import OrderedModel
 from polymorphic.models import PolymorphicModel
 
-from ..base.decorators import signal_connect
-from ..base.fields import LowerCaseCharField
-from ..base.key_constructors import UpdatedAtKeyBit
-from ..base.models import RelatedManager
+from outpost.django.base.decorators import signal_connect
+from outpost.django.base.fields import LowerCaseCharField
+from outpost.django.base.key_constructors import UpdatedAtKeyBit
+from outpost.django.base.models import RelatedManager
 
 
 class OriginMixin(models.Model):

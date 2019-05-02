@@ -9,12 +9,12 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from polymorphic.models import PolymorphicModel
 
+from outpost.django.base.decorators import signal_connect
+from outpost.django.base.validators import PublicKeyValidator
 from outpost.django.campusonline.models import (
     Person,
     Student,
 )
-from outpost.django.base.decorators import signal_connect
-from outpost.django.base.validators import PublicKeyValidator
 
 
 class PublicKey(models.Model):

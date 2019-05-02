@@ -8,11 +8,12 @@ from django_filters.rest_framework import (
     filterset,
 )
 
-from . import models
-from ..campusonline.models import (
+from outpost.django.campusonline.models import (
     CourseGroupTerm,
     Room,
 )
+
+from . import models
 
 
 class CampusOnlineHoldingFilter(filterset.FilterSet):

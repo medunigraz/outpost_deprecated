@@ -3,9 +3,10 @@ from datetime import timedelta
 
 from celery.task import PeriodicTask
 
-from ..campusonline.models import Organization as COOrganization
-from ..campusonline.models import Person as COPerson
-from ..geo.models import Room
+from outpost.django.campusonline.models import Organization as COOrganization
+from outpost.django.campusonline.models import Person as COPerson
+from outpost.django.geo.models import Room
+
 from .models import (
     Organization,
     Person,

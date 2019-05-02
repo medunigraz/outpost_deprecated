@@ -17,13 +17,14 @@ from rest_framework.filters import (
 )
 from rest_framework.response import Response
 
+from outpost.django.api.permissions import ExtendedDjangoModelPermissions
+from outpost.django.campusonline import models as co
+
 from . import (
     filters,
     models,
     serializers,
 )
-from ..api.permissions import ExtendedDjangoModelPermissions
-from ..campusonline import models as co
 
 logger = logging.getLogger(__name__)
 

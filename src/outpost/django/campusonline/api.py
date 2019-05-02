@@ -9,14 +9,15 @@ from rest_framework.permissions import (
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
+from outpost.django.api.permissions import ExtendedDjangoModelPermissions
+from outpost.django.base.decorators import docstring_format
+
 from . import (
     filters,
     key_constructors,
     models,
     serializers,
 )
-from ..api.permissions import ExtendedDjangoModelPermissions
-from ..base.decorators import docstring_format
 
 # from rest_framework_extensions.mixins import (
 #     CacheResponseAndETAGMixin,

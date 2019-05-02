@@ -35,12 +35,13 @@ from PIL import Image
 from polymorphic.models import PolymorphicModel
 from purl import URL
 
-from ..base.decorators import signal_connect
-from ..base.models import NetworkedDeviceMixin
-from ..base.utils import (
+from outpost.django.base.decorators import signal_connect
+from outpost.django.base.models import NetworkedDeviceMixin
+from outpost.django.base.utils import (
     Process,
     Uuid4Upload,
 )
+
 from .utils import FFMPEGProgressHandler
 
 logger = logging.getLogger(__name__)

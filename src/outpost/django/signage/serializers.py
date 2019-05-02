@@ -6,11 +6,12 @@ from rest_framework.serializers import (
 )
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
+from outpost.django.campusonline import serializers as campusonline
+
 from . import (
     models,
     search_indexes,
 )
-from ..campusonline import serializers as campusonline
 
 
 class BackgroundSerializer(GeoFeatureModelSerializer):

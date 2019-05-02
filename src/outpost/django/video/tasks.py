@@ -20,17 +20,18 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from pint import UnitRegistry
 
-from ..base.tasks import MaintainanceTaskMixin
-from ..campusonline.models import (
+from outpost.django.base.tasks import MaintainanceTaskMixin
+from outpost.django.campusonline.models import (
     Course,
     CourseGroupTerm,
     Person,
 )
-from ..campusonline.serializers import (
+from outpost.django.campusonline.serializers import (
     CourseSerializer,
     PersonSerializer,
     RoomSerializer,
 )
+
 from .utils import FFProbeProcess
 
 from .models import (  # EventAudio,; EventVideo,

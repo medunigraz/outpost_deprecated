@@ -5,7 +5,7 @@ import pluggy
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
-from ..base.plugins import Plugin
+from outpost.django.base.plugins import Plugin
 
 logger = logging.getLogger(__name__)
 

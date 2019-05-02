@@ -1,6 +1,6 @@
 from django.views.generic import TemplateView
 
-from ..campusonline import models as co
+from outpost.django.campusonline import models as co
 
 
 class HoldingView(TemplateView):

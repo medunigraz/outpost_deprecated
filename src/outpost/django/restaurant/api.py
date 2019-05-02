@@ -3,6 +3,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework_gis.filters import DistanceToPointFilter
 
+from outpost.django.base.decorators import docstring_format
+
 # from rest_framework_extensions.mixins import (
 #     CacheResponseAndETAGMixin,
 # )
@@ -13,7 +15,6 @@ from . import (
     models,
     serializers,
 )
-from ..base.decorators import docstring_format
 
 
 @docstring_format(

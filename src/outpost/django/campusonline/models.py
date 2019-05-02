@@ -21,10 +21,11 @@ from PyQt5.QtCore import (
 )
 from treebeard.al_tree import AL_Node
 
-from ..base.decorators import locale
-from ..base.models import RelatedManager
-from ..base.signals import materialized_view_refreshed
-from ..base.tasks import RefreshMaterializedViewTask
+from outpost.django.base.decorators import locale
+from outpost.django.base.models import RelatedManager
+from outpost.django.base.signals import materialized_view_refreshed
+from outpost.django.base.tasks import RefreshMaterializedViewTask
+
 from .conf import settings
 
 logger = logging.getLogger(__name__)

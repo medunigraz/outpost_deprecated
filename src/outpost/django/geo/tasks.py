@@ -3,7 +3,8 @@ from datetime import timedelta
 
 from celery.task import PeriodicTask
 
-from ..structure.models import Organization
+from outpost.django.structure.models import Organization
+
 from .models import Room
 
 logger = logging.getLogger(__name__)

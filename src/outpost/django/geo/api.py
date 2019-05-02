@@ -21,15 +21,16 @@ from rest_framework_extensions.etag.mixins import ListETAGMixin
 from rest_framework_gis.filters import InBBoxFilter
 from reversion.views import RevisionMixin
 
+from outpost.django.base.mixins import (
+    GeoModelViewSet,
+    MediatypeNegotiationMixin,
+)
+
 from . import filters
 from . import key_constructors as keys
 from . import (
     models,
     serializers,
-)
-from ..base.mixins import (
-    GeoModelViewSet,
-    MediatypeNegotiationMixin,
 )
 
 

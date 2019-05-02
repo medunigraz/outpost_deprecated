@@ -3,9 +3,10 @@ from drf_haystack.viewsets import HaystackViewSet
 from rest_framework.permissions import AllowAny
 from xapian_backend import NGRAM_MAX_LENGTH
 
+from outpost.django.geo import models as geo
+from outpost.django.structure import models as structure
+
 from . import serializers
-from ..geo import models as geo
-from ..structure import models as structure
 
 
 class LimitingHaystackAutocompleteFilter(HaystackAutocompleteFilter):

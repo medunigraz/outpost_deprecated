@@ -3,10 +3,11 @@ from rest_framework.serializers import (
     SerializerMethodField,
 )
 
+from outpost.django.base.utils import colorscale
+from outpost.django.campusonline import serializers as campusonline
+from outpost.django.geo import serializers as geo
+
 from . import models
-from ..base.utils import colorscale
-from ..campusonline import serializers as campusonline
-from ..geo import serializers as geo
 
 
 class OrganizationSerializer(ModelSerializer):

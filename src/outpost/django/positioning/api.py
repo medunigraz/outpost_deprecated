@@ -12,12 +12,13 @@ from rest_framework.permissions import (
 )
 from rest_framework.response import Response
 
+from outpost.django.base.mixins import GeoModelViewSet
+from outpost.django.geo.models import Edge
+
 from . import (
     models,
     serializers,
 )
-from ..base.mixins import GeoModelViewSet
-from ..geo.models import Edge
 
 # from rest_framework_extensions.mixins import (
 #     CacheResponseAndETAGMixin,

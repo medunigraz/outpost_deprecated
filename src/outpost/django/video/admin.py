@@ -1,7 +1,8 @@
 from django.contrib import admin
 
+from outpost.django.base.admin import NotificationInlineAdmin
+
 from . import models
-from ..base.admin import NotificationInlineAdmin
 
 
 class EpiphanRecordingInlineAdmin(admin.TabularInline):

@@ -4,9 +4,10 @@ from rest_framework import (
     serializers,
 )
 
+from outpost.django.campusonline.models import Person
+from outpost.django.campusonline.serializers import StudentSerializer
+
 from . import models
-from ..campusonline.models import Person
-from ..campusonline.serializers import StudentSerializer
 
 
 class TerminalSerializer(FlexFieldsModelSerializer):

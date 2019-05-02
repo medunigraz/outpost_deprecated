@@ -15,8 +15,8 @@ from rest_framework.serializers import (
     SerializerMethodField,
 )
 
-from ..geo import search_indexes as geo
-from ..structure import search_indexes as structure
+from outpost.django.geo import search_indexes as geo
+from outpost.django.structure import search_indexes as structure
 
 
 class AutocompleteSerializer(HaystackSerializer):

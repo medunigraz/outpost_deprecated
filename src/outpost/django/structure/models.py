@@ -1,7 +1,7 @@
 from django.db import models
 
-from ..base.fields import LowerCaseCharField
-from ..base.models import RelatedManager
+from outpost.django.base.fields import LowerCaseCharField
+from outpost.django.base.models import RelatedManager
 
 
 class Organization(models.Model):

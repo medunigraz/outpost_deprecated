@@ -14,12 +14,13 @@ from django_fsm import (
 )
 from model_utils.models import TimeStampedModel
 
-from ..base.decorators import signal_connect
-from ..base.fields import ChoiceArrayField
-from ..base.models import (
+from outpost.django.base.decorators import signal_connect
+from outpost.django.base.fields import ChoiceArrayField
+from outpost.django.base.models import (
     NetworkedDeviceMixin,
     RelatedManager,
 )
+
 from .plugins import TerminalBehaviour
 
 logger = logging.getLogger(__name__)
