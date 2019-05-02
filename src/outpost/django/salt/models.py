@@ -9,12 +9,12 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from polymorphic.models import PolymorphicModel
 
-from ..base.decorators import signal_connect
-from ..base.validators import PublicKeyValidator
-from ..campusonline.models import (
+from outpost.django.campusonline.models import (
     Person,
     Student,
 )
+from outpost.django.base.decorators import signal_connect
+from outpost.django.base.validators import PublicKeyValidator
 
 
 class PublicKey(models.Model):
@@ -203,3 +203,23 @@ class Group(models.Model):
 
     def __str__(self):
         return f'{self.name} ({self.pk})'
+
+
+class Permission(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL
+    )
+    system = models.ForeignKey(
+        'System',
+        blank=True,
+        null=True
+    )
+    function = models.CharField(
+        max_length=256,
+        default='.*'
+    )
+
+    def __str__(self):
+        if not self.system:
+            return f'{self.user}: {self.function}'
+        return f'{self.user}@{self.system}: {self.function}'

@@ -76,3 +76,8 @@ class StudentUserAdmin(admin.ModelAdmin):
 @admin.register(models.Group)
 class GroupAdmin(admin.ModelAdmin):
     pass
+
+
+@admin.register(models.Permission)
+class PermissionAdmin(admin.ModelAdmin):
+    pass
