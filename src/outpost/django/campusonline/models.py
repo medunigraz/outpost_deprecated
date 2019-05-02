@@ -767,8 +767,6 @@ class CourseGroupTerm(models.Model):
         'Person',
         models.DO_NOTHING,
         db_constraint=False,
-        null=True,
-        blank=True,
     )
     start = models.DateTimeField()
     end = models.DateTimeField()
