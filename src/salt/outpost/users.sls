@@ -24,7 +24,10 @@ outpost_user_{{ user.username }}:
 outpost_user_{{ user.username }}_ssh_key:
   ssh_auth.present:
     - user: {{ user.username }}
-    - names: {{ user.public_keys }}
+    - names:
+{%- for key in user.public_keys %}
+        - {{ key.key }}
+{%- endfor %}
     - require:
       - user: outpost_user_{{ user.username }}
 {%- endif %}
