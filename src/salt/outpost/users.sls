@@ -26,7 +26,7 @@ outpost_user_{{ user.username }}_ssh_key:
     - user: {{ user.username }}
     - names:
 {%- for key in user.public_keys %}
-        - {{ key.key }}
+      - {{ key.key }}
 {%- endfor %}
     - require:
       - user: outpost_user_{{ user.username }}
