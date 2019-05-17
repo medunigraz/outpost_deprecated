@@ -425,6 +425,7 @@ class Recording(TimeStampedModel, PolymorphicModel):
         upload_to=Uuid4Upload,
         default=None,
         null=True,
+        blank=True,
         storage=FileSystemStorage(location='/archive')
     )
     start = models.DateTimeField(
