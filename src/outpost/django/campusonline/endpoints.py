@@ -42,7 +42,7 @@ v1 = [
         'campusonline-event'
     ),
     (
-        r'campusonline/bulletin/page',
+        r'campusonline/bulletin:page',
         api.BulletinPageViewSet,
         'campusonline-bulletin-page'
     ),
@@ -52,7 +52,7 @@ v1 = [
         'campusonline-bulletin'
     ),
     (
-        r'campusonline/search/bulletin/page',
+        r'campusonline/search/bulletin:page',
         api.BulletinPageSearchViewSet,
         'campusonline-search-bulletin-page'
     ),
