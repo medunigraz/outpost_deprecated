@@ -296,11 +296,6 @@ class EpiphanSource(models.Model):
             'number',
         )
 
-    def pre_delete(self, *args, **kwargs):
-        logger.debug(f'{self}: Cleaning up files before object deletion')
-        self.video.delete(False)
-        self.audio.delete(False)
-
     @property
     def rtsp(self):
         return f'rtsp://{self.epiphan.hostname}:{self.port}/stream.sdp'
