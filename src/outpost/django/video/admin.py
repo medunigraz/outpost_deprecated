@@ -48,6 +48,7 @@ class ServerAdmin(admin.ModelAdmin):
 class EpiphanAdmin(admin.ModelAdmin):
     list_display = (
         '__str__',
+        'hostname',
         'server',
         'fingerprint',
         'online',
