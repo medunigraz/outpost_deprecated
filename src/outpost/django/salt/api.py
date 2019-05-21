@@ -12,7 +12,7 @@ from rest_framework import (
 )
 from rest_framework.response import Response
 
-from outpost.django.pi.permissions import ExtendedDjangoModelPermissions
+from outpost.django.api.permissions import ExtendedDjangoModelPermissions
 
 from . import (
     models,
